@@ -2,5 +2,7 @@
   text-align: center;
   background-color: #ECEEF3;
   width: 100%;
+  min-height: 100vh;
   height: 100%;
+  margin: auto;
 }

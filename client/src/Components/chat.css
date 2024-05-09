@@ -1,7 +1,35 @@
 .chatUI {
+    position: relative;
     background-color: #ECF0F6;
     width: 1000px;
     height: 100%;
-    border-radius: 20px;
     margin-left: 10px;
+}
+
+.chatUI > .bottombar {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 88%;
+    height: 40px;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%); 
+    z-index: 1000; 
+    background-color: white;
+    border-radius: 8px;
+    border: solid 1px #ccc;
+    padding: 0 10px;
+}
+
+.chatUI > .bottombar > input {
+    border: none;
+    width: 90%;
+    font-size: 15px;
+}
+
+.chatUI > .bottombar > .chatBtn {
+    width: 30px;
+    height: 30px;
 }

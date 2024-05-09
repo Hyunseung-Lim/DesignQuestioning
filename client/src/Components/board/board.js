@@ -1,16 +1,116 @@
 import React, { useState, useRef } from 'react';
-import './board.css'
+import axios from 'axios';
+import './board.css';
 
 import { StickyNote } from './stickynote';
 
 export const Board = (props) => {
 
-    const [notesData, setNotesData] = useState([{"id": 0, "content": "저출산의 원인은 바쁜 와중에 아이를 돌볼 시간이 없다는 것. 그래서 디지털 트윈 기술을 활용해 디지털 환경에서 아이를 케어하면 실제 아이도 케어를 받도록 함", "position": {"x": 0, "y": 0}}, {"id": 1, "content": "hi1", "position": {"x": 400, "y": 400}}]);
+    const [currentNotesData, setCurrentNotesData] = useState(props.notesData);
     const parentRef = useRef(null);
 
+    const saveNote = () => {
+        axios({
+            method: "POST",
+            url:"/saveNote",
+            headers: {
+                Authorization: 'Bearer ' + props.token
+            },
+            data: {notesData: currentNotesData}
+            })
+            .then((response) => {
+
+            }).catch((error) => {
+            if (error.response) {
+                console.log(error.response)
+                console.log(error.response.status)
+                console.log(error.response.headers)
+            }
+        })
+    }
+
+    const addNote = () => {
+        axios({
+            method: "POST",
+            url:"/saveNote",
+            headers: {
+                Authorization: 'Bearer ' + props.token
+            },
+            data: {notesData: currentNotesData}
+            })
+            .then((response) => {
+                axios({
+                    method: "GET",
+                    url:"/addNote",
+                    headers: {
+                        Authorization: 'Bearer ' + props.token
+                    }
+                    })
+                    .then((response) => {
+                    const res =response.data
+                    res.access_token && props.setToken(res.access_token)
+                    setCurrentNotesData(
+                        res.notesData
+                    )
+                    }).catch((error) => {
+                    if (error.response) {
+                        console.log(error.response)
+                        console.log(error.response.status)
+                        console.log(error.response.headers)
+                    }
+                })
+            }).catch((error) => {
+            if (error.response) {
+                console.log(error.response)
+                console.log(error.response.status)
+                console.log(error.response.headers)
+            }
+        })
+    }
+
+    const deleteNote = (id) => {
+        axios({
+            method: "POST",
+            url:"/saveNote",
+            headers: {
+                Authorization: 'Bearer ' + props.token
+            },
+            data: {notesData: currentNotesData}
+            })
+            .then((response) => {
+                axios({
+                    method: "POST",
+                    url:"/deleteNote",
+                    headers: {
+                        Authorization: 'Bearer ' + props.token
+                    },
+                    data: {'deleteId': id}
+                    })
+                    .then((response) => {
+                    const res =response.data
+                    res.access_token && props.setToken(res.access_token)
+                    setCurrentNotesData(
+                        res.notesData
+                    )
+                    }).catch((error) => {
+                    if (error.response) {
+                        console.log(error.response)
+                        console.log(error.response.status)
+                        console.log(error.response.headers)
+                    }
+                })
+            }).catch((error) => {
+            if (error.response) {
+                console.log(error.response)
+                console.log(error.response.status)
+                console.log(error.response.headers)
+            }
+        })
+    }
+
     const moveNote = (id, newPos) => {
-        setNotesData(notesData.map(notesData => {
-            return notesData.id === id ? { ...notesData, position: newPos } : notesData;
+        setCurrentNotesData(currentNotesData.map(noteData => {
+            return noteData.id === id ? { ...noteData, position: newPos } : noteData;
         }));
     };
 
@@ -19,20 +119,23 @@ export const Board = (props) => {
             <div className='board'>
                 <div className='boardUI'>
                     <div className='noteContainer' ref={parentRef}>
-                        {notesData.map(noteData => (
+                        {currentNotesData.map((noteData, index) => (
                             <StickyNote
-                                key={noteData.id}
-                                initialPos={noteData.position}
-                                content={noteData.content}
+                                key = {index}
                                 id={noteData.id}
-                                onMove={moveNote}
+                                initialPos={noteData.position}
+                                initalContent={noteData.content}
+                                num={index}
+                                moveNote={moveNote}
+                                deleteNote ={() => deleteNote(noteData.id)}
                                 parentRef={parentRef}
                             />
                         ))}
                     </div>
                 </div>
                 <div className='bottombar'>
-                    <button>add note</button>
+                    <button onClick={addNote}>add note</button>
+                    <button onClick={saveNote}>save</button>
                 </div>
             </div>
         </>

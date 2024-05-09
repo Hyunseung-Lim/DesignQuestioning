@@ -1,11 +1,17 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import './board.css'
+import './board.css';
 
-export const StickyNote = ({ initialPos, content, id, onMove, parentRef}) => {
+export const StickyNote = ({ id, initialPos, initalContent, num, moveNote, deleteNote, parentRef}) => {
     const [isDragging, setIsDragging] = useState(false);
     const [position, setPosition] = useState(initialPos);
     const [relPosition, setRelPosition] = useState({ x: 0, y: 0 }); // Relative position of the cursor
+    const [content, setContent] = useState(initalContent);
 
+
+    const handleTextChange = (event) => {
+        setContent(event.target.value);
+    };
+    
     const onMouseDown = (e) => {
         if (e.button !== 0) return;
         const elem = e.target.getBoundingClientRect();
@@ -29,8 +35,8 @@ export const StickyNote = ({ initialPos, content, id, onMove, parentRef}) => {
 
     const onMouseUp = useCallback(() => {
         setIsDragging(false);
-        onMove(id, position);
-    }, [id, onMove, position]);
+        moveNote(id, position);
+    }, [id, moveNote, position]);
 
     useEffect(() => {
         if (isDragging) {
@@ -58,10 +64,11 @@ export const StickyNote = ({ initialPos, content, id, onMove, parentRef}) => {
                     top: position.y + 'px', 
                     position: 'absolute' 
                 }}>
-                <div className='num'>#{id + 1}
-                    <button>delete</button>
+                <div className='num'>
+                    #{num + 1} # {id}
+                    <button onClick={deleteNote}>delete</button>
                 </div>
-                <textarea placeholder='Write here...'>{content}</textarea>
+                <textarea value={content} onChange={handleTextChange} placeholder='Write here...'/>
             </div>
         </>
     )

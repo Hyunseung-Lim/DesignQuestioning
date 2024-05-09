@@ -1,0 +1,108 @@
+.topbar { 
+    width: calc(100vw - 48px);
+    height: 48px;
+    padding: 0 24px;
+    background-color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+}
+
+.topbar > img {
+    width: 32px;
+    height: 32px;
+}
+
+.menu {
+    display: none;
+    /* padding-right: 20px; */
+}
+
+.menu > .hamburger-bar {
+    display: block;
+    height: 30px;
+    transition: transform 0.2s ease-out;
+    text-decoration: none;
+    color: black;
+    background-color: white;
+    padding: 0px 16px;
+    text-align: left;
+    border: none;
+}
+
+.burger-icon {
+    cursor: pointer;
+    display: inline-block;
+    padding: 8px 0;
+    top: 4px;
+    right: 4px;
+    user-select: none;
+    width: auto;
+    margin: 0;
+}
+
+.burger-icon .burger-sticks {
+    background: black;
+    display: block;
+    height: 2px;
+    position: relative;
+    transition: background .2s ease-out;
+    width: 18px;
+}
+
+.burger-icon .burger-sticks:before,
+.burger-icon .burger-sticks:after {
+    background: black;
+    content: '';
+    display: block;
+    height: 100%;
+    position: absolute;
+    transition: all .2s ease-out;
+    width: 100%;
+}
+
+.burger-icon .burger-sticks:before {
+    top: 5px;
+}
+
+.burger-icon .burger-sticks:after {
+    top: -5px;
+}
+
+.burger-check {
+    display: none;
+}
+
+.burger-check:checked~.menu {
+    display: flex;
+    position: fixed;
+    flex-direction: column;
+    margin-top: 46.2px;
+    width: 100px;
+    height: 100px;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    height: 100%;
+    max-width: 100px;
+    transition: 0.5s ease;
+}
+
+.burger-check:checked~.burger-icon .burger-sticks {
+    background: transparent;
+}
+
+.burger-check:checked~.burger-icon .burger-sticks:before {
+    transform: rotate(-45deg);
+}
+
+.burger-check:checked~.burger-icon .burger-sticks:after {
+    transform: rotate(45deg);
+}
+
+.burger-check:checked~.burger-icon:not(.steps) .burger-sticks:before,
+.burger-check:checked~.burger-icon:not(.steps) .burger-sticks:after {
+    top: 0;
+}
