@@ -3,14 +3,18 @@ import axios from 'axios';
 import './pages.css'
 
 import { Topbar } from '../Components/Topbar/topbar';
-import { Board } from '../Components/board/board';
+// import { Board } from '../Components/board/board';
 import { Chat } from '../Components/chat/chat';
+import { IdeaContainer } from '../Components/IdeaContainer/ideaContainer';
+import { Student } from '../Components/student/student';
 
 export const MainPage = (props) => {
 
-    const [profileData, setProfileData] = useState({'name':null})
-    const [notesData, setNotesData] = useState([]);
+    const [profileData, setProfileData] = useState({'name':null});
+    const [ideasData, setIdeasData] = useState();
+    const [chatData, setChatData] = useState();
 
+    // const [notesData, setNotesData] = useState([]);
 
     // get profile data from server
     function getData() {
@@ -27,9 +31,16 @@ export const MainPage = (props) => {
         setProfileData(({
             name: res.name
         }))
-        setNotesData(
-            res.notesData
+        setIdeasData(
+            res.ideasData
         )
+        setChatData(
+            res.chatData
+        )
+        console.log(res.ideasData)
+        // setNotesData(
+        //     res.notesData
+        // )
         }).catch((error) => {
         if (error.response) {
             console.log(error.response)
@@ -61,8 +72,10 @@ export const MainPage = (props) => {
             <div className='mainpage'>
                 <Topbar removeToken={props.removeToken}/>
                 <div className='UIContainer'>
-                    {notesData ? <Board token={props.token} notesData={notesData}/> : <>loading</>}
-                    <Chat/>
+                    {/* {notesData ? <Board token={props.token} notesData={notesData}/> : <>loading</>} */}
+                    {ideasData ? <IdeaContainer ideasData={ideasData}/> : <>loading</>}
+                    {chatData ? <Chat chatData={chatData}/> : <>loading</>}
+                    <Student/>
                 </div>
             </div>
         </>

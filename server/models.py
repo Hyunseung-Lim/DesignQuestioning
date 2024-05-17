@@ -8,12 +8,31 @@ class User(UserMixin, db.Model):
     realPassword = db.Column(db.String(100))
     name = db.Column(db.String(1000))
 
-
-class Note(db.Model):
+class Idea(db.Model):
     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    content = db.Column(db.String(100))
-    position = db.Column(db.JSON)
+    title = db.Column(db.String(1000))
+    target_problem = db.Column(db.String(1000))
+    idea = db.Column(db.String(1000))
+
+# class Note(db.Model):
+#     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+#     content = db.Column(db.String(100))
+#     position = db.Column(db.JSON)
+
+
+class KnowledgeState(db.Model):
+    id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    opportunity = db.Column(db.String(1000))
+    consideration = db.Column(db.String(1000))
+    knowledge = db.Column(db.String(1000))
+
+class ChatLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    log = db.Column(db.JSON)
 
 # class Log(db.Model):
 #     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy

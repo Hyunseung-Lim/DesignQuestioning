@@ -1,0 +1,17 @@
+.ideaContainerUI {
+    height: 100%;
+    overflow: auto;
+    width: 500px;
+    flex: 1 1 500px;
+}
+
+.ideaContainerUI > .navbar {
+    display: flex;
+    background-color: #888888;
+}
+
+.ideaContainerUI > .navbar > .ideaTag {
+    background: white;
+    border: 0;
+    padding: 10px;
+}

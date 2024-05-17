@@ -5,13 +5,13 @@ from flask_cors import cross_origin
 from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, unset_jwt_cookies, jwt_required, JWTManager
 from datetime import datetime, timedelta, timezone
 from __init__ import create_app, db
-from models import User, Note
+from models import User, Idea, KnowledgeState, ChatLog
 from datetime import datetime
 import base64
 import json
 import os
 import http.client
-
+import openai
 
 
 main = Blueprint('main', __name__)
@@ -41,9 +41,33 @@ def signup():
         password = generate_password_hash(password, method='sha256'),
         realPassword = password
     )
-
     db.session.add(new_user)
     db.session.commit()
+
+    new_KnowledgeState = KnowledgeState(
+        user_id = new_user.id,
+        opportunity = "",
+        consideration = "",
+        knowledge = ""
+    )
+
+    new_ChatLog = ChatLog(
+        user_id = new_user.id,
+        log = []
+    )
+
+    new_ideas = [
+        Idea(user_id=new_user.id, title="유아친화 지역 사회 공간", target_problem="아이를 키우는 환경의 부족", idea="지역 사회 내에서 안전하고 창의적인 유아친화 공간을 만들어 부모들이 아이들을 더욱 편리하고 즐겁게 키울 수 있도록 지원합니다. 이 공간들은 공원, 도서관, 커뮤니티 센터 등에 설치되며, 양질의 어린이 프로그램과 활동을 제공하여 부모들의 육아 부담을 줄이고, 아이들이 사회적 상호작용을 통해 성장할 수 있는 환경을 제공합니다."),
+        Idea(user_id=new_user.id, title="플렉스 워크 포인트", target_problem="일과 가정의 균형 부족", idea="기업들이 육아와 일을 병행할 수 있도록 유연한 근무 환경을 제공하는 정책을 도입합니다. 이 아이디어는 육아 휴직, 시간 선택 근무, 재택 근무 옵션을 포함하여 부모가 자녀 양육에 더 많은 시간을 할애할 수 있게 돕습니다. 또한, 직장 내 어린이집을 설치하여 부모가 직장 근처에서 아이들과 더 많은 시간을 보낼 수 있게 합니다."),
+        Idea(user_id=new_user.id, title="노인과 청년 연결 프로그램", target_problem="고령화 사회의 노인 인력 활용", idea="노인 세대가 자신의 지식과 경험을 청년 세대에게 전달할 수 있는 멘토링 및 지원 프로그램을 개발합니다. 이 프로그램은 노인을 일자리와 연결하여 활동적인 사회 생활을 유지하게 돕고, 동시에 젊은 부모나 예비 부모에게 육아와 관련된 지식과 지원을 제공합니다. 이러한 상호작용은 세대 간의 소통과 이해를 증진시키고, 고령화 사회에서의 노인들의 역할을 재정의합니다.")
+    ]
+
+    print(new_user.id)
+    db.session.add_all(new_ideas)
+    db.session.add(new_KnowledgeState)
+    db.session.add(new_ChatLog)
+    db.session.commit()
+
     return {"msg": "make account successful"}
 
 @main.route("/token", methods=['POST'])
@@ -79,71 +103,98 @@ def logout():
 def profile():
     user = User.query.filter_by(email=get_jwt_identity()).first()
     name = user.name
+    ideasData = []
+    ideas = Idea.query.filter_by(user_id=user.id).all()
+    ideasData = [{"id": idea.id, "title": idea.title, "problem": idea.target_problem, "idea": idea.idea} for idea in ideas]
+    userChat = ChatLog.query.filter_by(user_id=user.id).first()
 
-    notesData = []
+    return {"ideasData": ideasData, "chatData": userChat.log, "name": name}
 
-    notes = Note.query.filter_by(user_id=user.id).all()
-    for note in notes:
-        noteData = {"id": note.id, "content": note.content, "position": note.position}
-        notesData.insert(0, noteData)
-    return {"notesData": notesData, "name": name}
-
-@main.route("/addNote")
+@main.route("/response", methods=["POST"])
 @jwt_required()
-def addNote():
+def response():
+    params = request.get_json()
+    feedback = params['feedback']
     user = User.query.filter_by(email=get_jwt_identity()).first()
-    
-    new_notes = Note(
-        user_id = user.id,
-        content = "",
-        position = {"x": 0, "y": 0}
+    ideasData = []
+    ideas = Idea.query.filter_by(user_id=user.id).all()
+    ideasData = [{"id": idea.id, "title": idea.title, "problem": idea.target_problem, "idea": idea.idea} for idea in ideas]
+    user_knowledgestate = KnowledgeState.query.filter_by(user_id=user.id).first()
+    opportunity = user_knowledgestate.opportunity
+    consideration = user_knowledgestate.consideration
+    knowledge = user_knowledgestate.knowledge
+    user_chat = ChatLog.query.filter_by(user_id=user.id).first()
+
+    prompt = [{"role": "system", "content":"Feedback Analysis Instructions for Instructor’s Review of a Student’s Design Idea.\nSTEP 1: Review previous ideas and chat logs to understand the context of the feedback.\nSTEP 2: Decompose the feedback into individual sentences.\nSTEP 3: Classify each sentence into one of two primary categories; Provoke Thought: This feedback aims to ensure that the feedback provider has a clear and accurate understanding of the design presented.; Provide Information: This feedback provides relevant information or is directly related to a design idea to evaluate or suggest improvements.\nSTEP 4: Subcategorize each sentence based on its nature (There are 21 types of ‘Provoke Thought’ and 3 types of ‘Provide information.’); Provoke Thought: Low-Level Question: Seeks factual details about the design. - Verification: Is X true? (e.g., \"Do they have TVs in the depots?\")\n- Definition: What does X mean? (e.g., \"What do you mean by 'best performance'?\")\n- Example: What is an example of X? (e.g., \"What would be three top use cases you can envision right now?\")\n- Feature Specification: What (qualitative) attributes does X have? (e.g., \"What kinds are they?\")\n- Concept Completion: Who? What? When? Where? (e.g., \"Where is the processing happening?\")\n- Quantification: How much? How many? (e.g., \"How many interact with your web app?\")\n- Disjunctive: Is X or Y the case? (e.g., \"Is it mobile or web from here?\")\n- Comparison: How does X compare to Y? (e.g., \"Tell me the difference between data from supply chain and sales\")\n- Judgmental: What is your opinion on X? (e.g., \"Do you think each hospital will use it for its own data?\")\nDeep Reasoning Question: Explores deeper implications or reasons behind the design.\n- Interpretation: How is a particular event or pattern of information interpreted or summarized? (e.g., \"What do you think the need is based on where they’re going?\")\n- Goal Orientation: What are the motives behind an agent’s action? (e.g. \"As far as the client, do you know what their main goal is?\")\n- Causal Antecedent: What caused X to occur? (e.g. \"What keeps the costs up?\")\n- Causal Consequent: What were the consequences of X occurring? (e.g. \"How did the new system affect their operations?\")\n- Expectational: Why is X not true? (e.g. \"Why does it not store historical data?\")\n- Instrumental/Procedural: How does an agent accomplish a goal? (e.g. \"How did you decide that these are the 3 tabs?\")\n- Enablement: What object or resource enables an agent to perform an action? (e.g. \"Are there specific people that transport components? Is there a forklift driver and that’s his job?\")\nGenerate Design Question: Encourages innovative thinking about design challenges.\n - Proposal/Negotiation: Could a new concept be suggested/negotiated? (e.g. \"Do you think they’ll want to see some analytics?\")\n- Scenario Creation: What would happen if X occurred? (e.g. \"How do you think having 10 hospitals would affect the models?\")\n- Ideation: Generation of ideas without a deliberate end goal (e.g. \"How should the radio look to address the issues?\")- Method: How could an agent accomplish a goal? (e.g. \"How would you measure that?\")\n- Enablement: What object or resource could enable an agent to perform an action? (e.g. \"What system are you going to use to create the UI?\")\nProvide Information:\n-Information: Share related information or examples.\n-Evaluation: Assess the student’s design idea. Stating general facts rather than evaluating a student's ideas doesn't belong.\n-Recommendation: Provide actionable suggestions for improvement.\nSTEP 5: Summarize the extracted knowledge from each category;\nThought Prompting:\n-Low-Level Question: DO NOT ADD knowledge.\n-Deep Reasoning Question: Suggest design considerations.\n-Generate Design Question: Suggest new design opportunities.\nDirect Comments:\n-Information: Details the provided information.\n-Evaluation: Describes the assessment of the design.\n-Recommendation: Outline ideas for enhancement.\nResponse Only in JSON array, which looks like, [{”sentence”: “”, “type”:””, “knowledge”:{”knowledge_type”: ””, ”content”: ””}].\n-sentence: Individual unit of feedback.\n-type: Subcategory of feedback (e.g., Definition).\n-knowledge: Insights gained from the feedback. If the feedback type is a ‘Deep Reasoning Question’, the ‘knowledge_type’ is ‘Design Consideration’; if it's a ‘Generative Design Question’, it's ‘Design Opportunity’; and otherwise, it's ‘Design Knowledge’.\n-‘content’: Core content of the feedback. Student’s Idea:" + json.dumps(ideasData) + "chat Log:" + json.dumps(user_chat) + "feedback:" + feedback }]
+
+    completion = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=prompt,
+        stop=['User: '],
+        max_tokens=4000,
+        temperature=1.3,
+        presence_penalty=0.5,
+        frequency_penalty=0.5,
     )
-    db.session.add(new_notes)
-    db.session.commit()
-
-    notesData = []
-    notes = Note.query.filter_by(user_id=user.id).all()
-    for note in notes:
-        noteData = {"id": note.id, "content": note.content, "position": note.position}
-        notesData.insert(0, noteData)
-    return {"notesData": notesData}
+    reseult = completion["choices"][0]["message"]['content']
 
 
-@main.route("/saveNote", methods=["POST"])
-@cross_origin()
-@jwt_required()
-def saveNote():
-    user = User.query.filter_by(email=get_jwt_identity()).first()
-    params = request.get_json()
-    notesData = params["notesData"]
-    for noteData in notesData:
-        note = Note.query.filter_by(id=noteData['id']).first()
-        note.content = noteData['content']
-        note.position = noteData['position']
-    db.session.commit()
-    return {"msg": "successfully saved!"}
+# @main.route("/addNote")
+# @jwt_required()
+# def addNote():
+#     user = User.query.filter_by(email=get_jwt_identity()).first()
+    
+#     new_notes = Note(
+#         user_id = user.id,
+#         content = "",
+#         position = {"x": 0, "y": 0}
+#     )
+#     db.session.add(new_notes)
+#     db.session.commit()
+
+#     notesData = []
+#     notes = Note.query.filter_by(user_id=user.id).all()
+#     for note in notes:
+#         noteData = {"id": note.id, "content": note.content, "position": note.position}
+#         notesData.insert(0, noteData)
+#     return {"notesData": notesData}
 
 
-@main.route("/deleteNote", methods=["POST"])
-@cross_origin()
-@jwt_required()
-def deleteNote():
-    user = User.query.filter_by(email=get_jwt_identity()).first()
-    params = request.get_json()
-    deleteId = params["deleteId"]
+# @main.route("/saveNote", methods=["POST"])
+# @cross_origin()
+# @jwt_required()
+# def saveNote():
+#     user = User.query.filter_by(email=get_jwt_identity()).first()
+#     params = request.get_json()
+#     notesData = params["notesData"]
+#     for noteData in notesData:
+#         note = Note.query.filter_by(id=noteData['id']).first()
+#         note.content = noteData['content']
+#         note.position = noteData['position']
+#     db.session.commit()
+#     return {"msg": "successfully saved!"}
 
-    deletenote = Note.query.filter_by(id=deleteId).first()
 
-    if deletenote:
-        db.session.delete(deletenote)
-    db.session.commit()
+# @main.route("/deleteNote", methods=["POST"])
+# @cross_origin()
+# @jwt_required()
+# def deleteNote():
+#     user = User.query.filter_by(email=get_jwt_identity()).first()
+#     params = request.get_json()
+#     deleteId = params["deleteId"]
 
-    notesData = []
-    notes = Note.query.filter_by(user_id=user.id).all()
-    for note in notes:
-        noteData = {"id": note.id, "content": note.content, "position": note.position}
-        notesData.insert(0, noteData)
-    return {"notesData": notesData}
+#     deletenote = Note.query.filter_by(id=deleteId).first()
+
+#     if deletenote:
+#         db.session.delete(deletenote)
+#     db.session.commit()
+
+#     notesData = []
+#     notes = Note.query.filter_by(user_id=user.id).all()
+#     for note in notes:
+#         noteData = {"id": note.id, "content": note.content, "position": note.position}
+#         notesData.insert(0, noteData)
+#     return {"notesData": notesData}
 
 
 
