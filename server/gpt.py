@@ -22,7 +22,6 @@ def feedbackEvaluation(user, feedback):
     )
 
 
-
 def summerize(answer):
     answer_text = answer["lucy_answer"]
     prompt = [{"role": "system", "content": "Please summarize following answer below in a maximum of 2 sentences. \n Answer: " + str(answer_text)}]

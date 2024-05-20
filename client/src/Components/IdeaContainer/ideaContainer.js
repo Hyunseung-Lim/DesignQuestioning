@@ -18,8 +18,8 @@ export const IdeaContainer = (props) => {
             <div className='ideaContainerUI'>
                 <div className='navbar'>
                     {ideas.map((idea, index)=>
-                        <button className='ideaTag' key={index} onClick={() => ChangeIdea(index)}>
-                            idea {index + 1}
+                        <button className={currentIdea == index ? 'current ideaTag' : 'ideaTag'} key={index} onClick={() => ChangeIdea(index)}>
+                            Idea {index + 1}
                         </button>
                     )}
                 </div>
@@ -27,8 +27,10 @@ export const IdeaContainer = (props) => {
                     {ideas.map((idea, index) => (index === currentIdea) ?
                         <div className='ideaBox' key={index}>
                             <div className='ideatitle'>Title: {idea.title}</div>
-                            <div className='problem'>Problem: {idea.problem}</div>
-                            <div className='idea'>Idea: {idea.idea}</div>
+                            <div className='subtitle'>Target Problem</div>
+                            <div className='problem'>{idea.problem}</div>
+                            <div className='subtitle'>Idea</div>
+                            <div className='idea'>{idea.idea}</div>
                         </div>
                         :
                         null

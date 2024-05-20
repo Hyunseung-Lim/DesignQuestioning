@@ -6,7 +6,7 @@ export const ChatBubble = ({speaker, content}) => {
         <>
             {speaker === "student" ? 
                 <div className='studentchat'>
-                    <img src='logo192.png' alt='logo'/>
+                    <img src='images/student.png' alt='logo'/>
                     <div className='chatbubble'>
                         {content}
                     </div>

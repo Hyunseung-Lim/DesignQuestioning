@@ -13,8 +13,9 @@ export const MainPage = (props) => {
     const [profileData, setProfileData] = useState({'name':null});
     const [ideasData, setIdeasData] = useState();
     const [chatData, setChatData] = useState();
-
-    // const [notesData, setNotesData] = useState([]);
+    const [divergentLevel, setDivergentLevel] = useState(0);
+    const [convergentLevel, setConvergentLevel] = useState(0);
+    const [knowledgeLevel, setKnowledgeLevel] = useState(0);
 
     // get profile data from server
     function getData() {
@@ -37,10 +38,6 @@ export const MainPage = (props) => {
         setChatData(
             res.chatData
         )
-        console.log(res.ideasData)
-        // setNotesData(
-        //     res.notesData
-        // )
         }).catch((error) => {
         if (error.response) {
             console.log(error.response)
@@ -63,6 +60,33 @@ export const MainPage = (props) => {
         })
     }
 
+    const getResponse = (feedback) => {
+        axios({
+            method: "POST",
+            url:"/response",
+            headers: {
+                Authorization: 'Bearer ' + props.token
+            },
+            data: {feedback: feedback}
+            })
+            .then((response) => {
+                const res =response.data
+                setChatData([...chatData, 
+                    {"speaker": "instructor", "content": feedback},
+                    {"speaker": "student", "content": res.response}
+                ]);
+                setDivergentLevel(res.student_divergent_level);
+                setConvergentLevel(res.student_convergent_level);
+                setKnowledgeLevel(res.student_knowledge_level);
+            }).catch((error) => {
+            if (error.response) {
+                console.log(error.response)
+                console.log(error.response.status)
+                console.log(error.response.headers)
+            }
+        })
+    }
+
     useEffect(() => {
         getData()
     }, []);
@@ -74,8 +98,8 @@ export const MainPage = (props) => {
                 <div className='UIContainer'>
                     {/* {notesData ? <Board token={props.token} notesData={notesData}/> : <>loading</>} */}
                     {ideasData ? <IdeaContainer ideasData={ideasData}/> : <>loading</>}
-                    {chatData ? <Chat chatData={chatData}/> : <>loading</>}
-                    <Student/>
+                    {chatData ? <Chat token={props.token} chatData={chatData} getResponse={(feedback) => getResponse(feedback)}/> : <>loading</>}
+                    <Student divergentLevel={divergentLevel} convergentLevel={convergentLevel} knowledgeLevel={knowledgeLevel}/>
                 </div>
             </div>
         </>

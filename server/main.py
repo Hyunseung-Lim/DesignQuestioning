@@ -3,6 +3,7 @@ from flask import Blueprint, current_app, redirect, url_for, request, flash, jso
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import cross_origin
 from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, unset_jwt_cookies, jwt_required, JWTManager
+from sqlalchemy.orm.attributes import flag_modified
 from datetime import datetime, timedelta, timezone
 from __init__ import create_app, db
 from models import User, Idea, KnowledgeState, ChatLog
@@ -12,7 +13,13 @@ import json
 import os
 import http.client
 import openai
+import requests
 
+openai.api_key = My_OpenAI_key
+
+DRQ = ["Interpretation", "Goal Orientation", "Causal Antecedent", "Causal Consequent", "Expectational", "Instrumental/Procedural", "Enablement(DR)"]
+GDQ = ["Proposal/Negotiation", "Scenario Creation", "Ideation", "Method", "Enablement"]
+GoodQuestionCategory = DRQ + GDQ + ["Evaluation", "Recommendation"]
 
 main = Blueprint('main', __name__)
 
@@ -100,6 +107,7 @@ def logout():
 
 @main.route("/profile")
 @jwt_required()
+@cross_origin()
 def profile():
     user = User.query.filter_by(email=get_jwt_identity()).first()
     name = user.name
@@ -112,6 +120,7 @@ def profile():
 
 @main.route("/response", methods=["POST"])
 @jwt_required()
+@cross_origin()
 def response():
     params = request.get_json()
     feedback = params['feedback']
@@ -125,18 +134,73 @@ def response():
     knowledge = user_knowledgestate.knowledge
     user_chat = ChatLog.query.filter_by(user_id=user.id).first()
 
-    prompt = [{"role": "system", "content":"Feedback Analysis Instructions for Instructor’s Review of a Student’s Design Idea.\nSTEP 1: Review previous ideas and chat logs to understand the context of the feedback.\nSTEP 2: Decompose the feedback into individual sentences.\nSTEP 3: Classify each sentence into one of two primary categories; Provoke Thought: This feedback aims to ensure that the feedback provider has a clear and accurate understanding of the design presented.; Provide Information: This feedback provides relevant information or is directly related to a design idea to evaluate or suggest improvements.\nSTEP 4: Subcategorize each sentence based on its nature (There are 21 types of ‘Provoke Thought’ and 3 types of ‘Provide information.’); Provoke Thought: Low-Level Question: Seeks factual details about the design. - Verification: Is X true? (e.g., \"Do they have TVs in the depots?\")\n- Definition: What does X mean? (e.g., \"What do you mean by 'best performance'?\")\n- Example: What is an example of X? (e.g., \"What would be three top use cases you can envision right now?\")\n- Feature Specification: What (qualitative) attributes does X have? (e.g., \"What kinds are they?\")\n- Concept Completion: Who? What? When? Where? (e.g., \"Where is the processing happening?\")\n- Quantification: How much? How many? (e.g., \"How many interact with your web app?\")\n- Disjunctive: Is X or Y the case? (e.g., \"Is it mobile or web from here?\")\n- Comparison: How does X compare to Y? (e.g., \"Tell me the difference between data from supply chain and sales\")\n- Judgmental: What is your opinion on X? (e.g., \"Do you think each hospital will use it for its own data?\")\nDeep Reasoning Question: Explores deeper implications or reasons behind the design.\n- Interpretation: How is a particular event or pattern of information interpreted or summarized? (e.g., \"What do you think the need is based on where they’re going?\")\n- Goal Orientation: What are the motives behind an agent’s action? (e.g. \"As far as the client, do you know what their main goal is?\")\n- Causal Antecedent: What caused X to occur? (e.g. \"What keeps the costs up?\")\n- Causal Consequent: What were the consequences of X occurring? (e.g. \"How did the new system affect their operations?\")\n- Expectational: Why is X not true? (e.g. \"Why does it not store historical data?\")\n- Instrumental/Procedural: How does an agent accomplish a goal? (e.g. \"How did you decide that these are the 3 tabs?\")\n- Enablement: What object or resource enables an agent to perform an action? (e.g. \"Are there specific people that transport components? Is there a forklift driver and that’s his job?\")\nGenerate Design Question: Encourages innovative thinking about design challenges.\n - Proposal/Negotiation: Could a new concept be suggested/negotiated? (e.g. \"Do you think they’ll want to see some analytics?\")\n- Scenario Creation: What would happen if X occurred? (e.g. \"How do you think having 10 hospitals would affect the models?\")\n- Ideation: Generation of ideas without a deliberate end goal (e.g. \"How should the radio look to address the issues?\")- Method: How could an agent accomplish a goal? (e.g. \"How would you measure that?\")\n- Enablement: What object or resource could enable an agent to perform an action? (e.g. \"What system are you going to use to create the UI?\")\nProvide Information:\n-Information: Share related information or examples.\n-Evaluation: Assess the student’s design idea. Stating general facts rather than evaluating a student's ideas doesn't belong.\n-Recommendation: Provide actionable suggestions for improvement.\nSTEP 5: Summarize the extracted knowledge from each category;\nThought Prompting:\n-Low-Level Question: DO NOT ADD knowledge.\n-Deep Reasoning Question: Suggest design considerations.\n-Generate Design Question: Suggest new design opportunities.\nDirect Comments:\n-Information: Details the provided information.\n-Evaluation: Describes the assessment of the design.\n-Recommendation: Outline ideas for enhancement.\nResponse Only in JSON array, which looks like, [{”sentence”: “”, “type”:””, “knowledge”:{”knowledge_type”: ””, ”content”: ””}].\n-sentence: Individual unit of feedback.\n-type: Subcategory of feedback (e.g., Definition).\n-knowledge: Insights gained from the feedback. If the feedback type is a ‘Deep Reasoning Question’, the ‘knowledge_type’ is ‘Design Consideration’; if it's a ‘Generative Design Question’, it's ‘Design Opportunity’; and otherwise, it's ‘Design Knowledge’.\n-‘content’: Core content of the feedback. Student’s Idea:" + json.dumps(ideasData) + "chat Log:" + json.dumps(user_chat) + "feedback:" + feedback }]
+    goodQuestionChecker = False
+    feedbackeval_prompt = [{"role": "system", "content":"Feedback Analysis Instructions for Instructor’s Review of a Student’s Design Idea.\nSTEP 1: Review previous ideas and chat logs to understand the context of the feedback.\nSTEP 2: Decompose the feedback into individual sentences.\nSTEP 3: Classify each sentence into one of two primary categories; Provoke Thought: This feedback aims to ensure that the feedback provider has a clear and accurate understanding of the design presented.; Provide Information: This feedback provides relevant information or is directly related to a design idea to evaluate or suggest improvements.\nSTEP 4: Subcategorize each sentence based on its nature (There are 21 types of ‘Provoke Thought’ and 3 types of ‘Provide information.’); Provoke Thought: Low-Level Question: Seeks factual details about the design. - Verification: Is X true? (e.g., \"Do they have TVs in the depots?\")\n- Definition: What does X mean? (e.g., \"What do you mean by 'best performance'?\")\n- Example: What is an example of X? (e.g., \"What would be three top use cases you can envision right now?\")\n- Feature Specification: What (qualitative) attributes does X have? (e.g., \"What kinds are they?\")\n- Concept Completion: Who? What? When? Where? (e.g., \"Where is the processing happening?\")\n- Quantification: How much? How many? (e.g., \"How many interact with your web app?\")\n- Disjunctive: Is X or Y the case? (e.g., \"Is it mobile or web from here?\")\n- Comparison: How does X compare to Y? (e.g., \"Tell me the difference between data from supply chain and sales\")\n- Judgmental: What is your opinion on X? (e.g., \"Do you think each hospital will use it for its own data?\")\nDeep Reasoning Question: Explores deeper implications or reasons behind the design.\n- Interpretation: How is a particular event or pattern of information interpreted or summarized? (e.g., \"What do you think the need is based on where they’re going?\")\n- Goal Orientation: What are the motives behind an agent’s action? (e.g. \"As far as the client, do you know what their main goal is?\")\n- Causal Antecedent: What caused X to occur? (e.g. \"What keeps the costs up?\")\n- Causal Consequent: What were the consequences of X occurring? (e.g. \"How did the new system affect their operations?\")\n- Expectational: Why is X not true? (e.g. \"Why does it not store historical data?\")\n- Instrumental/Procedural: How does an agent accomplish a goal? (e.g. \"How did you decide that these are the 3 tabs?\")\n- Enablement(DR): What object or resource enables an agent to perform an action? (e.g. \"Are there specific people that transport components? Is there a forklift driver and that’s his job?\")\nGenerate Design Question: Encourages innovative thinking about design challenges.\n - Proposal/Negotiation: Could a new concept be suggested/negotiated? (e.g. \"Do you think they’ll want to see some analytics?\")\n- Scenario Creation: What would happen if X occurred? (e.g. \"How do you think having 10 hospitals would affect the models?\")\n- Ideation: Generation of ideas without a deliberate end goal (e.g. \"How should the radio look to address the issues?\")- Method: How could an agent accomplish a goal? (e.g. \"How would you measure that?\")\n- Enablement(GD): What object or resource could enable an agent to perform an action? (e.g. \"What system are you going to use to create the UI?\")\nProvide Information:\n-Information: Share related information or examples.\n-Evaluation: Assess the student’s design idea. Stating general facts rather than evaluating a student's ideas doesn't belong.\n-Recommendation: Provide actionable suggestions for improvement.\nSTEP 5: Summarize the extracted knowledge from each category;\nThought Prompting:\n-'Low-Level Question': DO NOT ADD knowledge.\n-'Deep Reasoning Question': Suggest design considerations.\n-'Generate Design Question': Suggest new design opportunities.\nDirect Comments:\n-'Information': Details the provided information.\n-'Evaluation': Describes the assessment of the design.\n-'Recommendation': Outline ideas for enhancement.\nResponse Only in JSON array, which looks like, {\"sentences\":[{”sentence”: “”, “type”:””, “knowledge”:{”knowledge_type”: ””, ”content”: ””}]}.\n-sentence: Individual unit of feedback.\n-type: Subcategory of feedback (e.g., Definition).\n-knowledge: Insights gained from the feedback. If the feedback type is a ‘Deep Reasoning Question’, the ‘knowledge_type’ is ‘Design Consideration’; if it's a ‘Generative Design Question’, it's ‘Design Opportunity’; and otherwise, it's ‘Design Knowledge’.\n-‘content’: Core content of the feedback. Student’s Idea:" + json.dumps(ideasData) + "\nchat Log:" + json.dumps(user_chat.log) + "\nfeedback:" + feedback }]
+    student_prompt = [{"role": "system", "content":"This is your design ideas: " + json.dumps(ideasData) + "\nYour knowledge of expanding ideas: " + opportunity + "\nYour knowledge of converging ideas: " + consideration + "\nYour Design knowledge: " + knowledge + "You are a student who is trying to learn design. You're coming up with ideas for a design project. Your persona is \n- a Design Department 1st year student. \n- Korean. (say in Korean) \n- not flexible in design thinking. \n- NEVER apologize, say you can help or just say thanks.\n- NEVER write more than 3 sentences in a single response. Speak colloquially only. Use honorifics.\nAnswer questions from the instructor ONLY based on your knowledge. If you can't answer based on your knowledge, say you don't know. But try to answer AS MUCH AS you can.\nIf " + str(goodQuestionChecker) + ": Mention that was a good question.\nThe format of your answer is JSON as follows. {”answer”: {your answer}}" + "\nThis is previous conversations between you(the student) and the instructor: " + json.dumps(user_chat.log) + "\nThis is the instructor's following chat(feedback): " + feedback }, 
+                      {"role": "user", "content":"I am the professor of your class. The class is in the Department of Industrial Design, where you learn about design thinking. I’ll give feedback on your design project."}]
 
-    completion = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=prompt,
-        stop=['User: '],
-        max_tokens=4000,
-        temperature=1.3,
-        presence_penalty=0.5,
-        frequency_penalty=0.5,
+    completion1 = openai.chat.completions.create(
+        model="gpt-4o",
+        # model="gpt-3.5-turbo",
+        messages=feedbackeval_prompt,
+        response_format={"type": "json_object"}
     )
-    reseult = completion["choices"][0]["message"]['content']
+    try:
+        result1 = json.loads(completion1.choices[0].message.content)
+    except ZeroDivisionError as e:
+    # This will run only if there is no error
+        return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
+    
+    new_opportunity = ""
+    new_consideration = ""
+    new_knowledge = ""
+    for sentence in result1["sentences"]:
+        print(sentence["knowledge"]["knowledge_type"])
+        if sentence["type"] in GoodQuestionCategory:
+            goodQuestionChecker = True
+        if sentence["knowledge"]["knowledge_type"] == "Design Consideration":
+            new_consideration += sentence["knowledge"]["content"]
+        if sentence["knowledge"]["knowledge_type"] == "Design Opportunity":
+            new_opportunity += sentence["knowledge"]["content"]
+        if sentence["knowledge"]["knowledge_type"] == "Design Knowledge":
+            new_knowledge += sentence["knowledge"]["content"]
+    print("second")
+    completion2 = openai.chat.completions.create(
+        model="gpt-4o",
+        # model="gpt-3.5-turbo",
+        messages=student_prompt,
+        response_format={"type": "json_object"}
+    )
+    try:
+        result2 = json.loads(completion2.choices[0].message.content)
+        print("result2")
+    except ZeroDivisionError as e:
+    # This will run only if there is no error
+        return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
+
+    user_knowledgestate.opportunity += new_opportunity
+    user_knowledgestate.consideration += new_consideration
+    user_knowledgestate.knowledge += new_knowledge
+
+    new_entries = [
+        {"speaker": "instructor", "content": feedback},
+        {"speaker": "student", "content": result2["answer"]}
+    ]
+    user_chat.log.extend(new_entries)
+    flag_modified(user_chat, 'log')
+    flag_modified(user_knowledgestate, 'opportunity')
+    flag_modified(user_knowledgestate, 'consideration')
+    flag_modified(user_knowledgestate, 'knowledge')
+
+    db.session.commit()
+
+    student_divergent_level = len(user_knowledgestate.opportunity)
+    student_convergent_level = len(user_knowledgestate.consideration)
+    student_knowledge_level = len(user_knowledgestate.knowledge)
+
+    print(student_divergent_level, student_convergent_level, student_knowledge_level)
+
+    return {"response": result2["answer"], "student_divergent_level": student_divergent_level, "student_convergent_level": student_convergent_level, "student_knowledge_level": student_knowledge_level}
 
 
 # @main.route("/addNote")

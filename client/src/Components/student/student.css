@@ -4,3 +4,56 @@
     background-color: white;
     flex-grow: 1;
 }
+
+.studentUI > .topbar {
+    display: flex;
+    width: calc(100% - 40px);
+    padding: 10px 20px;
+    flex-direction: row;
+    justify-content: left;
+    font-weight: 700;
+    border: 0;
+}
+
+.studentUI > .topbar > img {
+    margin-right: 12px;
+}
+
+.studentProfile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.studentProfile > img {
+    width: 150px;
+    height: 150px;
+}
+
+.studentProfile > .name {
+    margin: 12px 0 6px;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.studentProfile > .job {
+    font-weight: 600;
+    font-size: 12px;
+    color: hsl(0, 0%, 20%);
+}
+
+.barContainer {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.gaugeBar {
+    width: 100%;
+    height: 20px;
+    background-color: #ddd;
+    border-radius: 10px;
+    margin: 4px;
+}

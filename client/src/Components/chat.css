@@ -2,8 +2,8 @@
     position: relative;
     background-color: #ECF0F6;
     height: calc(100vh - 48px);
-    margin-left: 10px;
-    width: 500px;
+    /* margin-left: 10px; */
+    width: 600px;
     flex: 1 1 500px;
 }
 
@@ -24,14 +24,15 @@
     z-index: 1000; 
     background-color: white;
     border-radius: 8px;
-    border: solid 1px #ccc;
+    border: solid 2px #eee;
     padding: 0 10px;
 }
 
 .chatUI > .bottombar > input {
     border: none;
     width: 90%;
-    font-size: 15px;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .chatUI > .bottombar > .chatBtn {
@@ -72,6 +73,8 @@
     word-wrap: break-word;
     box-sizing: border-box;
     margin-bottom: 20px;
+    font-size: 14px;
+    text-align: left;
 }
 
 .studentchat > img {
@@ -85,17 +88,20 @@
     background-color: white;
     border-radius: 10px;
     width: calc(100% - 60px);
-    padding: 10px;
+    padding: 14px;
 }
 
 .instructorchat {
     max-width: 100%;
     width: 100%;
     display: flex;
-    background-color: white;
     border-radius: 10px;
-    padding: 10px;
+    padding: 14px;
     margin-bottom: 20px;
     word-wrap: break-word;
     box-sizing: border-box;
+    font-size: 14px;
+    line-height: 140%;
+    text-align: left;
+    background-color: #D1D3E3;
 }
