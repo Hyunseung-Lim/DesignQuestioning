@@ -7,10 +7,13 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(100))
     realPassword = db.Column(db.String(100))
     name = db.Column(db.String(1000))
+    mode = db.Column(db.Integer)
+    currentRound = db.Column(db.Integer)
 
 class Idea(db.Model):
     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    round = db.Column(db.Integer)
     title = db.Column(db.String(1000))
     target_problem = db.Column(db.String(1000))
     idea = db.Column(db.String(1000))
@@ -21,17 +24,33 @@ class Idea(db.Model):
 #     content = db.Column(db.String(100))
 #     position = db.Column(db.JSON)
 
+class InitialSetting(db.Model):
+    id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    round = db.Column(db.Integer)
+    character = db.Column(db.Integer)
+    goal1 = db.Column(db.String(1000))
+    goal2 = db.Column(db.String(1000))
+    goal3 = db.Column(db.String(1000))
+    time = db.Column(db.Integer)
 
 class KnowledgeState(db.Model):
     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    opportunity = db.Column(db.String(1000))
-    consideration = db.Column(db.String(1000))
+    round = db.Column(db.Integer)
+    # opportunity = db.Column(db.String(1000))
+    # consideration = db.Column(db.String(1000))
+    q_num = db.Column(db.Integer)
+    s_num = db.Column(db.Integer)
+    qns = db.Column(db.Integer) # question and statemnet
+    dnc = db.Column(db.Integer) # divergent and convergent
+    eval = db.Column(db.JSON)
     knowledge = db.Column(db.String(1000))
 
 class ChatLog(db.Model):
     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    round = db.Column(db.Integer)
     log = db.Column(db.JSON)
 
 # class Log(db.Model):

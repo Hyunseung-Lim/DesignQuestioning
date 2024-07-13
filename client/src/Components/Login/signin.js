@@ -47,7 +47,7 @@ export const Signin = (props) => {
             <div className='signholder'>
                 <form className='signinbox' onSubmit={submitHander}>
                     <div className='signinTitle'>
-                        <img src='logo192.png' alt='logo'/> IDMentee
+                        IDMentee
                     </div>
                     <input className='signInput' type="email" value={email} onChange={emailHandler} placeholder={'이메일'}></input>
                     <input className='signInput' type="password" value={password} onChange={passwordHandler} placeholder={'비밀번호'} autoComplete="on"></input>

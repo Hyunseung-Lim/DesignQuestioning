@@ -5,15 +5,21 @@ export const ChatBubble = ({speaker, content}) => {
     return(
         <>
             {speaker === "student" ? 
-                <div className='studentchat'>
+                <div className='studentchatHolder'>
                     <img src='images/student.png' alt='logo'/>
-                    <div className='chatbubble'>
-                        {content}
+                    <div className='studentchat'>
+                        <div className='studentName'>동건</div>
+                        <div className='chatbubble'>
+                            {content}
+                        </div>
                     </div>
                 </div>
                 :
-                <div className='instructorchat'>
-                    {content}
+                <div className='instructorchatHolder'>
+                    <div className='userName'>You</div>
+                    <div className='instructorchat'>
+                        {content}
+                    </div>
                 </div>
             }
         </>

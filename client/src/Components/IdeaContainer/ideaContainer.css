@@ -2,36 +2,72 @@
     height: 100%;
     overflow: auto;
     width: 400px;
+    min-width: 280px;
     flex: 1 1 400px;
+    background-color: #ECF0F6;
+    padding: 16px;
+    max-height: 100%;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.ideaContainerUI::-webkit-scrollbar {
+    display: none; /* 스크롤바를 숨김 */
+}
+
+.ideaContainerUI > .ideaDescription {
+    background-color: white;
+    border: solid 1px #ddd;
+    border-radius: 4px;
+    /* height: 50px; */
+    padding: 20px 30px;
+    text-align: left;
+    font-size: 15px;
+    font-weight:700;
+    margin-top: -1px;
 }
 
 .ideaContainerUI > .navbar {
     display: flex;
     /* background-color: #ECF0F6;; */
-    padding: 0 4px;
 }
 
-.ideaContainerUI > .navbar > .ideaTag {
+.ideaContainerUI > .navbar > .Tag {
     background: white;
     border: 0;
     padding: 8px 28px;
     font-weight: 700;
-    color: #333;
-    margin: 4px 2px;
+    color: var(--theme-color);
+    border-radius: 4px 4px 0 0;
+    border: solid 1px #ddd;
+    border-bottom: solid 1px white;
 }
 
 .ideaContainerUI > .navbar > .current {
     background-color: #F7F8FA;
-    border-radius: 6px;
+    color: #333;
+    border-bottom: solid 1px #ddd;
+}
+
+.ideaContainerUI > .navbar > .right {
+    border-left: 0;
+}
+
+.ideaContainerUI > .ideaContainer {
+    overflow: auto;
+    box-sizing: border-box;
+    padding-bottom: 10px;
 }
 
 .ideaBox {
     display: flex;
     flex-direction: column;
     text-align: left;
-    padding: 20px;
+    padding: 30px;
     margin-top: 20px;
-
+    background-color: white;
+    border: solid 1px #ddd;
+    border-radius: 4px;
 }
 
 .ideaBox > .ideatitle {

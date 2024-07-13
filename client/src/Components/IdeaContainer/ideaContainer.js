@@ -5,11 +5,11 @@ import './ideaContainer.css'
 export const IdeaContainer = (props) => {
 
     const[ideas, setIdeas] = useState(props.ideasData);
-    const[currentIdea, setCurrentIdea] = useState(0);
+    const[currentDescription, setCurrentDescription] = useState(0);
 
-    const ChangeIdea = (i) => {
-        if(currentIdea != i) {
-            setCurrentIdea(i);
+    const ChangeDescription = (i) => {
+        if(currentDescription !== i) {
+            setCurrentDescription(i);
         }
     }
     
@@ -17,23 +17,30 @@ export const IdeaContainer = (props) => {
         <>
             <div className='ideaContainerUI'>
                 <div className='navbar'>
-                    {ideas.map((idea, index)=>
-                        <button className={currentIdea == index ? 'current ideaTag' : 'ideaTag'} key={index} onClick={() => ChangeIdea(index)}>
-                            Idea {index + 1}
-                        </button>
-                    )}
+                    <button className={currentDescription === 1 ? 'current Tag' : 'Tag'} onClick={() => ChangeDescription(0)}>
+                        Topic
+                    </button>
+                    <button className={currentDescription === 0 ? 'current right Tag' : 'right Tag'} onClick={() => ChangeDescription(1)}>
+                        Design Goals
+                    </button>
+                </div>
+                <div className='ideaDescription'>
+                    {
+                        currentDescription === 0 ? 
+                            <div>인구위기(저출산, 고령화) 극복을 위한 ‘기술의 활용’ 아이디어</div> 
+                            :
+                            <div>1. 뿡뿡<br/>2. 뿡뿡</div>
+                    }
                 </div>
                 <div className='ideaContainer'>
-                    {ideas.map((idea, index) => (index === currentIdea) ?
+                    {ideas.map((idea, index) =>
                         <div className='ideaBox' key={index}>
-                            <div className='ideatitle'>Title: {idea.title}</div>
+                            <div className='ideatitle'>IDEA {index+1}: {idea.title}</div>
                             <div className='subtitle'>Target Problem</div>
                             <div className='problem'>{idea.problem}</div>
                             <div className='subtitle'>Idea</div>
                             <div className='idea'>{idea.idea}</div>
                         </div>
-                        :
-                        null
                     )}
                 </div>
             </div>

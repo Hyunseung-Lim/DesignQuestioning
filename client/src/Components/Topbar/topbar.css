@@ -15,21 +15,45 @@
     height: 32px;
 }
 
+.topbar > .rightContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.topbar > .rightContainer > .timeHolder {
+    width: 100px;
+    padding: 10px 10px 7px;
+    font-weight: 600;
+}
+
+.topbar > .rightContainer > .timeHolder > img {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+}
+
 .menu {
     display: none;
     /* padding-right: 20px; */
 }
 
 .menu > .hamburger-bar {
+    min-width: 110px;
     display: block;
-    height: 30px;
+    height: 40px;
     transition: transform 0.2s ease-out;
     text-decoration: none;
     color: black;
     background-color: white;
-    padding: 0px 16px;
+    padding: 0px 24px;
     text-align: left;
     border: none;
+}
+
+.menu > .hamburger-bar:hover{
+    background-color: #eee;
+    color: var(--theme-color);
 }
 
 .burger-icon {
@@ -80,11 +104,11 @@
     position: fixed;
     flex-direction: column;
     margin-top: 46.2px;
-    width: 100px;
+    width: 140px;
     height: 100px;
     z-index: 1;
     top: 0;
-    right: 0;
+    right: 10px;
     height: 100%;
     max-width: 100px;
     transition: 0.5s ease;

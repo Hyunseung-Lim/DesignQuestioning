@@ -1,3 +1,8 @@
+:root {
+  --theme-color: #2C54F2;
+  --theme-hover: #2648d2;
+}
+
 body {
   margin: 0;
   font-family: 'Noto Sans KR';

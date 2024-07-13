@@ -60,7 +60,7 @@ export const Signup = (props) => {
             <div className='signholder'>
                 <form className='signupbox' onSubmit={submitHander}>
                     <div className='signinTitle'>
-                        <img src='logo192.png' alt='logo'/> IDMentee
+                        IDMentee
                     </div>
                     <input className='signInput' type="email" placeholder={'이메일'} value={email}  onChange={emailHandler}></input>
                     <input className='signInput' type="name" placeholder={'이름'} value={name} onChange={nameHandler}></input>

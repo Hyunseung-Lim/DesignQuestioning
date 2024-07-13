@@ -14,5 +14,203 @@
     width: 100vw;
     display: flex;
     height: 100%;
+    max-height: 100%;
     background-color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+/* mode page */
+.modepage {
+    margin: auto;
+    padding-top: calc((100vh - 330px)/2);
+    width: 660px;
+}
+
+.modeinstruction {
+    margin-bottom: 10px;
+}
+
+.modeBox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    height: 260px;
+    border-radius: 4px;
+    border: solid 1px #c8c8c8;
+    background-color: white;
+}
+
+.modeBtn {
+    width: 300px;
+    height: 220px;
+    background-color: var(--theme-color);
+    border-radius: 6px;
+    color: white;
+    margin: 10px;
+    font-size: 28px;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modeBtn:hover {
+    background-color: var(--theme-hover);
+}
+
+
+/* start page */
+.startpage {
+    margin: auto;
+    padding-top: calc((100vh - 750px)/2);
+    width: 700px;
+}
+
+.page_mode2 {
+    padding-top: calc((100vh - 350px)/2);
+}
+
+.startbox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin-bottom: 24px;
+    height: 700px;
+    border-radius: 4px;
+    border: solid 1px #c8c8c8;
+    background-color: white;
+}
+
+.box_mode2 {
+    height: 300px;
+}
+
+.roundBar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+    margin: 30px 0 10px;
+}
+
+.roundLabels {
+    width: 625px;
+    display: flex;
+    align-items: center;
+    flex-direction: row; 
+    justify-content: space-between; 
+}
+
+.roundLabels > .label {
+    width: 90px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+    color: #dddddd;
+}
+
+.roundLabels > .selectLabel {
+    color: var(--theme-color);
+}
+
+
+.startButton {
+    width: 278px;
+    height: 40px;
+    margin-top: 5px;
+    border-radius: 20px;
+    border: 0px;
+    font-size: 14px;
+    font-weight: 700;
+    background-color: var(--theme-color);
+    color: white;
+}
+
+.startButton:hover {
+    background-color: var(--theme-hover);
+}
+
+.settingTitle {
+    font-size: 18px;
+    font-weight: 800;
+    margin-top: 20px;
+}
+
+.characterHolder {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 600px;
+    padding: 10px 20px
+}
+
+.characterHolder > .character {
+    width: 100px;
+    height: 100px;
+    border-radius: 55px;
+}
+
+.setGoal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.setGoal > .goal {
+    margin-top: 12px;
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    text-align: left;
+    font-size: 15px;
+}
+
+.setGoal > .goal > input {
+    margin-top: 2px;
+    background-color: white;
+    border-radius: 6px;
+    border: solid 1px #ddd;
+    padding: 0 8px 0 12px;
+    height: 34px;
+    font-size: 16px;
+}
+
+.setTime {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.timeHolder {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.timeHolder > .timebuttonHolder {
+    display: flex;
+    flex-direction: column;
+}
+
+.timeHolder > .time {
+    margin: 0 20px;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.timeHolder > .timebuttonHolder > button {
+    border: none;
+    background-color: #fff;
+    font-size: 15px;
+}
+
+.timeHolder > .timebuttonHolder > button:hover {
+    color: var(--theme-color);
 }

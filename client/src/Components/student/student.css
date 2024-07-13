@@ -19,6 +19,14 @@
     margin-right: 12px;
 }
 
+.studentUI > .title {
+    width: 80%;
+    font-weight: 800;
+    text-align: left;
+    margin-top: 30px;
+    padding: 0 20px;
+}
+
 .studentProfile {
     display: flex;
     flex-direction: column;
@@ -29,6 +37,7 @@
 .studentProfile > img {
     width: 150px;
     height: 150px;
+    margin-bottom: 10px;
 }
 
 .studentProfile > .name {
@@ -43,17 +52,80 @@
     color: hsl(0, 0%, 20%);
 }
 
+
 .barContainer {
-    padding: 30px;
+    width: 80%;
+    height: 20px;
+    background-color: #E8EDF1;
+    border-radius: 10px;
+    margin: 4px;
+}
+
+.gague {
+    height: 100%;
+    background-color: var(--theme-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* color: white; */
+    border-radius: 15px;
+    transition: width 0.3s ease-in-out;
+}
+
+.no-animation {
+    transition: none; /* This disables animation */
+}
+
+.levelContainer {
+    margin: 4px 0;
+    display: flex;
+    width: 78%;
+    justify-content:space-between;
+}
+
+.levelContainer > .level {
+    font-weight: 700;
+    color: var(--theme-color);
+    font-size: 15px;
+}
+
+.levelContainer > .exp {
+    font-size: 12px;
+}
+
+.buttonContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.buttonContainer > .userBtn {
+    border: 0;
+    background-color: white;
+    width: 44%;
+    height: 30px;
+    border-radius: 4px;
+    margin: 2px;
+    font-weight: 800;
+}
+
+.buttonContainer > .clicked {
+    color: var(--theme-color);
+    background-color: #E8EDF1;
+}
+
+.buttonContainer > .userBtn:hover {
+    background-color: #E8EDF1;
+}
+
+.userStatus {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.gaugeBar {
-    width: 100%;
-    height: 20px;
-    background-color: #ddd;
-    border-radius: 10px;
-    margin: 4px;
+.userStatus > .radar {
+    width: 84%;
 }
