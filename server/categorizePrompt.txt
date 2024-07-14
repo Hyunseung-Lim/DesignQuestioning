@@ -1,13 +1,13 @@
 "role": "system", 
 "content":
-    "Feedback Analysis Instructions for Instructor’s Review of a Student’s Design Idea.\n\n
+    "Feedback Analysis Instructions for Instructor's Feedback of a Student's Design Idea.\n\n
     STEP 1: Review previous ideas and chat logs to understand the context of the feedback.\n\n
     STEP 2: Decompose the feedback into individual sentences.\n\n
     STEP 3: Classify each sentence into one of three primary categories;
         'Question': This is a question feedback, which ensure that the feedback provider has a clear and accurate understanding of the design presented.;
-        'Statement': This is ㅁ statement feedback, which provides relevant information or is directly related to a design idea to evaluate or suggest improvements.;
+        'Statement': This is a statement feedback, which provides relevant information or is directly related to a design idea to evaluate or suggest improvements.;
         'No feedback': This sentence is completely irrelevant to the feedback.\n\n
-    STEP 4: Subcategorize each sentence based on its nature (There are 21 types of ‘Question’, three types of 'Statement' and no sub category for 'No feedback.'); 
+    STEP 4: Subcategorize each sentence based on its nature (There are 21 types of 'Question', three types of 'Statement' and no sub category for 'No feedback.'); 
         'Question':\n
             \"Low-Level\": Seeks factual details about the design.\n
                 - Verification: Is X true?\n
@@ -46,22 +46,11 @@
             \"Evaluation\": Describes the assessment of the design.\n
             \"Recommendation\": Outline ideas for enhancement.\n
         'No feedback': DO NOT ADD knowledge.\n
-    STEP 6: Evaluate the feedback on a scale of 1 to 5 based on the following criteria. There are three different criteria depending on whether the feedback is a 'Question' or a 'Statement'.\n
-        'Question':\n
-            \"Uniquness\": The question is unique.\n
-            \"Relevance\": The question is relevant to the context of the current discussion.\n
-            \"High-level\": The question is high-level.(If the question falls into the \"Low-Level\" category, it's between 1 and 2. Otherwise, it's between 3 and 5.)\n
-        'Statement':\n
-            \"Specificity\": The feedback is specific.\n
-            \"Justification\": The feedback is justified.\n
-            \"Active\": The feedback is actionable\n
-        'No feedback': DO NOT RATE.\n
-    Response Only in JSON array, which looks like, {\"sentences\":[{\"sentence\": \"\", \"categories\":\"\", \"type\":\"\", \"knowledge\":\"\", \"evaluation\":{\"uniquness\": 0-5, \"relevance\": 0-5, \"high-level\": 0-5, \"specificity\": 0-5, \"justification\": 0-5, \"active\": 0-5}}]}.\n
+    Response Only in JSON array, which looks like, {\"sentences\":[{\"sentence\": \"\", \"categories\":\"\", \"type\":\"\", \"knowledge\":\"\"}]}.\n
         \"sentence\": Individual unit of feedback.\n
         \"categories\": Category of feedback. ('Question' or 'Statement' or 'No feedback')\n
         \"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n
         \"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.\n
-        \"evaluation\": JSON with the evaluation score based on the criteria. The criteria that should be evaluated in STEP 6 have a value between 1-5, with the rest evaluated as 0.\n\n
-    Student’s Idea:" + json.dumps(ideasData) + "\n
+    Student's Idea:" + json.dumps(ideasData) + "\n
     chat Log:" + json.dumps(user_chat.log) + "\n
     feedback:" + feedback

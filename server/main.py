@@ -248,27 +248,41 @@ def response():
     knowledge = user_knowledgestate.knowledge
     user_chat = ChatLog.query.filter_by(user_id=user.id).first()
 
-    feedbackeval_prompt = [{"role": "system","content": "Feedback Analysis Instructions for Instructor’s Review of a Student’s Design Idea.\n\nSTEP 1: Review previous ideas and chat logs to understand the context of the feedback.\n\nSTEP 2: Decompose the feedback into individual sentences.\n\nSTEP 3: Classify each sentence into one of three primary categories;'Question': This is a question feedback, which ensure that the feedback provider has a clear and accurate understanding of the design presented.;'Statement': This is ㅁ statement feedback, which provides relevant information or is directly related to a design idea to evaluate or suggest improvements.;'No feedback': This sentence is completely irrelevant to the feedback.\n\nSTEP 4: Subcategorize each sentence based on its nature (There are 21 types of ‘Question’, three types of 'Statement' and no sub category for 'No feedback.'); 'Question':\n\"Low-Level\": Seeks factual details about the design.\n- Verification: Is X true?\n- Definition: What does X mean?\n- Example: What is an example of X?\n- Feature Specification: What (qualitative) attributes does X have?\n- Concept Completion: Who? What? When? Where?\n- Quantification: How much? How many?\n- Disjunctive: Is X or Y the case?\n- Comparison: How does X compare to Y?\n- Judgmental: What is your opinion on X?\n\"Deep Reasoning\": Explores deeper implications or reasons behind the design.\n- Interpretation: How is a particular event or pattern of information interpreted or summarized?\n- Goal Orientation: What are the motives behind an agent’s action?\n- Causal Antecedent: What caused X to occur?\n- Causal Consequent: What were the consequences of X occurring?\n- Expectational: Why is X not true?\n- Instrumental/Procedural: How does an agent accomplish a goal?\n- Enablement(DR): What object or resource enables an agent to perform an action?\n\"Generate Design\": Encourages innovative thinking about design challenges.\n- Proposal/Negotiation: Could a new concept be suggested/negotiated?\n- Scenario Creation: What would happen if X occurred?\n- Ideation: Generation of ideas without a deliberate end goal\n- Method: How could an agent accomplish a goal?\n- Enablement(GD): What object or resource could enable an agent to perform an action?\n'Statement':\n\"Information\": Share related information or examples.\n\"Evaluation\": Assess the student’s design idea. Stating general facts rather than evaluating a student's ideas doesn't belong.\n\"Recommendation\": Provide actionable suggestions for improvement.\n\nSTEP 5: Summarize the extracted knowledge from each category. Knowledge includes only key approaches and keywords and excludes complex context.;\n'Question':\n\"Low-Level\": DO NOT ADD knowledge.\n\"Deep Reasoning\": Suggest design considerations.\n\"Generate Design\": Suggest new design opportunities.\n'Statement':\n\"Information\": Details the provided information.\n\"Evaluation\": Describes the assessment of the design.\n\"Recommendation\": Outline ideas for enhancement.\n'No feedback': DO NOT ADD knowledge.\nSTEP 6: Evaluate the feedback on a scale of 1 to 7 based on the following criteria. There are three different criteria depending on whether the feedback is a 'Question' or a 'Statement'.\n'Question':\n\"Uniquness\": The question is unique.\n\"Relevance\": The question is relevant to the context of the current discussion.\n\"High-level\": The question is high-level.(If the question falls into the \"Low-Level\" category, it's between 1 and 2. Otherwise, it's between 3 and 5.)\n'Statement':\n\"Specificity\": The feedback is specific.\n\"Justification\": The feedback is justified.\n\"Active\": The feedback is actionable\n'No feedback': DO NOT RATE.\nResponse Only in JSON array, which looks like, {\"sentences\":[{\"sentence\": \"\", \"categories\":\"\", \"type\":\"\", \"knowledge\":\"\", \"evaluation\":{\"uniquness\": 0-7, \"relevance\": 0-7, \"high-level\": 0-7, \"specificity\": 0-7, \"justification\": 0-7, \"active\": 0-7}}]}.\n\"sentence\": Individual unit of feedback.\n\"categories\": Category of feedback. ('Question' or 'Statement' or 'No feedback')\n\"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n\"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.\n\"evaluation\": JSON with the evaluation score based on the criteria. The criteria that should be evaluated in STEP 6 have a value between 1-5, with the rest evaluated as 0.\n\nStudent’s Idea:" + json.dumps(ideasData) + "\nchat Log:" + json.dumps(user_chat.log) + "\nfeedback:" + feedback}]
+    feedbackcate_prompt = [{"role": "system", "content":"Feedback Analysis Instructions for Instructor's Feedback of a Student's Design Idea.\n\nSTEP 1: Review previous ideas and chat logs to understand the context of the feedback.\n\nSTEP 2: Decompose the feedback into individual sentences.\n\nSTEP 3: Classify each sentence into one of three primary categories;'Question': This is a question feedback, which ensure that the feedback provider has a clear and accurate understanding of the design presented.;'Statement': This is a statement feedback, which provides relevant information or is directly related to a design idea to evaluate or suggest improvements.;'No feedback': This sentence is completely irrelevant to the feedback.\n\nSTEP 4: Subcategorize each sentence based on its nature (There are 21 types of 'Question', three types of 'Statement' and no sub category for 'No feedback.'); 'Question':\n\"Low-Level\": Seeks factual details about the design.\n- Verification: Is X true?\n- Definition: What does X mean?\n- Example: What is an example of X?\n- Feature Specification: What (qualitative) attributes does X have?\n- Concept Completion: Who? What? When? Where?\n- Quantification: How much? How many?\n- Disjunctive: Is X or Y the case?\n- Comparison: How does X compare to Y?\n- Judgmental: What is your opinion on X?\n\"Deep Reasoning\": Explores deeper implications or reasons behind the design.\n- Interpretation: How is a particular event or pattern of information interpreted or summarized?\n- Goal Orientation: What are the motives behind an agent’s action?\n- Causal Antecedent: What caused X to occur?\n- Causal Consequent: What were the consequences of X occurring?\n- Expectational: Why is X not true?\n- Instrumental/Procedural: How does an agent accomplish a goal?\n- Enablement(DR): What object or resource enables an agent to perform an action?\n\"Generate Design\": Encourages innovative thinking about design challenges.\n- Proposal/Negotiation: Could a new concept be suggested/negotiated?\n- Scenario Creation: What would happen if X occurred?\n- Ideation: Generation of ideas without a deliberate end goal\n- Method: How could an agent accomplish a goal?\n- Enablement(GD): What object or resource could enable an agent to perform an action?\n'Statement':\n\"Information\": Share related information or examples.\n\"Evaluation\": Assess the student’s design idea. Stating general facts rather than evaluating a student's ideas doesn't belong.\n\"Recommendation\": Provide actionable suggestions for improvement.\n\nSTEP 5: Summarize the extracted knowledge from each category. Knowledge includes only key approaches and keywords and excludes complex context.;\n'Question':\n\"Low-Level\": DO NOT ADD knowledge.\n\"Deep Reasoning\": Suggest design considerations.\n\"Generate Design\": Suggest new design opportunities.\n'Statement':\n\"Information\": Details the provided information.\n\"Evaluation\": Describes the assessment of the design.\n\"Recommendation\": Outline ideas for enhancement.\n'No feedback': DO NOT ADD knowledge.\nResponse Only in JSON array, which looks like, {\"sentences\":[{\"sentence\": \"\", \"categories\":\"\", \"type\":\"\", \"knowledge\":\"\"}]}.\n\"sentence\": Individual unit of feedback.\n\"categories\": Category of feedback. ('Question' or 'Statement' or 'No feedback')\n\"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n\"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.\nStudent's Idea:" + json.dumps(ideasData) + "\nchat Log:" + json.dumps(user_chat.log) + "\nfeedback:" + feedback}]
     student_prompt = [{"role": "system", "content":"This is your design ideas: " + json.dumps(ideasData) + "\nYour Design knowledge: " + knowledge + "You are a student who is trying to learn design. You're coming up with ideas for a design project. Your persona is \n- a Design Department 1st year student. \n- Korean. (say in Korean) \n- not flexible in design thinking. \n- NEVER apologize, say you can help or just say thanks.\n- NEVER write more than 3 sentences in a single response. Speak colloquially only. Use honorifics.\nAnswer questions from the instructor ONLY based on your knowledge. If you can't answer based on your knowledge, say you don't know. But try to answer AS MUCH AS you can.\nThe format of your answer is JSON as follows. {”answer”: {your answer}}" + "\nThis is previous conversations between you(the student) and the instructor: " + json.dumps(user_chat.log) + "\nThis is the instructor's following chat(feedback): " + feedback }, 
-                      {"role": "user", "content":"I am the professor of your class. The class is in the Department of Design, where you learn about design thinking. I’ll give feedback on your design project."}]
+                      {"role": "user", "content":"I am the professor of your class. The class is in the Department of Design, where you learn about design thinking. I'll give feedback on your design project."}]
 
     completion1 = openai.chat.completions.create(
+        model="gpt-4o",
+        # model="gpt-3.5-turbo",
+        messages=feedbackcate_prompt,
+        response_format={"type": "json_object"}
+    )
+    try:
+        result1 = json.loads(completion1.choices[0].message.content)
+    except ZeroDivisionError as e:
+        # This will run only if there is no error
+        return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
+
+    feedbackeval_prompt = [{"role": "system", "content":"Feedback Evaluation Instructions for Instructor's Feedback of a Student's Design Idea.\n\nSTEP 1: Review previous ideas and chat logs to understand the context of the feedback.\n\nSTEP 2: Evaluate the feedback on a scale of 1 to 57 based on the following criteria. There are three different criteria depending on whether the feedback category is a 'Question' or a 'Statement'.\n'Question':\n\"Uniquness\": The question is unique.\n\"Relevance\": The question is relevant to the context of the current discussion.\n\"High-level\": The question is high-level.(If the question falls into the \"Low-Level\" category, it's between 1 and 2. Otherwise, it's between 3 and 5.)\n'Statement':\n\"Specificity\": The feedback is specific.\n\"Justification\": The feedback is justified.\n\"Active\": The feedback is actionable\n'No feedback': DO NOT RATE.\nSTEP 3: Evaluate the sentiment of the feedback. Analyze the sentiment of the feedback and rate it as either positive(1), neutral(0), or negative(-1).\n\nResponse Only in JSON array, which looks like, {\"sentences\":[{\"sentence\": \"\", \"categories\":\"\", \"type\":\"\", \"knowledge\":\"\", \"evaluation\":{\"uniquness\": [0,7], \"relevance\": [0,7], \"high-level\": [0,7], \"specificity\": [0,7], \"justification\": [0,7], \"active\": [0,7], \"sentiment\":[-1,1]}}]}.\n\"sentence\": Individual unit of feedback.\n\"categories\": Category of feedback. ('Question' or 'Statement' or 'No feedback')\n\"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n\"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.\n\"evaluation\": JSON with the evaluation score based on the criteria. The criteria that should be evaluated in STEP 2 have a value between 1-7, with the rest evaluated as 0.\n\nStudent's Idea:" + json.dumps(ideasData) + "\nchat Log:" + json.dumps(user_chat.log) + "\nfeedback:" + str(result1)}]
+
+    completion2 = openai.chat.completions.create(
         model="gpt-4o",
         # model="gpt-3.5-turbo",
         messages=feedbackeval_prompt,
         response_format={"type": "json_object"}
     )
     try:
-        result1 = json.loads(completion1.choices[0].message.content)
-        print(result1)
+        result2 = json.loads(completion2.choices[0].message.content)
     except ZeroDivisionError as e:
-    # This will run only if there is no error
+        # This will run only if there is no error
         return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
-    
+
+
     # new_opportunity = ""
     # new_consideration = ""
     new_knowledge = ""
-    for sentence in result1["sentences"]:
+    for sentence in result2["sentences"]:
         # print(sentence["knowledge"]["knowledge_type"])
         try:
             # if sentence["knowledge"]["knowledge_type"] == "Design Consideration":
@@ -280,14 +294,14 @@ def response():
         except:
             return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
             
-    completion2 = openai.chat.completions.create(
+    completion3 = openai.chat.completions.create(
         model="gpt-4o",
         # model="gpt-3.5-turbo",
         messages=student_prompt,
         response_format={"type": "json_object"}
     )
     try:
-        result2 = json.loads(completion2.choices[0].message.content)
+        result3 = json.loads(completion3.choices[0].message.content)
     except ZeroDivisionError as e:
     # This will run only if there is no error
         return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
@@ -298,7 +312,7 @@ def response():
 
     new_entries = [
         {"speaker": "instructor", "content": feedback},
-        {"speaker": "student", "content": result2["answer"]}
+        {"speaker": "student", "content": result3["answer"]}
     ]
     user_chat.log.extend(new_entries)
     flag_modified(user_chat, 'log')
@@ -314,7 +328,7 @@ def response():
     # print("consideration: ", user_knowledgestate.consideration)
     print("knowledge: ", user_knowledgestate.knowledge)
 
-    return {"response": result2["answer"], "student_knowledge_level": student_knowledge_level}
+    return {"response": result3["answer"], "student_knowledge_level": student_knowledge_level}
 
 @main.route("/nextRound")
 @jwt_required()
