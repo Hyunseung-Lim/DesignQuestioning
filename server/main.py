@@ -22,9 +22,9 @@ load_dotenv()  # This loads the environment variables from .env
 My_OpenAI_key = os.getenv('My_OpenAI_key')
 openai.api_key = My_OpenAI_key
 
-DRQ = ["Interpretation", "Goal Orientation", "Causal Antecedent", "Causal Consequent", "Expectational", "Instrumental/Procedural", "Enablement(DR)"]
-GDQ = ["Proposal/Negotiation", "Scenario Creation", "Ideation", "Method", "Enablement"]
-GoodQuestionCategory = DRQ + GDQ + ["Evaluation", "Recommendation"]
+LLQ = ["low-level", "verification", "definition", "example", "feature specification", "concept completion", "quantification", "disjunctive", "comparison", "judgmental"]
+DRQ = ["deep reasoning", "interpretation", "goal orientation", "causal antecedent", "causal consequent", "expectational", "instrumental/procedural", "instrumental", "procedural", "enablement(dr)"]
+GDQ = ["generate design", "proposal/negotiation", "proposal", "negotiation", "scenario creation", "ideation", "method", "enablement(gd)"]
 
 IdeaCategory = ['product', 'uiux', 'public']
 
@@ -79,27 +79,27 @@ def signup():
     db.session.commit()
 
     new_KnowledgeStates = [
-        KnowledgeState(user_id = new_user.id, round=1, q_num=0, s_num=0, qns=0, dnc=0, eval={'uniqueness': 0, 'ralevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = ""),
-        KnowledgeState(user_id = new_user.id, round=2, q_num=0, s_num=0, qns=0, dnc=0, eval={'uniqueness': 0, 'ralevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = ""),
-        KnowledgeState(user_id = new_user.id, round=3, q_num=0, s_num=0, qns=0, dnc=0, eval={'uniqueness': 0, 'ralevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "")
+        KnowledgeState(user_id = new_user.id, round=1, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = ""),
+        KnowledgeState(user_id = new_user.id, round=2, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = ""),
+        KnowledgeState(user_id = new_user.id, round=3, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "")
     ]
 
     new_ChatLogs = [
-        ChatLog(user_id = new_user.id, round=1, log = []),
-        ChatLog(user_id = new_user.id, round=2, log = []),
-        ChatLog(user_id = new_user.id, round=3, log = [])
+        ChatLog(user_id = new_user.id, round=1, log = [{"speaker":"student", "content": "안녕하세요! 저는 동건이라고 합니다. 제가 " + IdeaCategory[ideaOrder[new_user.id % 3][0]] + " 디자인과 관련하여 세가지 아이디어를 생각해보았는데요. 보시고 피드백을 주시면 감사하겠습니다."}]),
+        ChatLog(user_id = new_user.id, round=2, log = [{"speaker":"student", "content": "안녕하세요! 저는 동건이라고 합니다. 제가 " + IdeaCategory[ideaOrder[new_user.id % 3][1]]  + " 디자인과 관련하여 세가지 아이디어를 생각해보았는데요. 보시고 피드백을 주시면 감사하겠습니다."}]),
+        ChatLog(user_id = new_user.id, round=3, log = [{"speaker":"student", "content": "안녕하세요! 저는 동건이라고 합니다. 제가 " + IdeaCategory[ideaOrder[new_user.id % 3][2]]  + " 디자인과 관련하여 세가지 아이디어를 생각해보았는데요. 보시고 피드백을 주시면 감사하겠습니다."}])
     ]
 
     new_ideas = [
-        Idea(user_id=new_user.id, round=1, title=Ideas[ideaOrder[new_user.id][0] * 3]['title'], target_problem=Ideas[ideaOrder[new_user.id][0] * 3]['target_problem'], idea=Ideas[ideaOrder[new_user.id][0] * 3]['idea']),
-        Idea(user_id=new_user.id, round=1, title=Ideas[ideaOrder[new_user.id][0] * 3 + 1]['title'], target_problem=Ideas[ideaOrder[new_user.id][0] * 3 + 1]['target_problem'], idea=Ideas[ideaOrder[new_user.id][0] * 3 + 1]['idea']),
-        Idea(user_id=new_user.id, round=1, title=Ideas[ideaOrder[new_user.id][0] * 3 + 2]['title'], target_problem=Ideas[ideaOrder[new_user.id][0] * 3 + 2]['target_problem'], idea=Ideas[ideaOrder[new_user.id][0] * 3 + 2]['idea']),
-        Idea(user_id=new_user.id, round=2, title=Ideas[ideaOrder[new_user.id][1] * 3]['title'], target_problem=Ideas[ideaOrder[new_user.id][1] * 3]['target_problem'], idea=Ideas[ideaOrder[new_user.id][1] * 3]['idea']),
-        Idea(user_id=new_user.id, round=2, title=Ideas[ideaOrder[new_user.id][1] * 3 + 1]['title'], target_problem=Ideas[ideaOrder[new_user.id][1] * 3 + 1]['target_problem'], idea=Ideas[ideaOrder[new_user.id][1] * 3 + 1]['idea']),
-        Idea(user_id=new_user.id, round=2, title=Ideas[ideaOrder[new_user.id][1] * 3 + 2]['title'], target_problem=Ideas[ideaOrder[new_user.id][1] * 3 + 2]['target_problem'], idea=Ideas[ideaOrder[new_user.id][1] * 3 + 2]['idea']),
-        Idea(user_id=new_user.id, round=3, title=Ideas[ideaOrder[new_user.id][2] * 3]['title'], target_problem=Ideas[ideaOrder[new_user.id][2] * 3]['target_problem'], idea=Ideas[ideaOrder[new_user.id][2] * 3]['idea']),
-        Idea(user_id=new_user.id, round=3, title=Ideas[ideaOrder[new_user.id][2] * 3 + 1]['title'], target_problem=Ideas[ideaOrder[new_user.id][2] * 3 + 1]['target_problem'], idea=Ideas[ideaOrder[new_user.id][2] * 3 + 1]['idea']),
-        Idea(user_id=new_user.id, round=3, title=Ideas[ideaOrder[new_user.id][2] * 3 + 2]['title'], target_problem=Ideas[ideaOrder[new_user.id][2] * 3 + 2]['target_problem'], idea=Ideas[ideaOrder[new_user.id][2] * 3 + 2]['idea'])
+        Idea(user_id=new_user.id, round=1, title=Ideas[ideaOrder[new_user.id % 3][0] * 3]['title'], target_problem=Ideas[ideaOrder[new_user.id % 3][0] * 3]['target_problem'], idea=Ideas[ideaOrder[new_user.id % 3][0] * 3]['idea']),
+        Idea(user_id=new_user.id, round=1, title=Ideas[ideaOrder[new_user.id % 3][0] * 3 + 1]['title'], target_problem=Ideas[ideaOrder[new_user.id % 3][0] * 3 + 1]['target_problem'], idea=Ideas[ideaOrder[new_user.id % 3][0] * 3 + 1]['idea']),
+        Idea(user_id=new_user.id, round=1, title=Ideas[ideaOrder[new_user.id % 3][0] * 3 + 2]['title'], target_problem=Ideas[ideaOrder[new_user.id % 3][0] * 3 + 2]['target_problem'], idea=Ideas[ideaOrder[new_user.id % 3][0] * 3 + 2]['idea']),
+        Idea(user_id=new_user.id, round=2, title=Ideas[ideaOrder[new_user.id % 3][1] * 3]['title'], target_problem=Ideas[ideaOrder[new_user.id % 3][1] * 3]['target_problem'], idea=Ideas[ideaOrder[new_user.id % 3][1] * 3]['idea']),
+        Idea(user_id=new_user.id, round=2, title=Ideas[ideaOrder[new_user.id % 3][1] * 3 + 1]['title'], target_problem=Ideas[ideaOrder[new_user.id % 3][1] * 3 + 1]['target_problem'], idea=Ideas[ideaOrder[new_user.id % 3][1] * 3 + 1]['idea']),
+        Idea(user_id=new_user.id, round=2, title=Ideas[ideaOrder[new_user.id % 3][1] * 3 + 2]['title'], target_problem=Ideas[ideaOrder[new_user.id % 3][1] * 3 + 2]['target_problem'], idea=Ideas[ideaOrder[new_user.id % 3][1] * 3 + 2]['idea']),
+        Idea(user_id=new_user.id, round=3, title=Ideas[ideaOrder[new_user.id % 3][2] * 3]['title'], target_problem=Ideas[ideaOrder[new_user.id % 3][2] * 3]['target_problem'], idea=Ideas[ideaOrder[new_user.id % 3][2] * 3]['idea']),
+        Idea(user_id=new_user.id, round=3, title=Ideas[ideaOrder[new_user.id % 3][2] * 3 + 1]['title'], target_problem=Ideas[ideaOrder[new_user.id % 3][2] * 3 + 1]['target_problem'], idea=Ideas[ideaOrder[new_user.id % 3][2] * 3 + 1]['idea']),
+        Idea(user_id=new_user.id, round=3, title=Ideas[ideaOrder[new_user.id % 3][2] * 3 + 2]['title'], target_problem=Ideas[ideaOrder[new_user.id % 3][2] * 3 + 2]['target_problem'], idea=Ideas[ideaOrder[new_user.id % 3][2] * 3 + 2]['idea'])
         # Idea(user_id=new_user.id, title="유아친화 지역 사회 공간", target_problem="아이를 키우는 환경의 부족", idea="지역 사회 내에서 안전하고 창의적인 유아친화 공간을 만들어 부모들이 아이들을 더욱 편리하고 즐겁게 키울 수 있도록 지원합니다. 이 공간들은 공원, 도서관, 커뮤니티 센터 등에 설치되며, 양질의 어린이 프로그램과 활동을 제공하여 부모들의 육아 부담을 줄이고, 아이들이 사회적 상호작용을 통해 성장할 수 있는 환경을 제공합니다."),
         # Idea(user_id=new_user.id, title="플렉스 워크 포인트", target_problem="일과 가정의 균형 부족", idea="기업들이 육아와 일을 병행할 수 있도록 유연한 근무 환경을 제공하는 정책을 도입합니다. 이 아이디어는 육아 휴직, 시간 선택 근무, 재택 근무 옵션을 포함하여 부모가 자녀 양육에 더 많은 시간을 할애할 수 있게 돕습니다. 또한, 직장 내 어린이집을 설치하여 부모가 직장 근처에서 아이들과 더 많은 시간을 보낼 수 있게 합니다."),
         # Idea(user_id=new_user.id, title="노인과 청년 연결 프로그램", target_problem="고령화 사회의 노인 인력 활용", idea="노인 세대가 자신의 지식과 경험을 청년 세대에게 전달할 수 있는 멘토링 및 지원 프로그램을 개발합니다. 이 프로그램은 노인을 일자리와 연결하여 활동적인 사회 생활을 유지하게 돕고, 동시에 젊은 부모나 예비 부모에게 육아와 관련된 지식과 지원을 제공합니다. 이러한 상호작용은 세대 간의 소통과 이해를 증진시키고, 고령화 사회에서의 노인들의 역할을 재정의합니다.")
@@ -155,7 +155,7 @@ def profile():
     setting = InitialSetting.query.filter_by(user_id=user.id, round=user.currentRound).first()
     user_knowledgestate = KnowledgeState.query.filter_by(user_id=user.id, round=user.currentRound).first()
 
-    return {"ideasData": ideasData, "chatData": userChat.log, "name": name, "mode": user.mode, "character": setting.character, "goal1": setting.goal1, "goal2": setting.goal2, "goal3": setting.goal3, "time": setting.time, "student_knowledge_level": len(user_knowledgestate.knowledge), "q_num": user_knowledgestate.q_num, "s_num": user_knowledgestate.s_num, "qns": user_knowledgestate.qns, "dnc": user_knowledgestate.dnc, "eval": user_knowledgestate.eval}
+    return {"ideasData": ideasData, "chatData": userChat.log, "name": name, "mode": user.mode, "character": setting.character, "goal1": setting.goal1, "goal2": setting.goal2, "goal3": setting.goal3, "time": setting.time, "student_knowledge_level": len(user_knowledgestate.knowledge), "q_num": user_knowledgestate.q_num, "s_num": user_knowledgestate.s_num, "qns": user_knowledgestate.qns, "cnd": user_knowledgestate.cnd, "eval": user_knowledgestate.eval}
 
 @main.route("/mode", methods=["POST"])
 @jwt_required()
@@ -248,9 +248,9 @@ def response():
     knowledge = user_knowledgestate.knowledge
     user_chat = ChatLog.query.filter_by(user_id=user.id).first()
 
-    feedbackcate_prompt = [{"role": "system", "content":"Feedback Analysis Instructions for Instructor's Feedback of a Student's Design Idea.\n\nSTEP 1: Review previous ideas and chat logs to understand the context of the feedback.\n\nSTEP 2: Decompose the feedback into individual sentences.\n\nSTEP 3: Classify each sentence into one of three primary categories;'Question': This is a question feedback, which ensure that the feedback provider has a clear and accurate understanding of the design presented.;'Statement': This is a statement feedback, which provides relevant information or is directly related to a design idea to evaluate or suggest improvements.;'No feedback': This sentence is completely irrelevant to the feedback.\n\nSTEP 4: Subcategorize each sentence based on its nature (There are 21 types of 'Question', three types of 'Statement' and no sub category for 'No feedback.'); 'Question':\n\"Low-Level\": Seeks factual details about the design.\n- Verification: Is X true?\n- Definition: What does X mean?\n- Example: What is an example of X?\n- Feature Specification: What (qualitative) attributes does X have?\n- Concept Completion: Who? What? When? Where?\n- Quantification: How much? How many?\n- Disjunctive: Is X or Y the case?\n- Comparison: How does X compare to Y?\n- Judgmental: What is your opinion on X?\n\"Deep Reasoning\": Explores deeper implications or reasons behind the design.\n- Interpretation: How is a particular event or pattern of information interpreted or summarized?\n- Goal Orientation: What are the motives behind an agent’s action?\n- Causal Antecedent: What caused X to occur?\n- Causal Consequent: What were the consequences of X occurring?\n- Expectational: Why is X not true?\n- Instrumental/Procedural: How does an agent accomplish a goal?\n- Enablement(DR): What object or resource enables an agent to perform an action?\n\"Generate Design\": Encourages innovative thinking about design challenges.\n- Proposal/Negotiation: Could a new concept be suggested/negotiated?\n- Scenario Creation: What would happen if X occurred?\n- Ideation: Generation of ideas without a deliberate end goal\n- Method: How could an agent accomplish a goal?\n- Enablement(GD): What object or resource could enable an agent to perform an action?\n'Statement':\n\"Information\": Share related information or examples.\n\"Evaluation\": Assess the student’s design idea. Stating general facts rather than evaluating a student's ideas doesn't belong.\n\"Recommendation\": Provide actionable suggestions for improvement.\n\nSTEP 5: Summarize the extracted knowledge from each category. Knowledge includes only key approaches and keywords and excludes complex context.;\n'Question':\n\"Low-Level\": DO NOT ADD knowledge.\n\"Deep Reasoning\": Suggest design considerations.\n\"Generate Design\": Suggest new design opportunities.\n'Statement':\n\"Information\": Details the provided information.\n\"Evaluation\": Describes the assessment of the design.\n\"Recommendation\": Outline ideas for enhancement.\n'No feedback': DO NOT ADD knowledge.\nResponse Only in JSON array, which looks like, {\"sentences\":[{\"sentence\": \"\", \"categories\":\"\", \"type\":\"\", \"knowledge\":\"\"}]}.\n\"sentence\": Individual unit of feedback.\n\"categories\": Category of feedback. ('Question' or 'Statement' or 'No feedback')\n\"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n\"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.\nStudent's Idea:" + json.dumps(ideasData) + "\nchat Log:" + json.dumps(user_chat.log) + "\nfeedback:" + feedback}]
-    student_prompt = [{"role": "system", "content":"This is your design ideas: " + json.dumps(ideasData) + "\nYour Design knowledge: " + knowledge + "You are a student who is trying to learn design. You're coming up with ideas for a design project. Your persona is \n- a Design Department 1st year student. \n- Korean. (say in Korean) \n- not flexible in design thinking. \n- NEVER apologize, say you can help or just say thanks.\n- NEVER write more than 3 sentences in a single response. Speak colloquially only. Use honorifics.\nAnswer questions from the instructor ONLY based on your knowledge. If you can't answer based on your knowledge, say you don't know. But try to answer AS MUCH AS you can.\nThe format of your answer is JSON as follows. {”answer”: {your answer}}" + "\nThis is previous conversations between you(the student) and the instructor: " + json.dumps(user_chat.log) + "\nThis is the instructor's following chat(feedback): " + feedback }, 
-                      {"role": "user", "content":"I am the professor of your class. The class is in the Department of Design, where you learn about design thinking. I'll give feedback on your design project."}]
+    feedbackcate_prompt = [{"role": "system", "content":"Feedback Analysis Instructions for Instructor's Feedback of a Student's Design Idea.\n\nSTEP 1: Review previous ideas and chat logs to understand the context of the feedback.\n\nSTEP 2: Decompose the feedback into individual sentences.\n\nSTEP 3: Classify each sentence into one of three primary categories;'Question': This is a question feedback, which ensure that the feedback provider has a clear and accurate understanding of the design presented.;'Statement': This is a statement feedback, which provides relevant information or is directly related to a design idea to evaluate or suggest improvements.;'No feedback': This sentence is completely irrelevant to the feedback.\n\nSTEP 4: Subcategorize each sentence based on its nature (There are 21 types of 'Question', three types of 'Statement' and no sub category for 'No feedback.'); 'Question':\n\"Low-Level\": Seeks factual details about the design.\n- Verification: Is X true?\n- Definition: What does X mean?\n- Example: What is an example of X?\n- Feature Specification: What (qualitative) attributes does X have?\n- Concept Completion: Who? What? When? Where?\n- Quantification: How much? How many?\n- Disjunctive: Is X or Y the case?\n- Comparison: How does X compare to Y?\n- Judgmental: What is your opinion on X?\n\"Deep Reasoning\": Explores deeper implications or reasons behind the design.\n- Interpretation: How is a particular event or pattern of information interpreted or summarized?\n- Goal Orientation: What are the motives behind an agent’s action?\n- Causal Antecedent: What caused X to occur?\n- Causal Consequent: What were the consequences of X occurring?\n- Expectational: Why is X not true?\n- Instrumental/Procedural: How does an agent accomplish a goal?\n- Enablement(DR): What object or resource enables an agent to perform an action?\n\"Generate Design\": Encourages innovative thinking about design challenges.\n- Proposal/Negotiation: Could a new concept be suggested/negotiated?\n- Scenario Creation: What would happen if X occurred?\n- Ideation: Generation of ideas without a deliberate end goal\n- Method: How could an agent accomplish a goal?\n- Enablement(GD): What object or resource could enable an agent to perform an action?\n'Statement':\n\"Information\": Share related information or examples.\n\"Evaluation\": Assess the student’s design idea. Stating general facts rather than evaluating a student's ideas doesn't belong.\n\"Recommendation\": Provide actionable suggestions for improvement.\n\nSTEP 5: Summarize the extracted knowledge from each category. Knowledge includes only key approaches and keywords and excludes complex context.\n'Question':\n\"Low-Level\": DO NOT ADD knowledge.\n\"Deep Reasoning\": Suggest design considerations.\n\"Generate Design\": Suggest new design opportunities.\n'Statement':\n\"Information\": Details the provided information.\n\"Evaluation\": Describes the assessment of the design.\n\"Recommendation\": Outline ideas for enhancement.\n'No feedback': DO NOT ADD knowledge.\n\nSTEP 6: Check whether the knowledge is already known to the student or not.\n\nResponse Only in JSON array, which looks like, {\"sentences\":[{\"sentence\": \"\", \"categories\":\"\", \"type\":\"\", \"knowledge\":\"\", \"isNew\":\"\"}]}.\n\"sentence\": Individual unit of feedback.\n\"categories\": Category of feedback. ('Question' or 'Statement' or 'No feedback')\n\"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n\"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.\n\"isNew\": If it's new knowledge, true; otherwise, false.\nStudent's Idea:" + json.dumps(ideasData) + "\nStudent's Knowledge:" + knowledge + "\nchat Log:" + json.dumps(user_chat.log) + "\nfeedback:" + feedback}]
+    student_prompt = [{"role": "system", "content":"This is your design ideas: " + json.dumps(ideasData) + "\nYour Design knowledge: " + knowledge + "You are a student who is trying to learn design. You're coming up with ideas for a design project. Your persona is \n- a Design Department 1st year student. \n- Korean. (say in Korean) \n- not flexible in design thinking. \n- NEVER apologize, NEVER say you can help, and NEVER just say thanks.\n- NEVER write more than 3 sentences in a single response. Speak colloquially only. Use honorifics.\nAnswer questions from the instructor ONLY based on your knowledge. If you can't answer based on your knowledge, say you don't know. But try to answer AS MUCH AS you can.\nThe format of your answer is JSON as follows. {”answer”: {your answer}}" + "\nThis is previous conversations between you(the student) and the instructor: " + json.dumps(user_chat.log) + "\nThis is the instructor's following chat(feedback): " + feedback }, 
+                      {"role": "user", "content":"I am an industrial design expert. I'll give feedback on your design project."}]
 
     completion1 = openai.chat.completions.create(
         model="gpt-4o",
@@ -260,16 +260,29 @@ def response():
     )
     try:
         result1 = json.loads(completion1.choices[0].message.content)
+        result1 = [sentence for sentence in result1['sentences'] if sentence['categories'].lower() in ['question', 'statement']]
     except ZeroDivisionError as e:
         # This will run only if there is no error
         return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
 
-    feedbackeval_prompt = [{"role": "system", "content":"Feedback Evaluation Instructions for Instructor's Feedback of a Student's Design Idea.\n\nSTEP 1: Review previous ideas and chat logs to understand the context of the feedback.\n\nSTEP 2: Evaluate the feedback on a scale of 1 to 57 based on the following criteria. There are three different criteria depending on whether the feedback category is a 'Question' or a 'Statement'.\n'Question':\n\"Uniquness\": The question is unique.\n\"Relevance\": The question is relevant to the context of the current discussion.\n\"High-level\": The question is high-level.(If the question falls into the \"Low-Level\" category, it's between 1 and 2. Otherwise, it's between 3 and 5.)\n'Statement':\n\"Specificity\": The feedback is specific.\n\"Justification\": The feedback is justified.\n\"Active\": The feedback is actionable\n'No feedback': DO NOT RATE.\nSTEP 3: Evaluate the sentiment of the feedback. Analyze the sentiment of the feedback and rate it as either positive(1), neutral(0), or negative(-1).\n\nResponse Only in JSON array, which looks like, {\"sentences\":[{\"sentence\": \"\", \"categories\":\"\", \"type\":\"\", \"knowledge\":\"\", \"evaluation\":{\"uniquness\": [0,7], \"relevance\": [0,7], \"high-level\": [0,7], \"specificity\": [0,7], \"justification\": [0,7], \"active\": [0,7], \"sentiment\":[-1,1]}}]}.\n\"sentence\": Individual unit of feedback.\n\"categories\": Category of feedback. ('Question' or 'Statement' or 'No feedback')\n\"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n\"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.\n\"evaluation\": JSON with the evaluation score based on the criteria. The criteria that should be evaluated in STEP 2 have a value between 1-7, with the rest evaluated as 0.\n\nStudent's Idea:" + json.dumps(ideasData) + "\nchat Log:" + json.dumps(user_chat.log) + "\nfeedback:" + str(result1)}]
+    feedbackeval_prompt = [{"role": "system", "content":"Feedback Evaluation Instructions for Instructor's Feedback of a Student's Design Idea.\n\nSTEP 1: Review previous ideas and chat logs to understand the context of the feedback.\n\nSTEP 2: Evaluate the feedback on a scale of 1 to 57 based on the following criteria. There are three different criteria depending on whether the feedback category is a 'Question' or a 'Statement'.\n'Question':\n\"uniqueness\": The question is unique.\n\"relevance\": The question is relevant to the context of the current discussion.\n\"high-level\": The question is high-level.(If the question falls into the \"Low-Level\" category, it's between 1 and 2. Otherwise, it's between 3 and 5.)\n'Statement':\n\"specificity\": The feedback is specific.\n\"justification\": The feedback is justified.\n\"active\": The feedback is actionable\n'No feedback': DO NOT RATE.\nSTEP 3: Evaluate the sentiment of the feedback. Analyze the sentiment of the feedback and rate it as either positive(1), neutral(0), or negative(-1).\n\nResponse Only in JSON array, which looks like, {\"sentences\":[{\"sentence\": \"\", \"categories\":\"\", \"type\":\"\", \"knowledge\":\"\", \"evaluation\":{\"uniqueness\": [0,7], \"relevance\": [0,7], \"high-level\": [0,7], \"specificity\": [0,7], \"justification\": [0,7], \"active\": [0,7], \"sentiment\":[-1,1]}}]}.\n\"sentence\": Individual unit of feedback.\n\"categories\": Category of feedback. ('Question' or 'Statement' or 'No feedback')\n\"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n\"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.\n\"evaluation\": JSON with the evaluation score based on the criteria. The criteria that should be evaluated in STEP 2 have a value between 1-7, with the rest evaluated as 0.\n\nStudent's Idea:" + json.dumps(ideasData) + "\nchat Log:" + json.dumps(user_chat.log) + "\nfeedback:" + str(result1)}]
 
+    # Add Knowledge
+    new_knowledge = ""
+    for sentence in result1:
+        try:
+            if sentence['isNew']:
+                new_knowledge += sentence["knowledge"]
+        except:
+            return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
+    user_knowledgestate.knowledge += new_knowledge
+
+    # Second Prompt for Evaluate feedback
     completion2 = openai.chat.completions.create(
         model="gpt-4o",
         # model="gpt-3.5-turbo",
         messages=feedbackeval_prompt,
+        temperature=0,
         response_format={"type": "json_object"}
     )
     try:
@@ -278,19 +291,45 @@ def response():
         # This will run only if there is no error
         return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
 
-
-    # new_opportunity = ""
-    # new_consideration = ""
-    new_knowledge = ""
     for sentence in result2["sentences"]:
-        # print(sentence["knowledge"]["knowledge_type"])
         try:
-            # if sentence["knowledge"]["knowledge_type"] == "Design Consideration":
-            #     new_consideration += sentence["knowledge"]["content"]
-            # if sentence["knowledge"]["knowledge_type"] == "Design Opportunity":
-            #     new_opportunity += sentence["knowledge"]["content"]
-            # if sentence["knowledge"]["knowledge_type"] == "Design Knowledge":
-            new_knowledge += sentence["knowledge"]
+            if sentence['type'].lower() in LLQ + DRQ + GDQ:
+                user_knowledgestate.q_num += 1
+                if user_knowledgestate.qns > -5:
+                    user_knowledgestate.qns -= 1
+                #uniqueness
+                user_knowledgestate.eval['uniqueness'] += int(sentence['evaluation']['uniqueness'])
+                #relevance
+                user_knowledgestate.eval['relevance'] += int(sentence['evaluation']['relevance'])
+                #high-level
+                user_knowledgestate.eval['high-level'] += int(sentence['evaluation']['high-level'])
+                flag_modified(user_knowledgestate, 'q_num')
+                flag_modified(user_knowledgestate, 'qns')
+                flag_modified(user_knowledgestate, 'eval')
+   
+            if sentence['type'].lower() in ['information', 'evalutation', 'recommendation']:
+                user_knowledgestate.s_num += 1
+                if user_knowledgestate.qns < 5:
+                    user_knowledgestate.qns += 1
+                #specificity
+                user_knowledgestate.eval['specificity'] += int(sentence['evaluation']['specificity'])
+                #justification
+                user_knowledgestate.eval['justification'] += int(sentence['evaluation']['justification'])
+                #active
+                user_knowledgestate.eval['active'] += int(sentence['evaluation']['active'])
+                flag_modified(user_knowledgestate, 's_num')
+                flag_modified(user_knowledgestate, 'qns')
+                flag_modified(user_knowledgestate, 'eval')
+
+            if sentence['type'].lower() in GDQ + ['recommendation']:
+                if user_knowledgestate.cnd < 5:
+                    user_knowledgestate.cnd += 1   
+                    flag_modified(user_knowledgestate, 'cnd')
+
+            if sentence['type'].lower() in DRQ + ['evaluation']:
+                if user_knowledgestate.cnd > -5:
+                    user_knowledgestate.cnd -= 1
+
         except:
             return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
             
@@ -306,10 +345,6 @@ def response():
     # This will run only if there is no error
         return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
 
-
-
-    user_knowledgestate.knowledge += new_knowledge
-
     new_entries = [
         {"speaker": "instructor", "content": feedback},
         {"speaker": "student", "content": result3["answer"]}
@@ -323,12 +358,34 @@ def response():
     # student_divergent_level = len(user_knowledgestate.opportunity)
     # student_convergent_level = len(user_knowledgestate.consideration)
     student_knowledge_level = len(user_knowledgestate.knowledge)
+    feedback_uniqueness = 0
+    feedback_relevance = 0
+    feedback_high_level = 0
+    feedback_specificity = 0
+    feedback_justification = 0
+    feedback_active = 0
+    if user_knowledgestate.q_num > 0:
+        feedback_uniqueness = round(user_knowledgestate.eval['uniqueness'] / user_knowledgestate.q_num, 1)
+        feedback_relevance = round(user_knowledgestate.eval['relevance'] / user_knowledgestate.q_num, 1)
+        feedback_high_level = round(user_knowledgestate.eval['high-level'] / user_knowledgestate.q_num, 1)
+    if user_knowledgestate.s_num > 0:
+        feedback_specificity = round(user_knowledgestate.eval['specificity'] / user_knowledgestate.s_num, 1)
+        feedback_justification = round(user_knowledgestate.eval['justification'] / user_knowledgestate.s_num, 1)
+        feedback_active = round(user_knowledgestate.eval['active'] / user_knowledgestate.s_num, 1)
+    
+    # print(feedback_uniqueness)
+    # print(feedback_relevance)
+    # print(feedback_high_level)
+    # print(feedback_specificity)
+    # print(feedback_justification)
+    # print(feedback_active)
+    # print(user_knowledgestate.qns)
 
     # print("opportunity: ", user_knowledgestate.opportunity)
     # print("consideration: ", user_knowledgestate.consideration)
     print("knowledge: ", user_knowledgestate.knowledge)
 
-    return {"response": result3["answer"], "student_knowledge_level": student_knowledge_level}
+    return {"response": result3["answer"], "student_knowledge_level": student_knowledge_level, "qns": user_knowledgestate.qns, "cnd": user_knowledgestate.cnd, "uniqueness": feedback_uniqueness, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active}
 
 @main.route("/nextRound")
 @jwt_required()

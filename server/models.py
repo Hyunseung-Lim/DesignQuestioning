@@ -43,9 +43,9 @@ class KnowledgeState(db.Model):
     q_num = db.Column(db.Integer)
     s_num = db.Column(db.Integer)
     qns = db.Column(db.Integer) # question and statemnet
-    dnc = db.Column(db.Integer) # divergent and convergent
+    cnd = db.Column(db.Integer) # divergent and convergent
     eval = db.Column(db.JSON)
-    knowledge = db.Column(db.String(1000))
+    knowledge = db.Column(db.String(3000))
 
 class ChatLog(db.Model):
     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy

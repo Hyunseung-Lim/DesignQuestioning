@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import axios from "axios"
+import { useNavigate } from 'react-router-dom';
 
 import './login.css'
 
 export const Logout = (props) => {
 
-    function logout() {
+    const logout = async () => {
         axios({
           method: "POST",
           url:"/logout",
@@ -13,12 +14,14 @@ export const Logout = (props) => {
         .then((response) => {
            props.removeToken()
         }).catch((error) => {
-          if (error.response) {
-            console.log(error.response)
-            console.log(error.response.status)
-            console.log(error.response.headers)
+            if (error.response) {
+                console.log(error.response)
+                console.log(error.response.status)
+                console.log(error.response.headers)
             }
-        })}
+        })
+        navigate('/');
+    }
 
     return(
         <>

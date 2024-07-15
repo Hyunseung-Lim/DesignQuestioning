@@ -17,6 +17,7 @@ export const MainPage = (props) => {
     // const [convergentLevel, setConvergentLevel] = useState(0);
     const [knowledgeLevel, setKnowledgeLevel] = useState(0);
     const [time, setTime] = useState(0);
+    const [feedbackData, setFeedbackData] = useState({'cnd': 0, 'qns': 0, 'uniqueness': 0, 'relevance': 0, 'high_level': 0, 'specificity': 0, 'justification': 0, 'active': 0})
 
     // get profile data from server
     function getData() {
@@ -79,7 +80,8 @@ export const MainPage = (props) => {
                 ]);
                 // setDivergentLevel(res.student_divergent_level);
                 // setConvergentLevel(res.student_convergent_level);
-                setKnowledgeLevel(res.student_knowledge_level);
+                setKnowledgeLevel(res.student_knowledge_level)
+                setFeedbackData({'cnd': res.cnd, 'qns': res.qns, 'uniqueness': res.uniqueness, 'relevance': res.relevance, 'high_level': res.high_level, 'specificity': res.specificity, 'justification': res.justification, 'active': res.active})
             }).catch((error) => {
             if (error.response) {
                 console.log(error.response)
@@ -101,7 +103,7 @@ export const MainPage = (props) => {
                     {/* {notesData ? <Board token={props.token} notesData={notesData}/> : <>loading</>} */}
                     {ideasData ? <IdeaContainer ideasData={ideasData}/> : <>loading</>}
                     {chatData ? <Chat token={props.token} chatData={chatData} getResponse={(feedback) => getResponse(feedback)}/> : <>loading</>}
-                    <Student knowledgeLevel={knowledgeLevel}/>
+                    <Student knowledgeLevel={knowledgeLevel} profileData={profileData} feedbackData={feedbackData}/>
                 </div>
             </div>
         </>

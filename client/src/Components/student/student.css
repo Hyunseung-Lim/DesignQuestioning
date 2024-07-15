@@ -35,8 +35,8 @@
 }
 
 .studentProfile > img {
-    width: 150px;
-    height: 150px;
+    width: 140px;
+    height: 140px;
     margin-bottom: 10px;
 }
 
@@ -126,6 +126,54 @@
     align-items: center;
 }
 
-.userStatus > .radar {
+.userStatus > .feedback {
     width: 84%;
+}
+
+.userStatus > .feedback > .bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+
+.barPointer {
+    transition: x 0.5s;
+}
+
+.userStatus > .userProfileContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+
+}
+
+.userProfileContainer > img {
+    width: 120px;
+    height: 120px;
+    border-radius: 60px;
+    margin: 0 20px;
+}
+
+.userGoals {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: left;
+    padding: 20px;
+    min-width: 80%;
+    font-size: 14px;
+}
+
+.userGoals > .goal {
+    border-radius: 6px;
+    background-color: #f8f8ff;
+    border: solid 1px #ddf;
+    padding: 6px;
+    margin-top: 2px;
+    margin-bottom: 14px;
 }

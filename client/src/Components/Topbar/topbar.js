@@ -39,7 +39,7 @@ export const Topbar = (props) => {
         return num.toString().padStart(2, '0');
     }
 
-    function logout() {
+    const logout = async () => {
         axios({
           method: "POST",
           url:"/logout",
@@ -51,28 +51,29 @@ export const Topbar = (props) => {
             console.log(error.response)
             console.log(error.response.status)
             console.log(error.response.headers)
-            }
+        }
+        navigate('/');
     })}
 
 
-    function nextRound() {
-        axios({
-        method: "GET",
-        url:"/nextRound",
-        headers: {
-            Authorization: 'Bearer ' + props.token
-        }
-        })
-        .then((response) => {
+    // function nextRound() {
+    //     axios({
+    //     method: "GET",
+    //     url:"/nextRound",
+    //     headers: {
+    //         Authorization: 'Bearer ' + props.token
+    //     }
+    //     })
+    //     .then((response) => {
 
-        }).catch((error) => {
-        if (error.response) {
-            console.log(error.response)
-            console.log(error.response.status)
-            console.log(error.response.headers)
-            }
-        })
-    }
+    //     }).catch((error) => {
+    //     if (error.response) {
+    //         console.log(error.response)
+    //         console.log(error.response.status)
+    //         console.log(error.response.headers)
+    //         }
+    //     })
+    // }
 
     const finish = async () => {
         await axios({

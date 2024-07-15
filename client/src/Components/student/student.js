@@ -1,8 +1,11 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import './student.css'
 import { RadarChart } from '../radar/RadarChart';
 
 export const Student = (props) => {
+
+    const svgRef = useRef(null);
+    const [svgWidth, setSvgWidth] = useState(0);
 
     const [totalExp, setTotalExp] = useState(0);
     const [studentLevel, setStudentLevel] = useState(1);
@@ -10,51 +13,9 @@ export const Student = (props) => {
     const [animate, setAnimate] = useState(true);
     const maxExp = 100;
     const [userTab, setUserTab] = useState(false);
-
-    const radardata = {
-        labels: [
-            'Eating',
-            'Drinking',
-            'Sleeping',
-            'Designing',
-            'Coding',
-            'Cycling',
-            'Running'
-        ],
-        datasets: [{
-            label: 'My First Dataset',
-            data: [65, 59, 90, 81, 56, 55, 40],
-            fill: true,
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderColor: 'rgb(255, 99, 132)',
-            pointBackgroundColor: 'rgb(255, 99, 132)',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgb(255, 99, 132)'
-        }, {
-            label: 'My Second Dataset',
-            data: [28, 48, 40, 19, 96, 27, 100],
-            fill: true,
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgb(54, 162, 235)',
-            pointBackgroundColor: 'rgb(54, 162, 235)',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgb(54, 162, 235)'
-        }]
-    };
-
-    // const [divergentLevel, setDivergentLevel] = useState(props.divergentLevel);
-    // const [convergentLevel, setConvergentLevel] = useState(props.convergentLevel);
-    // const [knowledgeLevel, setKnowledgeLevel] = useState(props.knowledgeLevel);
-
-    // const expBar = {
-    //     width: `${currentExp}%`,
-    //     height: '20px',
-    //     backgroundColor: '#12CCAE',
-    //     borderRadius: '10px',
-    //     transition: 'width 0.3s ease'
-    // };
+    const [cnd, setCnd] = useState(0);
+    const [qns, setQns] = useState(0);
+    const [evalPoint, setEvalPoint] = useState([0,0,0,0,0,0]);
 
     function userTabChange (i) {
         setUserTab(i);
@@ -87,6 +48,28 @@ export const Student = (props) => {
         setTotalExp(props.knowledgeLevel);
     }, [props.knowledgeLevel]);
 
+    useEffect(() => {
+        const updateSvgWidth = () => {
+        if (svgRef.current) {
+                setSvgWidth(svgRef.current.clientWidth);
+            }
+        };
+
+        setTimeout(updateSvgWidth, 100);
+
+        window.addEventListener('resize', updateSvgWidth);
+    
+        return () => {
+            window.removeEventListener('resize', updateSvgWidth);
+        };
+    }, []);
+
+    useEffect(() => {
+        setCnd(props.feedbackData.cnd);
+        setQns(props.feedbackData.qns);
+        setEvalPoint([props.feedbackData.uniqueness, props.feedbackData.relevance, props.feedbackData.high_level, props.feedbackData.specificity, props.feedbackData.justification, props.feedbackData.active])
+    }, [props.feedbackData]);
+
     return(
         <>
             <div className='studentUI'>
@@ -104,17 +87,43 @@ export const Student = (props) => {
                         <div className='exp'>{currentExp} exp points</div>
                     </div>
                 </div>
-                <div className='title'>사용자 프로필</div>
+                <div className='title'>사용자({props.profileData.name}) 프로필</div>
                 <div className='buttonContainer'>
                     <button className={userTab ? 'userBtn clicked' : 'userBtn'} onClick={() => userTabChange(true)}>프로필</button>
                     <button className={userTab ? 'userBtn' : 'userBtn clicked'} onClick={() => userTabChange(false)}>피드백</button>
                 </div>
                 <div className='userStatus'>
                     {userTab ?
-                        <div></div>
+                        <div className='userProfileContainer'>
+                            <img src={"/images/character/character" + props.profileData.character + ".png"} alt='profileImg'/>
+                            <div className='userGoals'>
+                                <b>나는</b>
+                                <div className='goal'>{props.profileData.goal1}</div>
+                                <b>나의 피드백은</b>
+                                <div className='goal'>{props.profileData.goal2}</div>
+                                <b>나의 목표는</b>
+                                <div className='goal'>{props.profileData.goal3}</div>
+                            </div>
+                        </div>
                         :
-                        <div className='radar'>
-                            <RadarChart/>
+                        <div ref={svgRef} className='feedback'>
+                            <RadarChart evalPoint={evalPoint}/>
+                            <div className='bar'>
+                                <div>수렴형</div>
+                                <svg height="24" width="60%">
+                                    <rect y="10" width="100%" height="4" rx="2" ry="2" fill="#E8EDF1"/>
+                                    <rect className="barPointer" x={(cnd + 5) * (svgWidth * 0.6 - 8) / 10} width="8" height="24" rx="4" ry="4" fill='#2C54F2'/>
+                                </svg>
+                                <div>발산형</div>
+                            </div>
+                            <div className='bar'>
+                                <div>질문형</div>
+                                <svg height="24" width="60%">
+                                    <rect y="10" width="100%" height="4" rx="2" ry="2" fill="#E8EDF1"/>
+                                    <rect className="barPointer" x={(qns + 5) * (svgWidth * 0.6 - 8) / 10} width="8" height="24" rx="4" ry="4" fill='#2C54F2'/>
+                                </svg>
+                                <div>진술형</div>
+                            </div>
                         </div>
                     }
                 </div>

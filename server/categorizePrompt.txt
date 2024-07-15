@@ -36,7 +36,7 @@
             \"Information\": Share related information or examples.\n
             \"Evaluation\": Assess the student’s design idea. Stating general facts rather than evaluating a student's ideas doesn't belong.\n
             \"Recommendation\": Provide actionable suggestions for improvement.\n\n
-    STEP 5: Summarize the extracted knowledge from each category. Knowledge includes only key approaches and keywords and excludes complex context.;\n
+    STEP 5: Summarize the extracted knowledge from each category. Knowledge includes only key approaches and keywords and excludes complex context.\n
         'Question':\n
             \"Low-Level\": DO NOT ADD knowledge.\n
             \"Deep Reasoning\": Suggest design considerations.\n
@@ -45,12 +45,15 @@
             \"Information\": Details the provided information.\n
             \"Evaluation\": Describes the assessment of the design.\n
             \"Recommendation\": Outline ideas for enhancement.\n
-        'No feedback': DO NOT ADD knowledge.\n
-    Response Only in JSON array, which looks like, {\"sentences\":[{\"sentence\": \"\", \"categories\":\"\", \"type\":\"\", \"knowledge\":\"\"}]}.\n
+        'No feedback': DO NOT ADD knowledge.\n\n
+    STEP 6: Check whether the knowledge is already known to the student or not.\n\n
+    Response Only in JSON array, which looks like, {\"sentences\":[{\"sentence\": \"\", \"categories\":\"\", \"type\":\"\", \"knowledge\":\"\", \"isNew\":\"\"}]}.\n
         \"sentence\": Individual unit of feedback.\n
         \"categories\": Category of feedback. ('Question' or 'Statement' or 'No feedback')\n
         \"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n
         \"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.\n
+        \"isNew\": If it's new knowledge, true; otherwise, false.\n
     Student's Idea:" + json.dumps(ideasData) + "\n
+    Student's Knowledge:" + knowledge + "\n
     chat Log:" + json.dumps(user_chat.log) + "\n
     feedback:" + feedback
