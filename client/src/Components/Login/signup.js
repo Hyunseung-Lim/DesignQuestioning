@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Validate } from './validate';
+import { useNavigate } from 'react-router-dom';
 
 import './login.css';
 
 export const Signup = (props) => {
     
+    const navigate = useNavigate();
     // values
     const [email, setEmail] = useState("");
     const [name, setName] = useState("");
@@ -48,6 +50,7 @@ export const Signup = (props) => {
                         password: password
                     }
                 });
+                navigate('/');
                 props.setIsSignin();
             }
             setSubmitting(false);

@@ -18,6 +18,8 @@ export const MainPage = (props) => {
     const [knowledgeLevel, setKnowledgeLevel] = useState(0);
     const [time, setTime] = useState(0);
     const [feedbackData, setFeedbackData] = useState({'cnd': 0, 'qns': 0, 'uniqueness': 0, 'relevance': 0, 'high_level': 0, 'specificity': 0, 'justification': 0, 'active': 0})
+    const [questionChecker, setQuestionChecker] = useState(false);
+    const [face, setFace] = useState(33);
 
     // get profile data from server
     function getData() {
@@ -43,6 +45,7 @@ export const MainPage = (props) => {
         setTime(res.time *  60000)
         setKnowledgeLevel(res.student_knowledge_level)
         setFeedbackData({'cnd': res.cnd, 'qns': res.qns, 'uniqueness': res.uniqueness, 'relevance': res.relevance, 'high_level': res.high_level, 'specificity': res.specificity, 'justification': res.justification, 'active': res.active})
+        setFace(res.face)    
         }).catch((error) => {
         if (error.response) {
             console.log(error.response)
@@ -84,6 +87,31 @@ export const MainPage = (props) => {
                 // setConvergentLevel(res.student_convergent_level);
                 setKnowledgeLevel(res.student_knowledge_level)
                 setFeedbackData({'cnd': res.cnd, 'qns': res.qns, 'uniqueness': res.uniqueness, 'relevance': res.relevance, 'high_level': res.high_level, 'specificity': res.specificity, 'justification': res.justification, 'active': res.active})
+                setQuestionChecker(res.questionChecker)
+                setFace(res.face)
+            }).catch((error) => {
+            if (error.response) {
+                console.log(error.response)
+                console.log(error.response.status)
+                console.log(error.response.headers)
+            }
+        })
+    }
+
+    function getQuestion() {
+        axios({
+            method: "GET",
+            url:"/askQuestion",
+            headers: {
+                Authorization: 'Bearer ' + props.token
+            }
+            })
+            .then((response) => {
+                const res =response.data
+                setChatData([...chatData, 
+                    {"speaker": "student", "content": res.response}
+                ]);
+                setQuestionChecker(false);
             }).catch((error) => {
             if (error.response) {
                 console.log(error.response)
@@ -104,8 +132,8 @@ export const MainPage = (props) => {
                 <div className='UIContainer'>
                     {/* {notesData ? <Board token={props.token} notesData={notesData}/> : <>loading</>} */}
                     {ideasData ? <IdeaContainer ideasData={ideasData}/> : <>loading</>}
-                    {chatData ? <Chat token={props.token} chatData={chatData} getResponse={(feedback) => getResponse(feedback)}/> : <>loading</>}
-                    <Student knowledgeLevel={knowledgeLevel} profileData={profileData} feedbackData={feedbackData}/>
+                    {chatData ? <Chat token={props.token} chatData={chatData} questionChecker={questionChecker} getResponse={(feedback) => getResponse(feedback)} getQuestion={() => getQuestion()}/> : <>loading</>}
+                    <Student knowledgeLevel={knowledgeLevel} profileData={profileData} feedbackData={feedbackData} face={face}/>
                 </div>
             </div>
         </>

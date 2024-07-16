@@ -16,6 +16,7 @@ export const Student = (props) => {
     const [cnd, setCnd] = useState(0);
     const [qns, setQns] = useState(0);
     const [evalPoint, setEvalPoint] = useState([0,0,0,0,0,0]);
+    const [studentFace, setStudentFace] = useState(props.face);
 
     function userTabChange (i) {
         setUserTab(i);
@@ -70,6 +71,10 @@ export const Student = (props) => {
         setEvalPoint([props.feedbackData.uniqueness, props.feedbackData.relevance, props.feedbackData.high_level, props.feedbackData.specificity, props.feedbackData.justification, props.feedbackData.active])
     }, [props.feedbackData]);
 
+    useEffect(()=> {
+        setStudentFace(props.face);
+    }, [props.face]);
+
     return(
         <>
             <div className='studentUI'>
@@ -78,7 +83,7 @@ export const Student = (props) => {
                 </div> */}
                 <div className='studentProfile'>
                     <div className='title'>학생(동건) 프로필</div>
-                    <img src='images/student.png' alt='logo'/>
+                    <img src={'images/student/student' + studentFace + '.png'} alt='logo'/>
                     <div className= 'barContainer'>
                         <div className={animate ? 'gague' : 'gague no-animation'} style={{ width: `${currentExp}%` }}/>
                     </div>

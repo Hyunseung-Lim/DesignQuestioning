@@ -38,6 +38,7 @@ class KnowledgeState(db.Model):
     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     round = db.Column(db.Integer)
+    face = db.Column(db.Integer)
     # opportunity = db.Column(db.String(1000))
     # consideration = db.Column(db.String(1000))
     q_num = db.Column(db.Integer)
@@ -46,7 +47,8 @@ class KnowledgeState(db.Model):
     cnd = db.Column(db.Integer) # divergent and convergent
     eval = db.Column(db.JSON)
     knowledge = db.Column(db.String(3000))
-
+    counter = db.Column(db.JSON)
+ 
 class ChatLog(db.Model):
     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

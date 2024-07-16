@@ -11,6 +11,7 @@ export const Chat = (props) => {
     const [feedback, setFeedback] = useState("");
     const [triggerResponse, setTriggerResponse] = useState(false);
     const [isDisable, setIsDisable] = useState(false);
+    const [isQuestionUpdated, setIsQuestionUpdated] = useState(false);
     const divRef = useRef(null);
 
     const giveFeedback = () => {
@@ -45,8 +46,20 @@ export const Chat = (props) => {
 
     useEffect(() => {
         setChatlog(props.chatData);
+        setTimeout(() => {
+            setIsQuestionUpdated(false);
+        }, 500);
+        async function askQuestion() {
+            await props.getQuestion();
+            setIsQuestionUpdated(true);
+        }
         if(isDisable) {
-            setIsDisable(false);
+            if(props.questionChecker) {
+                askQuestion();
+            }
+            else if(!isQuestionUpdated) {
+                setIsDisable(false);
+            }
         }
     }, [props.chatData]);
 
@@ -71,6 +84,15 @@ export const Chat = (props) => {
                                 content = {chat.content}
                             />
                         ))}
+                        {isDisable ? 
+                        <ChatBubble
+                                key = {'umm'}
+                                speaker = {'student'}
+                                content = {'음...그게...'}
+                            />
+                        :
+                        null
+                        }
                     </div>
                 </div>
                 <div className={isDisable ? 'disabled bottombar': 'bottombar'}>

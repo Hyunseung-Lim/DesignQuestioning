@@ -79,9 +79,9 @@ def signup():
     db.session.commit()
 
     new_KnowledgeStates = [
-        KnowledgeState(user_id = new_user.id, round=1, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = ""),
-        KnowledgeState(user_id = new_user.id, round=2, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = ""),
-        KnowledgeState(user_id = new_user.id, round=3, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "")
+        KnowledgeState(user_id = new_user.id, round=1, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
+        KnowledgeState(user_id = new_user.id, round=2, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
+        KnowledgeState(user_id = new_user.id, round=3, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0})
     ]
 
     new_ChatLogs = [
@@ -170,7 +170,7 @@ def profile():
         feedback_justification = round(user_knowledgestate.eval['justification'] / user_knowledgestate.s_num, 1)
         feedback_active = round(user_knowledgestate.eval['active'] / user_knowledgestate.s_num, 1)
 
-    return {"ideasData": ideasData, "chatData": userChat.log, "name": name, "mode": user.mode, "character": setting.character, "goal1": setting.goal1, "goal2": setting.goal2, "goal3": setting.goal3, "time": setting.time, "student_knowledge_level": len(user_knowledgestate.knowledge), "qns": user_knowledgestate.qns, "cnd": user_knowledgestate.cnd, "uniqueness": feedback_uniqueness, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active}
+    return {"ideasData": ideasData, "chatData": userChat.log, "name": name, "mode": user.mode, "character": setting.character, "goal1": setting.goal1, "goal2": setting.goal2, "goal3": setting.goal3, "time": setting.time, "student_knowledge_level": len(user_knowledgestate.knowledge), "qns": user_knowledgestate.qns, "cnd": user_knowledgestate.cnd, "uniqueness": feedback_uniqueness, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active, 'face': user_knowledgestate.face}
 
 @main.route("/mode", methods=["POST"])
 @jwt_required()
@@ -264,12 +264,13 @@ def response():
     user_chat = ChatLog.query.filter_by(user_id=user.id).first()
 
     feedbackcate_prompt = [{"role": "system", "content":"Feedback Analysis Instructions for Instructor's Feedback of a Student's Design Idea.\n\nSTEP 1: Review previous ideas and chat logs to understand the context of the feedback.\n\nSTEP 2: Decompose the feedback into individual sentences.\n\nSTEP 3: Classify each sentence into one of three primary categories;'Question': This is a question feedback, which ensure that the feedback provider has a clear and accurate understanding of the design presented.;'Statement': This is a statement feedback, which provides relevant information or is directly related to a design idea to evaluate or suggest improvements.;'No feedback': This sentence is completely irrelevant to the feedback.\n\nSTEP 4: Subcategorize each sentence based on its nature (There are 21 types of 'Question', three types of 'Statement' and no sub category for 'No feedback.'); 'Question':\n\"Low-Level\": Seeks factual details about the design.\n- Verification: Is X true?\n- Definition: What does X mean?\n- Example: What is an example of X?\n- Feature Specification: What (qualitative) attributes does X have?\n- Concept Completion: Who? What? When? Where?\n- Quantification: How much? How many?\n- Disjunctive: Is X or Y the case?\n- Comparison: How does X compare to Y?\n- Judgmental: What is your opinion on X?\n\"Deep Reasoning\": Explores deeper implications or reasons behind the design.\n- Interpretation: How is a particular event or pattern of information interpreted or summarized?\n- Goal Orientation: What are the motives behind an agent’s action?\n- Causal Antecedent: What caused X to occur?\n- Causal Consequent: What were the consequences of X occurring?\n- Expectational: Why is X not true?\n- Instrumental/Procedural: How does an agent accomplish a goal?\n- Enablement(DR): What object or resource enables an agent to perform an action?\n\"Generate Design\": Encourages innovative thinking about design challenges.\n- Proposal/Negotiation: Could a new concept be suggested/negotiated?\n- Scenario Creation: What would happen if X occurred?\n- Ideation: Generation of ideas without a deliberate end goal\n- Method: How could an agent accomplish a goal?\n- Enablement(GD): What object or resource could enable an agent to perform an action?\n'Statement':\n\"Information\": Share related information or examples.\n\"Evaluation\": Assess the student’s design idea. Stating general facts rather than evaluating a student's ideas doesn't belong.\n\"Recommendation\": Provide actionable suggestions for improvement.\n\nSTEP 5: Summarize the extracted knowledge from each category. Knowledge includes only key approaches and keywords and excludes complex context.\n'Question':\n\"Low-Level\": DO NOT ADD knowledge.\n\"Deep Reasoning\": Suggest design considerations.\n\"Generate Design\": Suggest new design opportunities.\n'Statement':\n\"Information\": Details the provided information.\n\"Evaluation\": Describes the assessment of the design.\n\"Recommendation\": Outline ideas for enhancement.\n'No feedback': DO NOT ADD knowledge.\n\nSTEP 6: Check whether the knowledge is already known to the student or not.\n\nResponse Only in JSON array, which looks like, {\"sentences\":[{\"sentence\": \"\", \"categories\":\"\", \"type\":\"\", \"knowledge\":\"\", \"isNew\":\"\"}]}.\n\"sentence\": Individual unit of feedback.\n\"categories\": Category of feedback. ('Question' or 'Statement' or 'No feedback')\n\"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n\"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.\n\"isNew\": If it's new knowledge, true; otherwise, false.\nStudent's Idea:" + json.dumps(ideasData) + "\nStudent's Knowledge:" + knowledge + "\nchat Log:" + json.dumps(user_chat.log) + "\nfeedback:" + feedback}]
-    student_prompt = [{"role": "system", "content":"This is your design ideas: " + json.dumps(ideasData) + "\nYour Design knowledge: " + knowledge + "You are a student who is trying to learn design. You're coming up with ideas for a design project. Your persona is \n- a Design Department 1st year student. \n- Korean. (say in Korean) \n- not flexible in design thinking. \n- NEVER apologize, NEVER say you can help, and NEVER just say thanks.\n- NEVER write more than 3 sentences in a single response. Speak colloquially only. Use honorifics.\nAnswer questions from the instructor ONLY based on your knowledge. If you can't answer based on your knowledge, say you don't know. But try to answer AS MUCH AS you can.\nThe format of your answer is JSON as follows. {”answer”: {your answer}}" + "\nThis is previous conversations between you(the student) and the instructor: " + json.dumps(user_chat.log) + "\nThis is the instructor's following chat(feedback): " + feedback }, 
+    student_prompt = [{"role": "system", "content":"This is your design ideas: " + json.dumps(ideasData) + "\nYour Design Knowledge: " + knowledge + "\nYou are a student who is trying to learn design. You're coming up with ideas for a design project. Your persona is \n* A Design Department 1st year student. \n* Korean. (say in Korean) \n* NEVER apologize, NEVER say you can help, and NEVER just say thanks.\n* NEVER write more than 3 sentences in a single response. Speak colloquially only. Use honorifics.\n\nAnswer questions from the feedback provider ONLY based on your knowledge. If you can't answer based on Your Design Knowledge, say you don't know. BUT try to answer AS MUCH AS you can.\n\nThe format of your answer is JSON as follows. {\"answer\": {your answer}}\nThis is previous conversations between you(the student) and the feedback provider: " + json.dumps(user_chat.log) + "\nThis is the feedback provider's following chat(feedback): " + feedback}, 
                       {"role": "user", "content":"I am an industrial design expert. I'll give feedback on your design project."}]
 
     completion1 = openai.chat.completions.create(
         model="gpt-4o",
         # model="gpt-3.5-turbo",
+        temperature=0,
         messages=feedbackcate_prompt,
         response_format={"type": "json_object"}
     )
@@ -292,61 +293,105 @@ def response():
             return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
     user_knowledgestate.knowledge += new_knowledge
 
-    # Second Prompt for Evaluate feedback
-    completion2 = openai.chat.completions.create(
-        model="gpt-4o",
-        # model="gpt-3.5-turbo",
-        messages=feedbackeval_prompt,
-        temperature=0,
-        response_format={"type": "json_object"}
-    )
-    try:
-        result2 = json.loads(completion2.choices[0].message.content)
-    except ZeroDivisionError as e:
-        # This will run only if there is no error
-        return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
+    if len(result1) == 0:
+        if (user_knowledgestate.face / 10) > 1:
+                    user_knowledgestate.face -= 10
 
-    for sentence in result2["sentences"]:
+    else:
+        # Second Prompt for Evaluate feedback
+        completion2 = openai.chat.completions.create(
+            model="gpt-4o",
+            # model="gpt-3.5-turbo",
+            messages=feedbackeval_prompt,
+            temperature=0,
+            response_format={"type": "json_object"}
+        )
         try:
-            if sentence['type'].lower() in LLQ + DRQ + GDQ:
-                user_knowledgestate.q_num += 1
-                if user_knowledgestate.qns > -5:
-                    user_knowledgestate.qns -= 1
-                #uniqueness
-                user_knowledgestate.eval['uniqueness'] += int(sentence['evaluation']['uniqueness'])
-                #relevance
-                user_knowledgestate.eval['relevance'] += int(sentence['evaluation']['relevance'])
-                #high-level
-                user_knowledgestate.eval['high-level'] += int(sentence['evaluation']['high-level'])
-                flag_modified(user_knowledgestate, 'q_num')
-                flag_modified(user_knowledgestate, 'qns')
-                flag_modified(user_knowledgestate, 'eval')
-   
-            if sentence['type'].lower() in ['information', 'evalutation', 'recommendation']:
-                user_knowledgestate.s_num += 1
-                if user_knowledgestate.qns < 5:
-                    user_knowledgestate.qns += 1
-                #specificity
-                user_knowledgestate.eval['specificity'] += int(sentence['evaluation']['specificity'])
-                #justification
-                user_knowledgestate.eval['justification'] += int(sentence['evaluation']['justification'])
-                #active
-                user_knowledgestate.eval['active'] += int(sentence['evaluation']['active'])
-                flag_modified(user_knowledgestate, 's_num')
-                flag_modified(user_knowledgestate, 'qns')
-                flag_modified(user_knowledgestate, 'eval')
-
-            if sentence['type'].lower() in GDQ + ['recommendation']:
-                if user_knowledgestate.cnd < 5:
-                    user_knowledgestate.cnd += 1   
-                    flag_modified(user_knowledgestate, 'cnd')
-
-            if sentence['type'].lower() in DRQ + ['evaluation']:
-                if user_knowledgestate.cnd > -5:
-                    user_knowledgestate.cnd -= 1
-
-        except:
+            result2 = json.loads(completion2.choices[0].message.content)
+        except ZeroDivisionError as e:
+            # This will run only if there is no error
             return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
+
+        for sentence in result2["sentences"]:
+            try:
+                if sentence['type'].lower() in LLQ + DRQ + GDQ:
+                    user_knowledgestate.counter['q_count'] += 1
+                    user_knowledgestate.q_num += 1
+                    if user_knowledgestate.qns > -5:
+                        user_knowledgestate.qns -= 1
+                    #uniqueness
+                    user_knowledgestate.eval['uniqueness'] += int(sentence['evaluation']['uniqueness'])
+                    if sentence['evaluation']['uniqueness'] <= 4:
+                        user_knowledgestate.counter['u_count'] += 1
+                    #relevance
+                    user_knowledgestate.eval['relevance'] += int(sentence['evaluation']['relevance'])
+                    if sentence['evaluation']['relevance'] <= 4:
+                        user_knowledgestate.counter['r_count'] += 1
+                    #high-level
+                    user_knowledgestate.eval['high-level'] += int(sentence['evaluation']['high-level'])
+                    if sentence['evaluation']['high-level'] <= 4:
+                        user_knowledgestate.counter['h_count'] += 1
+
+                    if (int(sentence['evaluation']['uniqueness']) + int(sentence['evaluation']['relevance']) + int(sentence['evaluation']['high-level']) >= 15) and (user_knowledgestate.face / 10 < 5):
+                        user_knowledgestate.face += 10
+                    elif (int(sentence['evaluation']['uniqueness']) + int(sentence['evaluation']['relevance']) + int(sentence['evaluation']['high-level']) <= 9) and (user_knowledgestate.face / 10 > 1):
+                        user_knowledgestate.face -= 10
+
+                    flag_modified(user_knowledgestate, 'counter')
+                    flag_modified(user_knowledgestate, 'q_num')
+                    flag_modified(user_knowledgestate, 'qns')
+                    flag_modified(user_knowledgestate, 'eval')
+    
+                if sentence['type'].lower() in ['information', 'evalutation', 'recommendation']:
+                    user_knowledgestate.counter['q_count'] -= 1
+                    user_knowledgestate.s_num += 1
+                    if user_knowledgestate.qns < 5:
+                        user_knowledgestate.qns += 1
+                    #specificity
+                    user_knowledgestate.eval['specificity'] += int(sentence['evaluation']['specificity'])
+                    if sentence['evaluation']['specificity'] <= 4:
+                        user_knowledgestate.counter['s_count'] += 1
+                    #justification
+                    user_knowledgestate.eval['justification'] += int(sentence['evaluation']['justification'])
+                    if sentence['evaluation']['justification'] <= 4:
+                        user_knowledgestate.counter['j_count'] += 1
+                    #active
+                    user_knowledgestate.eval['active'] += int(sentence['evaluation']['active'])
+                    if sentence['evaluation']['active'] <= 4:
+                        user_knowledgestate.counter['a_count'] += 1
+
+                    if (int(sentence['evaluation']['specificity']) + int(sentence['evaluation']['justification']) + int(sentence['evaluation']['active']) >= 15) and (user_knowledgestate.face / 10 < 5):
+                        user_knowledgestate.face += 10
+                    elif (int(sentence['evaluation']['specificity']) + int(sentence['evaluation']['justification']) + int(sentence['evaluation']['active']) <= 9) and (user_knowledgestate.face / 10 > 1):
+                        user_knowledgestate.face -= 10
+
+                    flag_modified(user_knowledgestate, 'counter')
+                    flag_modified(user_knowledgestate, 's_num')
+                    flag_modified(user_knowledgestate, 'qns')
+                    flag_modified(user_knowledgestate, 'eval')
+
+                if sentence['type'].lower() in GDQ + ['recommendation']:
+                    user_knowledgestate.counter['d_count'] += 1
+                    if user_knowledgestate.cnd < 5:
+                        user_knowledgestate.cnd += 1
+                        flag_modified(user_knowledgestate, 'cnd')
+                    flag_modified(user_knowledgestate, 'counter')
+
+                if sentence['type'].lower() in DRQ + ['evaluation']:
+                    user_knowledgestate.counter['d_count'] -= 1
+                    if user_knowledgestate.cnd > -5:
+                        user_knowledgestate.cnd -= 1
+                        flag_modified(user_knowledgestate, 'cnd')
+                    flag_modified(user_knowledgestate, 'counter')
+                
+                if (user_knowledgestate.face % 10 < 5) and (user_knowledgestate.face % 10 > 1):
+                    user_knowledgestate.face += sentence['evaluation']['sentiment']
+                
+                flag_modified(user_knowledgestate, 'face')
+                print(sentence['evaluation']['sentiment'])
+
+            except:
+                return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
             
     completion3 = openai.chat.completions.create(
         model="gpt-4o",
@@ -388,6 +433,19 @@ def response():
         feedback_justification = round(user_knowledgestate.eval['justification'] / user_knowledgestate.s_num, 1)
         feedback_active = round(user_knowledgestate.eval['active'] / user_knowledgestate.s_num, 1)
     
+    question_checker = not (
+        (user_knowledgestate.counter['q_count'] < 3)
+        and (user_knowledgestate.counter['q_count'] > -3)
+        and (user_knowledgestate.counter['d_count'] < 3) 
+        and (user_knowledgestate.counter['d_count'] > -3) 
+        and (user_knowledgestate.counter['u_count'] < 3) 
+        and (user_knowledgestate.counter['r_count'] < 3) 
+        and (user_knowledgestate.counter['h_count'] < 3)
+        and (user_knowledgestate.counter['s_count'] < 3)
+        and (user_knowledgestate.counter['j_count'] < 3)
+        and (user_knowledgestate.counter['a_count'] < 3)
+    )
+
     # print(feedback_uniqueness)
     # print(feedback_relevance)
     # print(feedback_high_level)
@@ -398,9 +456,72 @@ def response():
 
     # print("opportunity: ", user_knowledgestate.opportunity)
     # print("consideration: ", user_knowledgestate.consideration)
-    print("knowledge: ", user_knowledgestate.knowledge)
+    # print(question_checker)
+    # print(user_knowledgestate.face)
+    # print("knowledge: ", user_knowledgestate.knowledge)
 
-    return {"response": result3["answer"], "student_knowledge_level": student_knowledge_level, "qns": user_knowledgestate.qns, "cnd": user_knowledgestate.cnd, "uniqueness": feedback_uniqueness, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active}
+    return {"response": result3["answer"], "student_knowledge_level": student_knowledge_level, "qns": user_knowledgestate.qns, "cnd": user_knowledgestate.cnd, "uniqueness": feedback_uniqueness, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active, "questionChecker": question_checker, "face": user_knowledgestate.face}
+
+@main.route("/askQuestion")
+@jwt_required()
+@cross_origin()
+def askQuestion():
+    user = User.query.filter_by(email=get_jwt_identity()).first()
+    user_knowledgestate = KnowledgeState.query.filter_by(user_id=user.id).first()
+    knowledge = user_knowledgestate.knowledge
+    user_chat = ChatLog.query.filter_by(user_id=user.id).first()
+    ideasData = []
+    ideas = Idea.query.filter_by(user_id=user.id).all()
+    ideasData = [{"id": idea.id, "title": idea.title, "problem": idea.target_problem, "idea": idea.idea} for idea in ideas]
+
+    instruction = ""
+
+    if user_knowledgestate.counter['q_count'] >= 3:
+        instruction = "Ask for the reviewer's own opinion or advice on the previous reviewer's question."
+    elif user_knowledgestate.counter['q_count'] <= -3:
+        instruction = "Ask what I need to think about to respond to the feedback."
+    elif user_knowledgestate.counter['d_count'] >= 3:
+        instruction = "Ask questions to synthesize what we've discussed so far."
+    elif user_knowledgestate.counter['d_count'] <= -3:
+        instruction = "Ask questions to expand on what we've discussed so far."
+    elif user_knowledgestate.counter['r_count'] >= 3:
+        instruction = "Ask questions that are relevant to what we're discussing."
+    elif user_knowledgestate.counter['h_count'] >= 3:
+        instruction = "Ask questions that elicit feedback that lead to higher-level thinking."
+    elif user_knowledgestate.counter['s_count'] >= 3:
+        instruction = "Ask questions that elicit specific feedback."
+    elif user_knowledgestate.counter['j_count'] >= 3:
+        instruction = "Ask questions that elicit justification."
+    elif user_knowledgestate.counter['a_count'] >= 3:
+        instruction = "Ask questions that elicit actionable feedback."
+    elif user_knowledgestate.counter['u_count'] >= 3:
+        instruction = "Ask questions to get feedback you hadn't considered."
+
+    user_knowledgestate.counter = {'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}
+    
+    question_prompt = [{"role": "system", "content":"This is your design ideas: " + json.dumps(ideasData) + "\nYour Design Knowledge: " + knowledge + "\nYou are a student who is trying to learn design. You're coming up with ideas for a design project. Your persona is \n* a Design Department 1st year student. \n* Korean. (say in Korean) \n* Speak colloquially only. Use honorifics.\n\nAsk questions to get good feedback from your feedback providers.The feedback meets the following conditions.\n* The question is aimed at finding knowledge that is not in my design knowledge that I need to know to answer the LAST feedback provider's question.\n*" + instruction + "\n* Keep your questions concise, in one sentence.\nThe format of your question is JSON as follows. {\"question\": {your question}} \nThis is previous conversations between you(the student) and the feedback provider: " + json.dumps(user_chat.log)}, 
+                    {"role": "user", "content":"I am an industrial design expert. I'll give feedback on your design project."}]
+
+    completion1 = openai.chat.completions.create(
+        model="gpt-4o",
+        # model="gpt-3.5-turbo",
+        messages=question_prompt,
+        response_format={"type": "json_object"}
+    )
+    try:
+        result = json.loads(completion1.choices[0].message.content)
+    except ZeroDivisionError as e:
+        # This will run only if there is no error
+        return {"response": "죄송합니다...질문이 있었는데 까먹었습니다..."}
+
+    print(result)
+    user_chat.log.append({"speaker": "student", "content": result["question"]})
+    flag_modified(user_chat, 'log')
+    flag_modified(user_knowledgestate, 'counter')
+
+    db.session.commit()
+
+    return {"response": result["question"]}
 
 @main.route("/nextRound")
 @jwt_required()
