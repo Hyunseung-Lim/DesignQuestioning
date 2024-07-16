@@ -41,6 +41,8 @@ export const MainPage = (props) => {
         setIdeasData(res.ideasData)
         setChatData(res.chatData)
         setTime(res.time *  60000)
+        setKnowledgeLevel(res.student_knowledge_level)
+        setFeedbackData({'cnd': res.cnd, 'qns': res.qns, 'uniqueness': res.uniqueness, 'relevance': res.relevance, 'high_level': res.high_level, 'specificity': res.specificity, 'justification': res.justification, 'active': res.active})
         }).catch((error) => {
         if (error.response) {
             console.log(error.response)

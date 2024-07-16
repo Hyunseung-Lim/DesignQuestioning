@@ -22,7 +22,7 @@
 }
 
 .topbar > .rightContainer > .timeHolder {
-    width: 100px;
+    width: 80px;
     padding: 10px 10px 7px;
     font-weight: 600;
 }
@@ -39,7 +39,7 @@
 }
 
 .menu > .hamburger-bar {
-    min-width: 110px;
+    min-width: 120px;
     display: block;
     height: 40px;
     transition: transform 0.2s ease-out;

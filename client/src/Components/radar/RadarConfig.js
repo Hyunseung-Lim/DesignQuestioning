@@ -1,7 +1,7 @@
 export const RadarOptions = {
   plugins: {
     legend: {
-        display: false,
+        display: false
     }
   },
   scales: {
@@ -9,6 +9,7 @@ export const RadarOptions = {
       min:0,
       max:7,
       pointLabels: {
+        color: 'rgb(11, 11, 11)',
         font: {
           size: 13,  // Adjust the font size for the main labels
           weight: 800

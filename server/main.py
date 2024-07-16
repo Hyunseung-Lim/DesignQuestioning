@@ -154,8 +154,23 @@ def profile():
     userChat = ChatLog.query.filter_by(user_id=user.id, round=user.currentRound).first()
     setting = InitialSetting.query.filter_by(user_id=user.id, round=user.currentRound).first()
     user_knowledgestate = KnowledgeState.query.filter_by(user_id=user.id, round=user.currentRound).first()
+    
+    feedback_uniqueness = 0
+    feedback_relevance = 0
+    feedback_high_level = 0
+    feedback_specificity = 0
+    feedback_justification = 0
+    feedback_active = 0
+    if user_knowledgestate.q_num > 0:
+        feedback_uniqueness = round(user_knowledgestate.eval['uniqueness'] / user_knowledgestate.q_num, 1)
+        feedback_relevance = round(user_knowledgestate.eval['relevance'] / user_knowledgestate.q_num, 1)
+        feedback_high_level = round(user_knowledgestate.eval['high-level'] / user_knowledgestate.q_num, 1)
+    if user_knowledgestate.s_num > 0:
+        feedback_specificity = round(user_knowledgestate.eval['specificity'] / user_knowledgestate.s_num, 1)
+        feedback_justification = round(user_knowledgestate.eval['justification'] / user_knowledgestate.s_num, 1)
+        feedback_active = round(user_knowledgestate.eval['active'] / user_knowledgestate.s_num, 1)
 
-    return {"ideasData": ideasData, "chatData": userChat.log, "name": name, "mode": user.mode, "character": setting.character, "goal1": setting.goal1, "goal2": setting.goal2, "goal3": setting.goal3, "time": setting.time, "student_knowledge_level": len(user_knowledgestate.knowledge), "q_num": user_knowledgestate.q_num, "s_num": user_knowledgestate.s_num, "qns": user_knowledgestate.qns, "cnd": user_knowledgestate.cnd, "eval": user_knowledgestate.eval}
+    return {"ideasData": ideasData, "chatData": userChat.log, "name": name, "mode": user.mode, "character": setting.character, "goal1": setting.goal1, "goal2": setting.goal2, "goal3": setting.goal3, "time": setting.time, "student_knowledge_level": len(user_knowledgestate.knowledge), "qns": user_knowledgestate.qns, "cnd": user_knowledgestate.cnd, "uniqueness": feedback_uniqueness, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active}
 
 @main.route("/mode", methods=["POST"])
 @jwt_required()

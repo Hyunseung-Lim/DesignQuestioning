@@ -76,8 +76,8 @@ export const Student = (props) => {
                 {/* <div className='topbar'>
                     <img src='images/student_wrap_Btn.png' alt='student_wrap_btn'/>
                 </div> */}
-                <div className='title'>학생(동건) 프로필</div>
                 <div className='studentProfile'>
+                    <div className='title'>학생(동건) 프로필</div>
                     <img src='images/student.png' alt='logo'/>
                     <div className= 'barContainer'>
                         <div className={animate ? 'gague' : 'gague no-animation'} style={{ width: `${currentExp}%` }}/>
@@ -87,10 +87,9 @@ export const Student = (props) => {
                         <div className='exp'>{currentExp} exp points</div>
                     </div>
                 </div>
-                <div className='title'>사용자({props.profileData.name}) 프로필</div>
                 <div className='buttonContainer'>
-                    <button className={userTab ? 'userBtn clicked' : 'userBtn'} onClick={() => userTabChange(true)}>프로필</button>
-                    <button className={userTab ? 'userBtn' : 'userBtn clicked'} onClick={() => userTabChange(false)}>피드백</button>
+                    <button className={userTab ? 'userBtn clicked' : 'userBtn'} onClick={() => userTabChange(true)}>유저 프로필</button>
+                    <button className={userTab ? 'userBtn' : 'userBtn clicked'} onClick={() => userTabChange(false)}>유저 피드백</button>
                 </div>
                 <div className='userStatus'>
                     {userTab ?
@@ -109,20 +108,76 @@ export const Student = (props) => {
                         <div ref={svgRef} className='feedback'>
                             <RadarChart evalPoint={evalPoint}/>
                             <div className='bar'>
-                                <div>수렴형</div>
-                                <svg height="24" width="60%">
-                                    <rect y="10" width="100%" height="4" rx="2" ry="2" fill="#E8EDF1"/>
-                                    <rect className="barPointer" x={(cnd + 5) * (svgWidth * 0.6 - 8) / 10} width="8" height="24" rx="4" ry="4" fill='#2C54F2'/>
-                                </svg>
                                 <div>발산형</div>
+                                <svg height='20' width="60%">
+                                    <defs>
+                                    <clipPath id="left-rounded-rect">
+                                            <path d={`M10,0 H${(cnd + 5) * (svgWidth * 0.6) / 10} V20 H10 Q0,20 0,10 V10 Q0,0 10,0 Z`} />
+                                        </clipPath>
+                                        <clipPath id="right-rounded-rect">
+                                        <path d={`M0,0 
+                                            H${svgWidth * 0.6  - 10} 
+                                            Q${svgWidth * 0.6 },0 ${svgWidth * 0.6},10 
+                                            V10
+                                            Q${svgWidth * 0.6},20 ${svgWidth * 0.6 - 10},20 
+                                            H0 
+                                            Z`}/>
+                                        </clipPath>
+                                    </defs>
+                                    {/* Rectangle with rounded corners on the left side */}
+                                    <rect 
+                                        className="barPointer"
+                                        x='10'
+                                        width={svgWidth * 0.6} 
+                                        height='20'
+                                        fill='#30C5B3' 
+                                        clipPath="url(#right-rounded-rect)"
+                                    />
+                                    <rect 
+                                        className="barPointer"
+                                        width={(cnd + 5) * (svgWidth * 0.6 - 20) / 10 + 10}
+                                        height='20'
+                                        fill='#2C54F2' 
+                                        clipPath="url(#left-rounded-rect)"
+                                    />
+                                </svg>
+                                <div>수렴형</div>
                             </div>
                             <div className='bar'>
-                                <div>질문형</div>
-                                <svg height="24" width="60%">
-                                    <rect y="10" width="100%" height="4" rx="2" ry="2" fill="#E8EDF1"/>
-                                    <rect className="barPointer" x={(qns + 5) * (svgWidth * 0.6 - 8) / 10} width="8" height="24" rx="4" ry="4" fill='#2C54F2'/>
-                                </svg>
                                 <div>진술형</div>
+                                <svg height='20' width="60%">
+                                    <defs>
+                                        <clipPath id="left-rounded-rect">
+                                            <path d={`M10,0 H${(qns + 5) * (svgWidth * 0.6) / 10} V20 H10 Q0,20 0,10 V10 Q0,0 10,0 Z`} />
+                                        </clipPath>
+                                        <clipPath id="right-rounded-rect">
+                                        <path d={`M0,0 
+                                            H${svgWidth * 0.6  - 10} 
+                                            Q${svgWidth * 0.6 },0 ${svgWidth * 0.6},10 
+                                            V10
+                                            Q${svgWidth * 0.6},20 ${svgWidth * 0.6 - 10},20 
+                                            H0 
+                                            Z`}/>
+                                        </clipPath>
+                                    </defs>
+                                    {/* Rectangle with rounded corners on the left side */}
+                                    <rect 
+                                        className="barPointer"
+                                        x='10'
+                                        width={svgWidth * 0.6} 
+                                        height='20'
+                                        fill='#30C5B3' 
+                                        clipPath="url(#right-rounded-rect)"
+                                    />
+                                    <rect 
+                                        className="barPointer"
+                                        width={(qns + 5) * (svgWidth * 0.6 - 20) / 10 + 10}
+                                        height='20'
+                                        fill='#2C54F2' 
+                                        clipPath="url(#left-rounded-rect)"
+                                    />
+                                </svg>
+                                <div>질문형</div>
                             </div>
                         </div>
                     }

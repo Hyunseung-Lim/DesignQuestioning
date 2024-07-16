@@ -30,8 +30,7 @@ export const Topbar = (props) => {
     function formatTime(milliseconds) {
         const minutes = Math.floor(milliseconds / 60000);
         const seconds = Math.floor((milliseconds % 60000) / 1000);
-        const millis = (milliseconds % 1000) / 10;
-        return `${padTo2Digits(minutes)}:${padTo2Digits(seconds)}:${padTo2Digits(millis)}`;
+        return `${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`;
     }
 
     // Helper function to ensure two-digit numbers
