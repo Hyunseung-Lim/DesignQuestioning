@@ -3,7 +3,7 @@ import axios from 'axios';
 import '../chat.css'
 
 import { ChatBubble } from './chatbubble';
-
+import { TypingAnimation } from './typinganimation';
 
 export const Chat = (props) => {
 
@@ -12,6 +12,7 @@ export const Chat = (props) => {
     const [triggerResponse, setTriggerResponse] = useState(false);
     const [isDisable, setIsDisable] = useState(false);
     const [isQuestionUpdated, setIsQuestionUpdated] = useState(false);
+    const [isReset, setIsReset] = useState(false);
     const divRef = useRef(null);
 
     const giveFeedback = () => {
@@ -52,6 +53,8 @@ export const Chat = (props) => {
         async function askQuestion() {
             await props.getQuestion();
             setIsQuestionUpdated(true);
+            setIsReset(true);
+            setTimeout(() => setIsReset(false), 100);
         }
         if(isDisable) {
             if(props.questionChecker) {
@@ -70,7 +73,7 @@ export const Chat = (props) => {
                 behavior: 'smooth'
             });
         }
-    }, [chatlog]);
+    }, [chatlog, isDisable]);
 
     return(
         <>
@@ -88,7 +91,7 @@ export const Chat = (props) => {
                         <ChatBubble
                                 key = {'umm'}
                                 speaker = {'student'}
-                                content = {'음...그게...'}
+                                content = {<TypingAnimation text="음...그게........." interval={800} isDisable={isDisable} reset={isReset}/>}
                             />
                         :
                         null

@@ -255,17 +255,17 @@ def response():
     feedback = params['feedback']
     user = User.query.filter_by(email=get_jwt_identity()).first()
     ideasData = []
-    ideas = Idea.query.filter_by(user_id=user.id).all()
+    ideas = Idea.query.filter_by(user_id=user.id, round=user.currentRound).all()
     ideasData = [{"id": idea.id, "title": idea.title, "problem": idea.target_problem, "idea": idea.idea} for idea in ideas]
-    user_knowledgestate = KnowledgeState.query.filter_by(user_id=user.id).first()
+    user_knowledgestate = KnowledgeState.query.filter_by(user_id=user.id, round=user.currentRound).first()
     # opportunity = user_knowledgestate.opportunity
     # consideration = user_knowledgestate.consideration
     knowledge = user_knowledgestate.knowledge
-    user_chat = ChatLog.query.filter_by(user_id=user.id).first()
+    user_chat = ChatLog.query.filter_by(user_id=user.id, round=user.currentRound).first()
 
     feedbackcate_prompt = [{"role": "system", "content":"Feedback Analysis Instructions for Instructor's Feedback of a Student's Design Idea.\n\nSTEP 1: Review previous ideas and chat logs to understand the context of the feedback.\n\nSTEP 2: Decompose the feedback into individual sentences.\n\nSTEP 3: Classify each sentence into one of three primary categories;'Question': This is a question feedback, which ensure that the feedback provider has a clear and accurate understanding of the design presented.;'Statement': This is a statement feedback, which provides relevant information or is directly related to a design idea to evaluate or suggest improvements.;'No feedback': This sentence is completely irrelevant to the feedback.\n\nSTEP 4: Subcategorize each sentence based on its nature (There are 21 types of 'Question', three types of 'Statement' and no sub category for 'No feedback.'); 'Question':\n\"Low-Level\": Seeks factual details about the design.\n- Verification: Is X true?\n- Definition: What does X mean?\n- Example: What is an example of X?\n- Feature Specification: What (qualitative) attributes does X have?\n- Concept Completion: Who? What? When? Where?\n- Quantification: How much? How many?\n- Disjunctive: Is X or Y the case?\n- Comparison: How does X compare to Y?\n- Judgmental: What is your opinion on X?\n\"Deep Reasoning\": Explores deeper implications or reasons behind the design.\n- Interpretation: How is a particular event or pattern of information interpreted or summarized?\n- Goal Orientation: What are the motives behind an agent’s action?\n- Causal Antecedent: What caused X to occur?\n- Causal Consequent: What were the consequences of X occurring?\n- Expectational: Why is X not true?\n- Instrumental/Procedural: How does an agent accomplish a goal?\n- Enablement(DR): What object or resource enables an agent to perform an action?\n\"Generate Design\": Encourages innovative thinking about design challenges.\n- Proposal/Negotiation: Could a new concept be suggested/negotiated?\n- Scenario Creation: What would happen if X occurred?\n- Ideation: Generation of ideas without a deliberate end goal\n- Method: How could an agent accomplish a goal?\n- Enablement(GD): What object or resource could enable an agent to perform an action?\n'Statement':\n\"Information\": Share related information or examples.\n\"Evaluation\": Assess the student’s design idea. Stating general facts rather than evaluating a student's ideas doesn't belong.\n\"Recommendation\": Provide actionable suggestions for improvement.\n\nSTEP 5: Summarize the extracted knowledge from each category. Knowledge includes only key approaches and keywords and excludes complex context.\n'Question':\n\"Low-Level\": DO NOT ADD knowledge.\n\"Deep Reasoning\": Suggest design considerations.\n\"Generate Design\": Suggest new design opportunities.\n'Statement':\n\"Information\": Details the provided information.\n\"Evaluation\": Describes the assessment of the design.\n\"Recommendation\": Outline ideas for enhancement.\n'No feedback': DO NOT ADD knowledge.\n\nSTEP 6: Check whether the knowledge is already known to the student or not.\n\nResponse Only in JSON array, which looks like, {\"sentences\":[{\"sentence\": \"\", \"categories\":\"\", \"type\":\"\", \"knowledge\":\"\", \"isNew\":\"\"}]}.\n\"sentence\": Individual unit of feedback.\n\"categories\": Category of feedback. ('Question' or 'Statement' or 'No feedback')\n\"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n\"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.\n\"isNew\": If it's new knowledge, true; otherwise, false.\nStudent's Idea:" + json.dumps(ideasData) + "\nStudent's Knowledge:" + knowledge + "\nchat Log:" + json.dumps(user_chat.log) + "\nfeedback:" + feedback}]
     student_prompt = [{"role": "system", "content":"This is your design ideas: " + json.dumps(ideasData) + "\nYour Design Knowledge: " + knowledge + "\nYou are a student who is trying to learn design. You're coming up with ideas for a design project. Your persona is \n* A Design Department 1st year student. \n* Korean. (say in Korean) \n* NEVER apologize, NEVER say you can help, and NEVER just say thanks.\n* NEVER write more than 3 sentences in a single response. Speak colloquially only. Use honorifics.\n\nAnswer questions from the feedback provider ONLY based on your knowledge. If you can't answer based on Your Design Knowledge, say you don't know. BUT try to answer AS MUCH AS you can.\n\nThe format of your answer is JSON as follows. {\"answer\": {your answer}}\nThis is previous conversations between you(the student) and the feedback provider: " + json.dumps(user_chat.log) + "\nThis is the feedback provider's following chat(feedback): " + feedback}, 
-                      {"role": "user", "content":"I am an industrial design expert. I'll give feedback on your design project."}]
+                      {"role": "user", "content":"I am an industrial design expert. As a mento, I'll give feedback on your design project."}]
 
     completion1 = openai.chat.completions.create(
         model="gpt-4o",
@@ -295,7 +295,8 @@ def response():
 
     if len(result1) == 0:
         if (user_knowledgestate.face / 10) > 1:
-                    user_knowledgestate.face -= 10
+            print('hi')
+            user_knowledgestate.face -= 10
 
     else:
         # Second Prompt for Evaluate feedback
@@ -332,9 +333,11 @@ def response():
                     if sentence['evaluation']['high-level'] <= 4:
                         user_knowledgestate.counter['h_count'] += 1
 
-                    if (int(sentence['evaluation']['uniqueness']) + int(sentence['evaluation']['relevance']) + int(sentence['evaluation']['high-level']) >= 15) and (user_knowledgestate.face / 10 < 5):
+                    if (int(sentence['evaluation']['uniqueness']) + int(sentence['evaluation']['relevance']) + int(sentence['evaluation']['high-level']) >= 15) and ((user_knowledgestate.face / 10) < 5):
+                        print(user_knowledgestate.face / 10)
                         user_knowledgestate.face += 10
-                    elif (int(sentence['evaluation']['uniqueness']) + int(sentence['evaluation']['relevance']) + int(sentence['evaluation']['high-level']) <= 9) and (user_knowledgestate.face / 10 > 1):
+                    elif (int(sentence['evaluation']['uniqueness']) + int(sentence['evaluation']['relevance']) + int(sentence['evaluation']['high-level']) <= 9) and ((user_knowledgestate.face / 10) > 1):
+                        print(user_knowledgestate.face / 10)
                         user_knowledgestate.face -= 10
 
                     flag_modified(user_knowledgestate, 'counter')
@@ -360,9 +363,9 @@ def response():
                     if sentence['evaluation']['active'] <= 4:
                         user_knowledgestate.counter['a_count'] += 1
 
-                    if (int(sentence['evaluation']['specificity']) + int(sentence['evaluation']['justification']) + int(sentence['evaluation']['active']) >= 15) and (user_knowledgestate.face / 10 < 5):
+                    if (int(sentence['evaluation']['specificity']) + int(sentence['evaluation']['justification']) + int(sentence['evaluation']['active']) >= 15) and ((user_knowledgestate.face / 10) < 5):
                         user_knowledgestate.face += 10
-                    elif (int(sentence['evaluation']['specificity']) + int(sentence['evaluation']['justification']) + int(sentence['evaluation']['active']) <= 9) and (user_knowledgestate.face / 10 > 1):
+                    elif (int(sentence['evaluation']['specificity']) + int(sentence['evaluation']['justification']) + int(sentence['evaluation']['active']) <= 9) and ((user_knowledgestate.face / 10) > 1):
                         user_knowledgestate.face -= 10
 
                     flag_modified(user_knowledgestate, 'counter')
@@ -384,11 +387,10 @@ def response():
                         flag_modified(user_knowledgestate, 'cnd')
                     flag_modified(user_knowledgestate, 'counter')
                 
-                if (user_knowledgestate.face % 10 < 5) and (user_knowledgestate.face % 10 > 1):
+                if ((user_knowledgestate.face % 10) < 5) and ((user_knowledgestate.face % 10) > 1):
                     user_knowledgestate.face += sentence['evaluation']['sentiment']
                 
                 flag_modified(user_knowledgestate, 'face')
-                print(sentence['evaluation']['sentiment'])
 
             except:
                 return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
@@ -500,7 +502,7 @@ def askQuestion():
     user_knowledgestate.counter = {'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}
     
     question_prompt = [{"role": "system", "content":"This is your design ideas: " + json.dumps(ideasData) + "\nYour Design Knowledge: " + knowledge + "\nYou are a student who is trying to learn design. You're coming up with ideas for a design project. Your persona is \n* a Design Department 1st year student. \n* Korean. (say in Korean) \n* Speak colloquially only. Use honorifics.\n\nAsk questions to get good feedback from your feedback providers.The feedback meets the following conditions.\n* The question is aimed at finding knowledge that is not in my design knowledge that I need to know to answer the LAST feedback provider's question.\n*" + instruction + "\n* Keep your questions concise, in one sentence.\nThe format of your question is JSON as follows. {\"question\": {your question}} \nThis is previous conversations between you(the student) and the feedback provider: " + json.dumps(user_chat.log)}, 
-                    {"role": "user", "content":"I am an industrial design expert. I'll give feedback on your design project."}]
+                    {"role": "user", "content":"I am an industrial design expert. As a mento, I'll give feedback on your design project."}]
 
     completion1 = openai.chat.completions.create(
         model="gpt-4o",
