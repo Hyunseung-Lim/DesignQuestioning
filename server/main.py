@@ -309,10 +309,13 @@ def response():
         )
         try:
             result2 = json.loads(completion2.choices[0].message.content)
+            print(result2)
         except ZeroDivisionError as e:
             # This will run only if there is no error
             return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
 
+        sentiment_counter = 0
+        
         for sentence in result2["sentences"]:
             try:
                 if sentence['type'].lower() in LLQ + DRQ + GDQ:
@@ -387,13 +390,17 @@ def response():
                         flag_modified(user_knowledgestate, 'cnd')
                     flag_modified(user_knowledgestate, 'counter')
                 
-                if ((user_knowledgestate.face % 10) < 5) and ((user_knowledgestate.face % 10) > 1):
-                    user_knowledgestate.face += sentence['evaluation']['sentiment']
+                sentiment_counter += sentence['evaluation']['sentiment']
                 
                 flag_modified(user_knowledgestate, 'face')
 
             except:
                 return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
+            
+        if ((user_knowledgestate.face % 10) < 5) and (sentiment_counter > 0):
+            user_knowledgestate.face += 1
+        elif ((user_knowledgestate.face % 10) > 1) and (sentiment_counter < 0):
+            user_knowledgestate.face -= 1
             
     completion3 = openai.chat.completions.create(
         model="gpt-4o",
