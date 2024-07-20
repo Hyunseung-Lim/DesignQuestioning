@@ -14,6 +14,7 @@ export const Chat = (props) => {
     const [isQuestionUpdated, setIsQuestionUpdated] = useState(false);
     const [isReset, setIsReset] = useState(false);
     const divRef = useRef(null);
+    const textareaRef = useRef(null);
 
     const giveFeedback = () => {
         if(feedback !== "") {
@@ -24,6 +25,7 @@ export const Chat = (props) => {
 
     const handleFeedbackChange = (event) => {
         setFeedback(event.target.value);
+        adjustHeight();
     };
 
     const handleKeyDown = (event) => {
@@ -75,6 +77,24 @@ export const Chat = (props) => {
         }
     }, [chatlog, isDisable]);
 
+    const adjustHeight = () => {
+        if (textareaRef.current) {
+            // Reset height to recalculate
+            textareaRef.current.style.height = '14px';
+            // Set height based on the scroll height which reflects the content height
+            const maxHeight = 112; // Example max height in pixels for about 5 lines
+            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, maxHeight)}px`;
+        }
+    };
+    
+
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+            adjustHeight(); // Adjust height on initial render to ensure it fits the content
+        }
+    }, [feedback]);
+
     return(
         <>
             <div className='chatUI'>
@@ -91,15 +111,15 @@ export const Chat = (props) => {
                         <ChatBubble
                                 key = {'umm'}
                                 speaker = {'student'}
-                                content = {<TypingAnimation text="음...그게........." interval={800} isDisable={isDisable} reset={isReset}/>}
+                                content = {<TypingAnimation interval={800} isDisable={isDisable} reset={isReset}/>}
                             />
                         :
                         null
                         }
                     </div>
                 </div>
-                <div className={isDisable ? 'disabled bottombar': 'bottombar'}>
-                    <input value={feedback} onKeyDown={handleKeyDown} onChange={handleFeedbackChange} disabled={isDisable} placeholder='Feeback to Student...'/>
+                <div className={isDisable ? 'disabled bottombar': 'bottombar'} style={{height: 'auto'}}>
+                    <textarea ref={textareaRef} id='bottomtextarea' style={{height: 'auto'}} value={feedback} onKeyDown={handleKeyDown} onChange={handleFeedbackChange} disabled={isDisable} placeholder='Feeback to Student...'/>
                     <img className='chatBtn' src='images/chatBtn.png' alt='chatBtn' onClick={giveFeedback} disabled={isDisable}/>
                 </div>
             </div>

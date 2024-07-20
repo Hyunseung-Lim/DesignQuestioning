@@ -97,7 +97,8 @@ export const Topbar = (props) => {
     return(
         <>
             <div className='topbar'>
-                <img src='logo192.png' alt='logo'/>
+                <div className='title'>IdeationMentee</div>
+                {/* <img src='logo192.png' alt='logo'/> */}
                 <div className='rightContainer'>
                     {isFeedback ? <div className='timeHolder'><img src="/images/timer.svg" alt="timer"/>{formatTime(time)}</div> : null }
                     <input className="burger-check" type="checkbox" id="burger-check" /><label className="burger-icon" htmlFor="burger-check"><span className="burger-sticks"></span></label>

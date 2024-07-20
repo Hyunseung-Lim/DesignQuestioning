@@ -17,7 +17,9 @@
     align-items: center;
     justify-content: space-between;
     width: 88%;
-    height: 40px;
+    height: auto;
+    max-height: 120px;
+    /* height: 30px; */
     bottom: 24px;
     left: 50%;
     transform: translateX(-50%); 
@@ -25,14 +27,17 @@
     background-color: white;
     border-radius: 6px;
     border: solid 1px #ddd;
-    padding: 0 8px 0 12px;
+    padding: 5px 8px 4px 12px;
 }
 
-.chatUI > .bottombar > input {
+.chatUI > .bottombar > textarea {
     border: none;
     width: 90%;
+    min-height: 14px;
+    overflow-y: auto;
     font-size: 14px;
     font-weight: 500;
+    resize: none;
 }
 
 .chatUI > .bottombar > .chatBtn {

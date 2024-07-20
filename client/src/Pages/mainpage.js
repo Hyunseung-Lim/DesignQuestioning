@@ -10,6 +10,7 @@ import { Student } from '../Components/student/student';
 
 export const MainPage = (props) => {
 
+    const [mode, setMode] = useState();
     const [profileData, setProfileData] = useState({'name':null, 'character':0, 'goal1':"", 'goal2':"", 'goal3':""});
     const [ideasData, setIdeasData] = useState();
     const [chatData, setChatData] = useState();
@@ -33,6 +34,7 @@ export const MainPage = (props) => {
         .then((response) => {
         const res =response.data
         res.access_token && props.setToken(res.access_token)
+        setMode(res.mode)
         setProfileData(({
             name: res.name,
             character: res.character,
@@ -133,7 +135,7 @@ export const MainPage = (props) => {
                     {/* {notesData ? <Board token={props.token} notesData={notesData}/> : <>loading</>} */}
                     {ideasData ? <IdeaContainer ideasData={ideasData}/> : <>loading</>}
                     {chatData ? <Chat token={props.token} chatData={chatData} questionChecker={questionChecker} getResponse={(feedback) => getResponse(feedback)} getQuestion={() => getQuestion()}/> : <>loading</>}
-                    <Student knowledgeLevel={knowledgeLevel} profileData={profileData} feedbackData={feedbackData} face={face}/>
+                    {profileData ? (mode === 1 ? <Student knowledgeLevel={knowledgeLevel} profileData={profileData} feedbackData={feedbackData} face={face}/> : null) : <>loading</> }
                 </div>
             </div>
         </>
