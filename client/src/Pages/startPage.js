@@ -16,9 +16,6 @@ export const StartPage = (props) => {
     const [goal2, setGoal2] = useState("");
     const [goal3, setGoal3] = useState("");
     const [time, setTime] = useState(20);
-    const [order, setOrder] = useState(0);
-
-    const topicOrder = [['Product', 'UI/UX', 'Public'], ['Product', 'Public', 'UI/UX'], ['UI/UX', 'Product', 'Public'], ['UI/UX', 'Public', 'Product'], ['Public', 'Product', 'UI/UX'], ['Public', 'UI/UX', 'Product']]
 
     function getSetting() {
         axios({
@@ -29,16 +26,15 @@ export const StartPage = (props) => {
         }
         })
         .then((response) => {
-        const res =response.data
-        res.access_token && props.setToken(res.access_token)
-        setOrder(res.order)
-        setMode(res.mode)
-        setCurrentRound(res.round)
-        setSelectCharacter(res.character)
-        setGoal1(res.goal1)
-        setGoal2(res.goal2)
-        setGoal3(res.goal3)
-        setTime(res.time)
+            const res =response.data
+            res.access_token && props.setToken(res.access_token)
+            setMode(res.mode)
+            setCurrentRound(res.round)
+            setSelectCharacter(res.character)
+            setGoal1(res.goal1)
+            setGoal2(res.goal2)
+            setGoal3(res.goal3)
+            setTime(res.time)
         }).catch((error) => {
         if (error.response) {
             console.log(error.response)
@@ -118,7 +114,7 @@ export const StartPage = (props) => {
     return(
         <>
             <Topbar removeToken={props.removeToken}/>
-            {currentRound <= 3 ?
+            {currentRound <= 4 ?
             <div className={mode === 1 ? 'startpage' : 'startpage page_mode2'}>
                 <div className={mode === 1 ? 'startbox' : 'startbox box_mode2'}>
                     <div className='roundBar'>
@@ -140,12 +136,12 @@ export const StartPage = (props) => {
                         }
                         {
                             currentRound <= 1 ?
-                            <svg height="2" width="250">
-                                <rect width="250" height="2" fill="#dddddd"/>
+                            <svg height="2" width="162">
+                                <rect width="162" height="2" fill="#dddddd"/>
                             </svg>
                             :
-                            <svg height="2" width="250">
-                                <rect width="250" height="2" fill="#2C54F2"/>
+                            <svg height="2" width="162">
+                                <rect width="162" height="2" fill="#2C54F2"/>
                             </svg>
                         }
                         {
@@ -166,12 +162,12 @@ export const StartPage = (props) => {
                         }
                         {
                             currentRound <= 2 ?
-                            <svg height="2" width="250">
-                                <rect width="250" height="2" fill="#dddddd"/>
+                            <svg height="2" width="162">
+                                <rect width="162" height="2" fill="#dddddd"/>
                             </svg>
                             :
-                            <svg height="2" width="250">
-                                <rect width="250" height="2" fill="#2C54F2"/>
+                            <svg height="2" width="162">
+                                <rect width="162" height="2" fill="#2C54F2"/>
                             </svg>
                         }
                         {
@@ -190,16 +186,45 @@ export const StartPage = (props) => {
                                 </svg>                            
                             )
                         }
+                        {
+                            currentRound <= 3 ?
+                            <svg height="2" width="162">
+                                <rect width="162" height="2" fill="#dddddd"/>
+                            </svg>
+                            :
+                            <svg height="2" width="162">
+                                <rect width="162" height="2" fill="#2C54F2"/>
+                            </svg>
+                        }
+                        {
+                            currentRound < 4 ?
+                            <svg className='circle' height="16" width="16">
+                                <circle cx="8" cy="8" r="6" stroke="#dddddd" strokeWidth="2" fill="white" />
+                            </svg>
+                            :
+                            (currentRound === 4 ?
+                                <svg className='circle' height="16" width="16">
+                                    <circle cx="8" cy="8" r="6" stroke="#2C54F2" strokeWidth="2" fill="white" />
+                                </svg>
+                                :
+                                <svg className='circle' height="16" width="16">
+                                    <circle cx="8" cy="8" r="6" stroke="#2C54F2" strokeWidth="2" fill="#2C54F2" />
+                                </svg>                            
+                            )
+                        }
                     </div>
                     <div className='roundLabels'>
                         <div className={currentRound < 1 ?'label': 'selectLabel label'}>
-                            Round 1 ({topicOrder[order][0]})
+                            Round 1
                         </div>
                         <div className={currentRound < 2 ?'label': 'selectLabel label'}>
-                            Round 2 ({topicOrder[order][1]})
+                            Round 2
                         </div>
                         <div className={currentRound < 3 ?'label': 'selectLabel label'}>
-                            Round 3 ({topicOrder[order][2]})
+                            Round 3
+                        </div>
+                        <div className={currentRound < 4 ?'label': 'selectLabel label'}>
+                            Round 4
                         </div>
                     </div>
                     <div className='setting'>
@@ -233,7 +258,7 @@ export const StartPage = (props) => {
                         </>
                         : null}
                         <div className='setTime'>
-                            <div className='settingTitle'>시간 설정</div>
+                            <div className='settingTitle'>제한 시간</div>
                             <div className='timeHolder'>
                                 <div className='time'>{time} MIN</div>
                                 <div className='timebuttonHolder'><button onClick={() => updateTime(1)}>&#9653;</button><button onClick={() => updateTime(-1)}>&#9663;</button></div>

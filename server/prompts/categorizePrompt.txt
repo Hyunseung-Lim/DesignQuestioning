@@ -53,7 +53,7 @@
         \"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n
         \"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5.\n
         \"isNew\": If it's new knowledge, true; otherwise, false.\n
-    Student's Idea:" + json.dumps(ideasData) + "\n
+    Student's Idea:" + json.dumps(ideaData) + "\n
     Student's Knowledge:" + knowledge + "\n
     chat Log:" + json.dumps(user_chat.log) + "\n
     feedback:" + feedback

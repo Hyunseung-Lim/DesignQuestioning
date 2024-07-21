@@ -1,14 +1,14 @@
 import React from 'react';
 import '../chat.css'
 
-export const ChatBubble = ({speaker, content}) => {
+export const ChatBubble = ({speaker, content, mode}) => {
     return(
         <>
             {speaker === "student" ? 
                 <div className='studentchatHolder'>
-                    <img src='images/student.png' alt='logo'/>
+                    {mode ==1 ? <img src='images/student.png' alt='logo'/> : <img src='images/gpt.png' alt='logo'/>}
                     <div className='studentchat'>
-                        <div className='studentName'>동건</div>
+                        <div className='studentName'>{mode == 1 ? <>동건</> : <>GPT</>}</div>
                         <div className='chatbubble'>
                             {content}
                         </div>

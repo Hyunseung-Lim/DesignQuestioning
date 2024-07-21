@@ -4,7 +4,7 @@ import './ideaContainer.css'
 
 export const IdeaContainer = (props) => {
 
-    const[ideas, setIdeas] = useState(props.ideasData);
+    const[idea, setIdea] = useState(props.ideaData);
     const[currentDescription, setCurrentDescription] = useState(0);
 
     const ChangeDescription = (i) => {
@@ -27,21 +27,19 @@ export const IdeaContainer = (props) => {
                 <div className='ideaDescription'>
                     {
                         currentDescription === 0 ? 
-                            <div>인구위기(저출산, 고령화) 극복을 위한 ‘기술의 활용’ 아이디어</div> 
+                            <div>{idea.topic}</div> 
                             :
-                            <div>1. 뿡뿡<br/>2. 뿡뿡</div>
+                            <div>{idea.design_goals.map((goal, index) => <div key={index}>{goal}</div>)}</div>
                     }
                 </div>
                 <div className='ideaContainer'>
-                    {ideas.map((idea, index) =>
-                        <div className='ideaBox' key={index}>
-                            <div className='ideatitle'>IDEA {index+1}: {idea.title}</div>
-                            <div className='subtitle'>Target Problem</div>
-                            <div className='problem'>{idea.problem}</div>
-                            <div className='subtitle'>Idea</div>
-                            <div className='idea'>{idea.idea}</div>
-                        </div>
-                    )}
+                    <div className='ideaBox'>
+                        <div className='ideatitle'>IDEA: {idea.title}</div>
+                        <div className='subtitle'>Target Problem</div>
+                        <div className='problem'>{idea.problem}</div>
+                        <div className='subtitle'>Idea</div>
+                        <div className='idea'>{idea.idea}</div>
+                    </div>
                 </div>
             </div>
         </>

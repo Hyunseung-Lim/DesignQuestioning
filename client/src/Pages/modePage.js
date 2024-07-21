@@ -23,7 +23,24 @@ export const ModePage = (props) => {
             .then((response) => {
             
             }).catch((error) => {
-            
+                if (error.response) {
+                    console.log(error.response)
+                    console.log(error.response.status)
+                    console.log(error.response.headers)
+                    axios({
+                    method: "POST",
+                    url:"/logout",
+                    })
+                    .then((response) => {
+                    props.removeToken()
+                    }).catch((error) => {
+                    if (error.response) {
+                        console.log(error.response)
+                        console.log(error.response.status)
+                        console.log(error.response.headers)
+                        }
+                    })
+                }                
             })
             navigate('/start');
         } catch (error) {

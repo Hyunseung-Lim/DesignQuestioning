@@ -5,13 +5,12 @@ import '../chat.css'
 import { ChatBubble } from './chatbubble';
 import { TypingAnimation } from './typinganimation';
 
-export const Chat = (props) => {
+export const BaselineChat = (props) => {
 
     const [chatlog, setChatlog] = useState(props.chatData);
     const [feedback, setFeedback] = useState("");
     const [triggerResponse, setTriggerResponse] = useState(false);
     const [isDisable, setIsDisable] = useState(false);
-    const [isQuestionUpdated, setIsQuestionUpdated] = useState(false);
     const [isReset, setIsReset] = useState(false);
     const divRef = useRef(null);
     const textareaRef = useRef(null);
@@ -49,22 +48,10 @@ export const Chat = (props) => {
 
     useEffect(() => {
         setChatlog(props.chatData);
-        setTimeout(() => {
-            setIsQuestionUpdated(false);
-        }, 500);
-        async function askQuestion() {
-            await props.getQuestion();
-            setIsQuestionUpdated(true);
-            setIsReset(true);
-            setTimeout(() => setIsReset(false), 100);
-        }
+
+        
         if(isDisable) {
-            if(props.questionChecker) {
-                askQuestion();
-            }
-            else if(!isQuestionUpdated) {
-                setIsDisable(false);
-            }
+            setIsDisable(false);
         }
     }, [props.chatData]);
 
@@ -87,7 +74,6 @@ export const Chat = (props) => {
         }
     };
     
-
     useEffect(() => {
         if (textareaRef.current) {
             textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
@@ -105,7 +91,7 @@ export const Chat = (props) => {
                                 key = {index}
                                 speaker = {chat.speaker}
                                 content = {chat.content}
-                                mode = {1}
+                                mode = {2}
                             />
                         ))}
                         {isDisable ? 
@@ -113,7 +99,7 @@ export const Chat = (props) => {
                                 key = {'umm'}
                                 speaker = {'student'}
                                 content = {<TypingAnimation interval={800} isDisable={isDisable} reset={isReset}/>}
-                                mode = {1}
+                                mode = {2}
                             />
                         :
                         null

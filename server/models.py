@@ -7,13 +7,15 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(100))
     realPassword = db.Column(db.String(100))
     name = db.Column(db.String(1000))
-    mode = db.Column(db.Integer)
     currentRound = db.Column(db.Integer)
 
 class Idea(db.Model):
     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     round = db.Column(db.Integer)
+    category = db.Column(db.String(10))
+    topic = db.Column(db.String(10))
+    design_goals = db.Column(db.JSON)
     title = db.Column(db.String(1000))
     target_problem = db.Column(db.String(1000))
     idea = db.Column(db.String(1000))
@@ -26,6 +28,7 @@ class Idea(db.Model):
 
 class InitialSetting(db.Model):
     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
+    mode = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     round = db.Column(db.Integer)
     character = db.Column(db.Integer)

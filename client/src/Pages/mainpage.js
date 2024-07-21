@@ -5,6 +5,7 @@ import './pages.css'
 import { Topbar } from '../Components/Topbar/topbar';
 // import { Board } from '../Components/board/board';
 import { Chat } from '../Components/chat/chat';
+import { BaselineChat } from '../Components/chat/baselinechat';
 import { IdeaContainer } from '../Components/IdeaContainer/ideaContainer';
 import { Student } from '../Components/student/student';
 
@@ -12,7 +13,7 @@ export const MainPage = (props) => {
 
     const [mode, setMode] = useState();
     const [profileData, setProfileData] = useState({'name':null, 'character':0, 'goal1':"", 'goal2':"", 'goal3':""});
-    const [ideasData, setIdeasData] = useState();
+    const [ideaData, setIdeaData] = useState();
     const [chatData, setChatData] = useState();
     // const [divergentLevel, setDivergentLevel] = useState(0);
     // const [convergentLevel, setConvergentLevel] = useState(0);
@@ -42,7 +43,7 @@ export const MainPage = (props) => {
             goal2: res.goal2,
             goal3: res.goal3
         }))
-        setIdeasData(res.ideasData)
+        setIdeaData(res.ideaData)
         setChatData(res.chatData)
         setTime(res.time *  60000)
         setKnowledgeLevel(res.student_knowledge_level)
@@ -100,6 +101,30 @@ export const MainPage = (props) => {
         })
     }
 
+    const getBaselineResponse = (feedback) => {
+        axios({
+            method: "POST",
+            url:"/baselineresponse",
+            headers: {
+                Authorization: 'Bearer ' + props.token
+            },
+            data: {feedback: feedback}
+            })
+            .then((response) => {
+                const res =response.data
+                setChatData([...chatData, 
+                    {"speaker": "instructor", "content": feedback},
+                    {"speaker": "student", "content": res.response}
+                ]);
+            }).catch((error) => {
+            if (error.response) {
+                console.log(error.response)
+                console.log(error.response.status)
+                console.log(error.response.headers)
+            }
+        })
+    }
+
     function getQuestion() {
         axios({
             method: "GET",
@@ -133,8 +158,10 @@ export const MainPage = (props) => {
                 <Topbar token={props.token} setToken={props.setToken} removeToken={props.removeToken} time={time}/>
                 <div className='UIContainer'>
                     {/* {notesData ? <Board token={props.token} notesData={notesData}/> : <>loading</>} */}
-                    {ideasData ? <IdeaContainer ideasData={ideasData}/> : <>loading</>}
-                    {chatData ? <Chat token={props.token} chatData={chatData} questionChecker={questionChecker} getResponse={(feedback) => getResponse(feedback)} getQuestion={() => getQuestion()}/> : <>loading</>}
+                    {ideaData ? <IdeaContainer ideaData={ideaData}/> : <>loading</>}
+                    {chatData ? (mode === 1 ? 
+                        <Chat token={props.token} chatData={chatData} questionChecker={questionChecker} getResponse={(feedback) => getResponse(feedback)} getQuestion={() => getQuestion()}/>
+                        : <BaselineChat token={props.token} chatData={chatData} getResponse={(feedback) => getBaselineResponse(feedback)}/>) : <>loading</>}
                     {profileData ? (mode === 1 ? <Student knowledgeLevel={knowledgeLevel} profileData={profileData} feedbackData={feedbackData} face={face}/> : null) : <>loading</> }
                 </div>
             </div>

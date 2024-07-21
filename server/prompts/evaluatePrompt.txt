@@ -19,6 +19,6 @@
         \"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n
         \"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.\n
         \"evaluation\": JSON with the evaluation score based on the criteria. The criteria that should be evaluated in STEP 2 have a value between 1-7, with the rest evaluated as 0.\n\n
-    Student's Idea:" + json.dumps(ideasData) + "\n
+    Student's Idea:" + json.dumps(ideaData) + "\n
     chat Log:" + json.dumps(user_chat.log) + "\n
     feedback:" + result1
