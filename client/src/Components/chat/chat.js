@@ -4,6 +4,7 @@ import '../chat.css'
 
 import { ChatBubble } from './chatbubble';
 import { TypingAnimation } from './typinganimation';
+import { TypingBubble } from './typingbubble';
 
 export const Chat = (props) => {
 
@@ -109,19 +110,14 @@ export const Chat = (props) => {
                             />
                         ))}
                         {isDisable ? 
-                        <ChatBubble
-                                key = {'umm'}
-                                speaker = {'student'}
-                                content = {<TypingAnimation interval={800} isDisable={isDisable} reset={isReset}/>}
-                                mode = {1}
-                            />
+                        <TypingBubble content = {<TypingAnimation interval={800} isDisable={isDisable} reset={isReset}/>}/>
                         :
                         null
                         }
                     </div>
                 </div>
                 <div className={isDisable ? 'disabled bottombar': 'bottombar'} style={{height: 'auto'}}>
-                    <textarea ref={textareaRef} id='bottomtextarea' style={{height: 'auto'}} value={feedback} onKeyDown={handleKeyDown} onChange={handleFeedbackChange} disabled={isDisable} placeholder='Feeback to Student...'/>
+                    <textarea ref={textareaRef} id='bottomtextarea' style={{height: 'auto'}} value={feedback} onKeyDown={handleKeyDown} onChange={handleFeedbackChange} disabled={isDisable} placeholder='피드백을 작성하세요...'/>
                     <img className='chatBtn' src='images/chatBtn.png' alt='chatBtn' onClick={giveFeedback} disabled={isDisable}/>
                 </div>
             </div>

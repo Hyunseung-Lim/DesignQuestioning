@@ -113,6 +113,13 @@
     background-color: white;
     border-radius: 10px;
     max-width: 100%;
+    padding: 2px 14px;
+}
+
+.studentchatHolder > .studentchat > .typingbubble {
+    background-color: white;
+    border-radius: 10px;
+    max-width: 100%;
     padding: 14px;
 }
 
