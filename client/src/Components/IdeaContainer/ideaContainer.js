@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './ideaContainer.css'
 
@@ -12,6 +12,14 @@ export const IdeaContainer = (props) => {
             setCurrentDescription(i);
         }
     }
+
+    const UpdateIDea = () => {
+        props.updateIdea();
+    }
+
+    useEffect(()=> {
+        setIdea(props.ideaData);
+    }, [props.ideaData]);
     
     return(
         <>
@@ -34,7 +42,7 @@ export const IdeaContainer = (props) => {
                 </div>
                 <div className='ideaContainer'>
                     <div className='ideaBox'>
-                        <div className='ideatitle'>IDEA: {idea.title}</div>
+                        <div className='ideatitle'><div className='title'>IDEA: {idea.title}</div><button onClick={UpdateIDea}>Update Idea</button></div>
                         <div className='subtitle'>Target Problem</div>
                         <div className='problem'>{idea.problem}</div>
                         <div className='subtitle'>Idea</div>

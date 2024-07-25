@@ -148,6 +148,26 @@ export const MainPage = (props) => {
         })
     }
 
+    function updateIdea() {
+        axios({
+            method: "GET",
+            url:"/updateIdea",
+            headers: {
+                Authorization: 'Bearer ' + props.token
+            }
+            })
+            .then((response) => {
+                const res =response.data
+                setIdeaData(res.ideaData)
+            }).catch((error) => {
+            if (error.response) {
+                console.log(error.response)
+                console.log(error.response.status)
+                console.log(error.response.headers)
+            }
+        })
+    }
+
     useEffect(() => {
         getData()
     }, []);
@@ -158,7 +178,7 @@ export const MainPage = (props) => {
                 <Topbar token={props.token} setToken={props.setToken} removeToken={props.removeToken} time={time}/>
                 <div className='UIContainer'>
                     {/* {notesData ? <Board token={props.token} notesData={notesData}/> : <>loading</>} */}
-                    {ideaData ? <IdeaContainer ideaData={ideaData}/> : <>loading</>}
+                    {ideaData ? <IdeaContainer ideaData={ideaData} updateIdea={() => updateIdea()}/> : <>loading</>}
                     {chatData ? (mode === 1 ? 
                         <Chat token={props.token} chatData={chatData} questionChecker={questionChecker} getResponse={(feedback) => getResponse(feedback)} getQuestion={() => getQuestion()}/>
                         : <BaselineChat token={props.token} chatData={chatData} getResponse={(feedback) => getBaselineResponse(feedback)}/>) : <>loading</>}

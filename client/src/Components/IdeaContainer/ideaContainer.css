@@ -71,9 +71,30 @@
 }
 
 .ideaBox > .ideatitle {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
     font-weight:900;
     font-size: 18px;
     margin-bottom: 2px;
+}
+
+
+
+.ideaBox > .ideatitle > button {
+    min-width: 102px;
+    margin-left: 10px;
+    border: solid 1px #ddd;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-weight: 800;
+    background-color: #f4f9fd;
+}
+
+.ideaBox > .ideatitle > button:hover {
+    color: var(--theme-color);
+    background-color: #E8EDF1;
 }
 
 .ideaBox > .subtitle {
