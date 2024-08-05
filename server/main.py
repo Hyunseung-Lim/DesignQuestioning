@@ -588,6 +588,7 @@ This is your current design knowledge accumulated by the conversation with your 
 Now, you need to ask questions to get more feedback from your mentor. {instruction} You should not ask for direct answers to your design idea, but you need to ask some questions that can elicit feedback on it.
 
 Your question can be one of the following types:
+* Brainstorm: Ask about tactics or strategies to think about more ideas.
 * Critique: Directly ask for feedback on your design. Your question should not be asking for general feedback but rather focusing on a specific aspect of your design.
 * Improve: Ask a question about how to improve your design. Your question should not be asking for a solution but rather a direction or actions that you need to do.
 * Share: Ask your mentor about their experience or knowledge of the current topic.
