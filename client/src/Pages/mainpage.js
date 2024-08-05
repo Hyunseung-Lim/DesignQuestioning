@@ -22,6 +22,7 @@ export const MainPage = (props) => {
     const [feedbackData, setFeedbackData] = useState({'cnd': 0, 'qns': 0, 'uniqueness': 0, 'relevance': 0, 'high_level': 0, 'specificity': 0, 'justification': 0, 'active': 0})
     const [questionChecker, setQuestionChecker] = useState(false);
     const [face, setFace] = useState(33);
+    const [isUpdateIdea, setIsUpdateIdea] = useState(false);
 
     // get profile data from server
     function getData() {
@@ -148,8 +149,9 @@ export const MainPage = (props) => {
         })
     }
 
-    function updateIdea() {
-        axios({
+    const updateIdea = async () => {
+        setIsUpdateIdea(true);
+        await axios({
             method: "GET",
             url:"/updateIdea",
             headers: {
@@ -159,12 +161,14 @@ export const MainPage = (props) => {
             .then((response) => {
                 const res =response.data
                 setIdeaData(res.ideaData)
+                setIsUpdateIdea(false);
             }).catch((error) => {
             if (error.response) {
                 console.log(error.response)
                 console.log(error.response.status)
                 console.log(error.response.headers)
             }
+            setIsUpdateIdea(false);
         })
     }
 
@@ -178,10 +182,10 @@ export const MainPage = (props) => {
                 <Topbar token={props.token} setToken={props.setToken} removeToken={props.removeToken} time={time}/>
                 <div className='UIContainer'>
                     {/* {notesData ? <Board token={props.token} notesData={notesData}/> : <>loading</>} */}
-                    {ideaData ? <IdeaContainer ideaData={ideaData} updateIdea={() => updateIdea()}/> : <>loading</>}
+                    {ideaData ? <IdeaContainer ideaData={ideaData} isUpdateIdea={isUpdateIdea} updateIdea={() => updateIdea()}/> : <>loading</>}
                     {chatData ? (mode === 1 ? 
-                        <Chat token={props.token} chatData={chatData} questionChecker={questionChecker} getResponse={(feedback) => getResponse(feedback)} getQuestion={() => getQuestion()}/>
-                        : <BaselineChat token={props.token} chatData={chatData} getResponse={(feedback) => getBaselineResponse(feedback)}/>) : <>loading</>}
+                        <Chat token={props.token} chatData={chatData} isUpdateIdea={isUpdateIdea} questionChecker={questionChecker} getResponse={(feedback) => getResponse(feedback)} getQuestion={() => getQuestion()}/>
+                        : <BaselineChat token={props.token} chatData={chatData} isUpdateIdea={isUpdateIdea} getResponse={(feedback) => getBaselineResponse(feedback)}/>) : <>loading</>}
                     {profileData ? (mode === 1 ? <Student knowledgeLevel={knowledgeLevel} profileData={profileData} feedbackData={feedbackData} face={face}/> : null) : <>loading</> }
                 </div>
             </div>

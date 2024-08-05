@@ -4,8 +4,9 @@ import './ideaContainer.css'
 
 export const IdeaContainer = (props) => {
 
-    const[idea, setIdea] = useState(props.ideaData);
-    const[currentDescription, setCurrentDescription] = useState(0);
+    const [idea, setIdea] = useState(props.ideaData);
+    const [isUpdateIdea, setIsUpdateIdea] = useState(props.isUpdateIdea);
+    const [currentDescription, setCurrentDescription] = useState(0);
 
     const ChangeDescription = (i) => {
         if(currentDescription !== i) {
@@ -20,6 +21,10 @@ export const IdeaContainer = (props) => {
     useEffect(()=> {
         setIdea(props.ideaData);
     }, [props.ideaData]);
+
+    useEffect(()=> {
+        setIsUpdateIdea(props.isUpdateIdea);
+    }, [props.isUpdateIdea]);
     
     return(
         <>
@@ -41,8 +46,8 @@ export const IdeaContainer = (props) => {
                     }
                 </div>
                 <div className='ideaContainer'>
-                    <div className='ideaBox'>
-                        <div className='ideatitle'><div className='title'>IDEA: {idea.title}</div><button onClick={UpdateIDea}>Update Idea</button></div>
+                    <div className={isUpdateIdea ? 'ideaBox disable' : 'ideaBox'}>
+                        <div className='ideatitle'><div className='title'>IDEA: {idea.title}</div><button onClick={UpdateIDea} disabled={isUpdateIdea}>Update Idea</button></div>
                         <div className='subtitle'>Target Problem</div>
                         <div className='problem'>{idea.problem}</div>
                         <div className='subtitle'>Idea</div>

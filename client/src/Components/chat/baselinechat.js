@@ -11,6 +11,7 @@ export const BaselineChat = (props) => {
     const [feedback, setFeedback] = useState("");
     const [triggerResponse, setTriggerResponse] = useState(false);
     const [isDisable, setIsDisable] = useState(false);
+    const [isUpdateIdea, setIsUpdateIdea] = useState(props.isUpdateIdea);
     const divRef = useRef(null);
     const textareaRef = useRef(null);
 
@@ -80,6 +81,10 @@ export const BaselineChat = (props) => {
         }
     }, [feedback]);
 
+    useEffect(()=> {
+        setIsUpdateIdea(props.isUpdateIdea);
+    }, [props.isUpdateIdea]);
+
     return(
         <>
             <div className='chatUI'>
@@ -95,8 +100,8 @@ export const BaselineChat = (props) => {
                         ))}
                     </div>
                 </div>
-                <div className={isDisable ? 'disabled bottombar': 'bottombar'} style={{height: 'auto'}}>
-                    <textarea ref={textareaRef} id='bottomtextarea' style={{height: 'auto'}} value={feedback} onKeyDown={handleKeyDown} onChange={handleFeedbackChange} disabled={isDisable} placeholder='피드백을 입력하세요.'/>
+                <div className={isDisable || isUpdateIdea ? 'disabled bottombar': 'bottombar'} style={{height: 'auto'}}>
+                    <textarea ref={textareaRef} id='bottomtextarea' style={{height: 'auto'}} value={feedback} onKeyDown={handleKeyDown} onChange={handleFeedbackChange} disabled={isDisable || isUpdateIdea} placeholder='피드백을 입력하세요.'/>
                     <img className='chatBtn' src='images/chatBtn.png' alt='chatBtn' onClick={giveFeedback} disabled={isDisable}/>
                 </div>
             </div>
