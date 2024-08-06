@@ -115,8 +115,8 @@ export const StartPage = (props) => {
         <>
             <Topbar removeToken={props.removeToken}/>
             {currentRound <= 4 ?
-            <div className={mode === 1 ? 'startpage' : 'startpage page_mode2'}>
-                <div className={mode === 1 ? 'startbox' : 'startbox box_mode2'}>
+            <div className='startpage'>
+                <div className='startbox'>
                     <div className='roundBar'>
                         {
                             currentRound < 1 ?
@@ -136,12 +136,12 @@ export const StartPage = (props) => {
                         }
                         {
                             currentRound <= 1 ?
-                            <svg height="2" width="162">
-                                <rect width="162" height="2" fill="#dddddd"/>
+                            <svg height="2" width="250">
+                                <rect width="250" height="2" fill="#dddddd"/>
                             </svg>
                             :
-                            <svg height="2" width="162">
-                                <rect width="162" height="2" fill="#2C54F2"/>
+                            <svg height="2" width="250">
+                                <rect width="250" height="2" fill="#2C54F2"/>
                             </svg>
                         }
                         {
@@ -162,12 +162,12 @@ export const StartPage = (props) => {
                         }
                         {
                             currentRound <= 2 ?
-                            <svg height="2" width="162">
-                                <rect width="162" height="2" fill="#dddddd"/>
+                            <svg height="2" width="250">
+                                <rect width="250" height="2" fill="#dddddd"/>
                             </svg>
                             :
-                            <svg height="2" width="162">
-                                <rect width="162" height="2" fill="#2C54F2"/>
+                            <svg height="2" width="250">
+                                <rect width="250" height="2" fill="#2C54F2"/>
                             </svg>
                         }
                         {
@@ -186,82 +186,49 @@ export const StartPage = (props) => {
                                 </svg>                            
                             )
                         }
-                        {
-                            currentRound <= 3 ?
-                            <svg height="2" width="162">
-                                <rect width="162" height="2" fill="#dddddd"/>
-                            </svg>
-                            :
-                            <svg height="2" width="162">
-                                <rect width="162" height="2" fill="#2C54F2"/>
-                            </svg>
-                        }
-                        {
-                            currentRound < 4 ?
-                            <svg className='circle' height="16" width="16">
-                                <circle cx="8" cy="8" r="6" stroke="#dddddd" strokeWidth="2" fill="white" />
-                            </svg>
-                            :
-                            (currentRound === 4 ?
-                                <svg className='circle' height="16" width="16">
-                                    <circle cx="8" cy="8" r="6" stroke="#2C54F2" strokeWidth="2" fill="white" />
-                                </svg>
-                                :
-                                <svg className='circle' height="16" width="16">
-                                    <circle cx="8" cy="8" r="6" stroke="#2C54F2" strokeWidth="2" fill="#2C54F2" />
-                                </svg>                            
-                            )
-                        }
                     </div>
                     <div className='roundLabels'>
                         <div className={currentRound < 1 ?'label': 'selectLabel label'}>
-                            Round 1
+                            Practice
                         </div>
                         <div className={currentRound < 2 ?'label': 'selectLabel label'}>
-                            Round 2
+                            Round 1
                         </div>
                         <div className={currentRound < 3 ?'label': 'selectLabel label'}>
-                            Round 3
-                        </div>
-                        <div className={currentRound < 4 ?'label': 'selectLabel label'}>
-                            Round 4
+                            Round 2
                         </div>
                     </div>
                     <div className='setting'>
-                        {mode === 1 ?
-                        <>
-                            <div className='setCharacter'>
-                                <div className='settingTitle'>당신은 당신이 생각하는 이상적인 피드백 제공자입니다.<br/>당신의 캐릭터는?</div>
-                                <div className='characterHolder'>
-                                    <img src='images/character/character1.png' className='character' style={selectCharacter === 1 ? {border: '5px solid #2C54F2'} : {border: '5px solid #ffffff'}} onClick={() => SelectCharacter(1)} alt='character1'/>
-                                    <img src='images/character/character2.png' className='character' style={selectCharacter === 2 ? {border: '5px solid #2C54F2'} : {border: '5px solid #ffffff'}} onClick={() => SelectCharacter(2)} alt='character2'/>
-                                    <img src='images/character/character3.png' className='character' style={selectCharacter === 3 ? {border: '5px solid #2C54F2'} : {border: '5px solid #ffffff'}} onClick={() => SelectCharacter(3)} alt='character3'/>
-                                    <img src='images/character/character4.png' className='character' style={selectCharacter === 4 ? {border: '5px solid #2C54F2'} : {border: '5px solid #ffffff'}} onClick={() => SelectCharacter(4)} alt='character4'/>
-                                    <img src='images/character/character5.png' className='character' style={selectCharacter === 5 ? {border: '5px solid #2C54F2'} : {border: '5px solid #ffffff'}}onClick={() => SelectCharacter(5)} alt='character5'/>
-                                </div>
+                        <div className='setCharacter'>
+                            <div className='settingTitle'>당신은 당신이 생각하는 이상적인 멘토입니다.<br/>당신의 캐릭터는?</div>
+                            <div className='characterHolder'>
+                                <img src='images/character/character1.png' className='character' style={selectCharacter === 1 ? {border: '5px solid #2C54F2'} : {border: '5px solid #ffffff'}} onClick={() => SelectCharacter(1)} alt='character1'/>
+                                <img src='images/character/character2.png' className='character' style={selectCharacter === 2 ? {border: '5px solid #2C54F2'} : {border: '5px solid #ffffff'}} onClick={() => SelectCharacter(2)} alt='character2'/>
+                                <img src='images/character/character3.png' className='character' style={selectCharacter === 3 ? {border: '5px solid #2C54F2'} : {border: '5px solid #ffffff'}} onClick={() => SelectCharacter(3)} alt='character3'/>
+                                <img src='images/character/character4.png' className='character' style={selectCharacter === 4 ? {border: '5px solid #2C54F2'} : {border: '5px solid #ffffff'}} onClick={() => SelectCharacter(4)} alt='character4'/>
+                                <img src='images/character/character5.png' className='character' style={selectCharacter === 5 ? {border: '5px solid #2C54F2'} : {border: '5px solid #ffffff'}}onClick={() => SelectCharacter(5)} alt='character5'/>
                             </div>
-                            <div className='setGoal'>
-                                <div className='settingTitle'>피드백 목표 설정</div>
-                                <div className='goal'>
-                                    1. 당신은 어떤 피드백 제공자인가요?
-                                    <input value={goal1} onChange={handleGoal1Change}/>
-                                </div>
-                                <div className='goal'>
-                                    2. 당신이 제공하는 피드백은 어떤 특성을 지녔나요?
-                                    <input value={goal2} onChange={handleGoal2Change}/>
-                                </div>
-                                <div className='goal'>
-                                    3. 해당 Round에서 당신의 목표는?
-                                    <input value={goal3} onChange={handleGoal3Change}/>
-                                </div>
+                        </div>
+                        <div className='setGoal'>
+                            <div className='settingTitle'>피드백 목표 설정</div>
+                            <div className='goal'>
+                                1. 당신은 어떤 멘토인가요?
+                                <input value={goal1} onChange={handleGoal1Change}/>
                             </div>
-                        </>
-                        : null}
+                            <div className='goal'>
+                                2. 당신이 제공하는 피드백은 어떤 특성을 지녔나요?
+                                <input value={goal2} onChange={handleGoal2Change}/>
+                            </div>
+                            <div className='goal'>
+                                3. 해당 Round에서 당신의 목표는?
+                                <input value={goal3} onChange={handleGoal3Change}/>
+                            </div>
+                        </div>
                         <div className='setTime'>
                             <div className='settingTitle'>제한 시간</div>
                             <div className='timeHolder'>
                                 <div className='time'>{time} MIN</div>
-                                <div className='timebuttonHolder'><button onClick={() => updateTime(1)}>&#9653;</button><button onClick={() => updateTime(-1)}>&#9663;</button></div>
+                                {/* <div className='timebuttonHolder'><button onClick={() => updateTime(1)}>&#9653;</button><button onClick={() => updateTime(-1)}>&#9663;</button></div> */}
                             </div>
                         </div>
                     </div>

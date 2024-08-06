@@ -91,7 +91,7 @@ export const Topbar = (props) => {
             console.log(error.response.headers)
             }
         })
-        navigate('/start');
+        navigate('/');
     }
 
     return(

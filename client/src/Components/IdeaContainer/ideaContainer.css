@@ -22,9 +22,14 @@
     /* height: 50px; */
     padding: 20px 30px;
     text-align: left;
-    font-size: 15px;
-    font-weight:700;
+    font-size: 14px;
+    font-weight:500;
     margin-top: -1px;
+}
+
+.ideaContainerUI > .ideaDescription > .topic {
+    font-weight: 700;
+    font-size: 15px;
 }
 
 .ideaContainerUI > .navbar {
@@ -76,13 +81,13 @@
     align-items: center;
     justify-content: space-between;
     font-weight:900;
-    font-size: 18px;
-    margin-bottom: 2px;
+    font-size: 17px;
+    margin-bottom: 6px;
 }
 
 .ideaBox > .ideatitle > button {
     min-width: 102px;
-    margin-left: 10px;
+    margin-left: 18px;
     border: solid 1px #ddd;
     border-radius: 4px;
     padding: 6px 12px;
@@ -111,7 +116,7 @@
     line-height: 140%;
 }
 
-.ideaContainerUI > .ideaContainer > .disable{
+.ideaContainerUI > .ideaContainer > .disable {
     background-color: #f4f9fd;
 }
 
@@ -121,4 +126,8 @@
 
 .ideaContainerUI > .ideaContainer > .disable > .ideatitle > button:hover {
     color: black;
+}
+
+.design_goal {
+    margin: 3px 0;
 }

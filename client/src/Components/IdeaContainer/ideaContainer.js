@@ -40,14 +40,20 @@ export const IdeaContainer = (props) => {
                 <div className='ideaDescription'>
                     {
                         currentDescription === 0 ? 
-                            <div>{idea.topic}</div> 
+                            <div className='topic'>{idea.topic}</div> 
                             :
-                            <div>{idea.design_goals.map((goal, index) => <div key={index}>{goal}</div>)}</div>
+                            <div className='goalsConatiner'>
+                                <div className='design_goal'><b>Inovation:</b> 아이디어가 얼마나 혁신적인 지</div> 
+                                <div className='design_goal'><b>Elaboration:</b> 아이디어가 얼마나 정교한지</div> 
+                                <div className='design_goal'><b>Usability:</b> 아이디어가 얼마나 사용하기 용이한지</div>
+                                <div className='design_goal'><b>Value:</b> 아이디어가 얼마나 사용할 가치가 있는지</div>
+                                <div className='design_goal'><b>Social Responsiblity:</b> 아이디어가 얼마나 사회적 책임을 이행하는지</div>
+                            </div>
                     }
                 </div>
                 <div className='ideaContainer'>
                     <div className={isUpdateIdea ? 'ideaBox disable' : 'ideaBox'}>
-                        <div className='ideatitle'><div className='title'>IDEA: {idea.title}</div><button onClick={UpdateIDea} disabled={isUpdateIdea}>Update Idea</button></div>
+                        <div className='ideatitle'><div className='title'>{idea.title}</div><button onClick={UpdateIDea} disabled={isUpdateIdea}>Update Idea</button></div>
                         <div className='subtitle'>Target Problem</div>
                         <div className='problem'>{idea.problem}</div>
                         <div className='subtitle'>Idea</div>

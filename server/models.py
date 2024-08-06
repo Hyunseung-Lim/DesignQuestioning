@@ -7,6 +7,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(100))
     realPassword = db.Column(db.String(100))
     name = db.Column(db.String(1000))
+    num = db.Column(db.Integer)
     currentRound = db.Column(db.Integer)
 
 class Idea(db.Model):

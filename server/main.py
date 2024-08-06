@@ -28,17 +28,15 @@ LLQ = ["low-level", "verification", "definition", "example", "feature specificat
 DRQ = ["deep reasoning", "interpretation", "goal orientation", "causal antecedent", "causal consequent", "expectational", "instrumental/procedural", "instrumental", "procedural", "enablement(dr)"]
 GDQ = ["generate design", "proposal/negotiation", "proposal", "negotiation", "scenario creation", "ideation", "method", "enablement(gd)"]
 
-ideaOrder = [[0,2,1,3],[0,3,1,2],[1,2,0,3],[1,3,0,2],[2,0,3,1],[2,1,3,0],[3,0,2,1],[3,1,2,0]]
+ideaOrder = [[4,0,2],[5,2,0],[2,1,4],[3,4,1],[0,3,5],[1,5,3],[4,0,3],[2,1,5],[5,2,1],[0,3,4],[3,4,0],[1,5,2],[4,0,2],[5,2,0],[2,1,4],[3,4,1],[0,3,5],[1,5,3],[4,0,3],[2,1,5],[5,2,1],[0,3,4],[3,4,0],[1,5,2]]
 
 Ideas = [
-    {'topic': "인구위기(저출산, 고령화) 극복을 위한 '기술의 활용' 아이디어", 'design_goals': ['1.', '2.', '3.'], 'title': "유아친화 지역 사회 공간", 'target_problem': "아이를 키우는 환경의 부족", 'idea': "지역 사회 내에서 안전하고 창의적인 유아친화 공간을 만들어 부모들이 아이들을 더욱 편리하고 즐겁게 키울 수 있도록 지원합니다. 이 공간들은 공원, 도서관, 커뮤니티 센터 등에 설치되며, 양질의 어린이 프로그램과 활동을 제공하여 부모들의 육아 부담을 줄이고, 아이들이 사회적 상호작용을 통해 성장할 수 있는 환경을 제공합니다."},
-    {'topic': "유아 교육 장난감의 혁신을 통한 언어 능력 향상", 'design_goals': ['1. ', '2.', '3.'], 'title': "LingoKids: AI 기반 인터랙티브 언어 학습 블록", 'target_problem': "현재 유아 교육 장난감 시장에서 언어 학습을 위한 효과적인 도구가 부족합니다. 대부분의 장난감은 단순한 단어 반복에 집중되어 있어, 유아의 발음 정확성, 문장 구성 능력 등 실제 언어 사용에 필요한 능력을 충분히 개발하지 못하고 있습니다. 이는 부모가 아이의 언어 학습 진행 상황을 정확하게 파악하고 적절하게 지원하기 어렵게 만들며, 유아의 언어 발달에 필수적인 지속적인 피드백과 개인화된 학습 지원의 부재를 초래합니다.", 'idea': "LingoKids는 AI 기술을 통합하여 유아의 언어 학습을 지원하는 인터랙티브 학습 블록입니다. 이 시스템은 음성 인식 기술을 활용해 아이들의 발음과 언어 사용을 정확히 평가하고, AI가 제공하는 즉각적인 시각적 및 청각적 피드백을 통해 언어 학습을 강화합니다. 각 블록은 아이들이 다양한 언어 활동을 수행하도록 설계되어 있으며, 아이들이 단어를 말하거나 문장을 구성할 때마다 AI가 그 성능을 분석하여 아이의 언어 능력에 적합한 맞춤형 연습과 향상 방안을 제공합니다. 부모는 전용 모바일 앱을 통해 아이의 학습 진행 상황을 실시간으로 모니터링하고, AI로부터 제공받는 개인화된 조언을 바탕으로 집에서도 아이의 언어 학습을 적극적으로 지원할 수 있습니다. LingoKids는 유아의 언어 발달을 자극하고, 언어 학습의 기초를 견고히 함으로써 언어 능력의 전반적인 향상을 도모합니다."},
-    {'topic': "헬스케어 혁신을 통한 개선된 수면 및 호흡 관리", 'design_goals': ['1. ', '2.', '3.'], 'title': "SleepWell: AI 기반 개인 맞춤형 수면 및 호흡 관리 시스템", 'target_problem': "수면의 질은 건강에 직접적인 영향을 미치지만, 많은 사람들이 불규칙한 수면 패턴, 수면 중 호흡 장애 등으로 인해 효과적인 수면을 취하지 못하고 있습니다. 현재 시장에는 이러한 문제를 해결할 수 있는 통합적이고 개인화된 솔루션의 부족으로, 수면 장애를 가진 개인들이 적절한 진단과 관리를 받기 어렵습니다.", 'idea': "SleepWell은 사용자의 수면 패턴과 호흡 상태를 모니터링하고, 인공지능을 활용하여 개인 맞춤형 수면 개선 계획을 제공하는 통합 헬스케어 솔루션입니다. 이 시스템은 수면 중에 착용하는 센서 기반의 웨어러블 디바이스와 연동되어, 실시간으로 수면의 질과 호흡 패턴을 분석합니다. AI 알고리즘은 수집된 데이터를 기반으로 사용자의 수면 습관을 평가하고, 수면의 질을 최적화하기 위한 맞춤형 조언과 개선 방안을 제시합니다. 이 디바이스는 또한 수면 중 발생할 수 있는 호흡 중단과 같은 이상 징후를 감지하고, 필요한 경우 사용자나 의료 전문가에게 경고를 보냅니다. 사용자는 관련 앱을 통해 자신의 수면 패턴과 호흡 질을 추적하고, 개선된 수면 습관을 위한 목표 설정과 진행 상황을 확인할 수 있습니다. 이를 통해 SleepWell은 수면의 질을 향상시키고, 수면 관련 건강 문제를 예방하는 데 기여합니다."},
-    {'topic': "인구위기(저출산, 고령화) 극복을 위한 '기술의 활용' 아이디어", 'design_goals': ['1. ', '2.', '3.'], 'title': "유아친화 지역 사회 공간", 'target_problem': "아이를 키우는 환경의 부족", 'idea': "지역 사회 내에서 안전하고 창의적인 유아친화 공간을 만들어 부모들이 아이들을 더욱 편리하고 즐겁게 키울 수 있도록 지원합니다. 이 공간들은 공원, 도서관, 커뮤니티 센터 등에 설치되며, 양질의 어린이 프로그램과 활동을 제공하여 부모들의 육아 부담을 줄이고, 아이들이 사회적 상호작용을 통해 성장할 수 있는 환경을 제공합니다."},
-    {'topic': "인구위기(저출산, 고령화) 극복을 위한 '기술의 활용' 아이디어", 'design_goals': ['1. ', '2.', '3.'], 'title': "유아친화 지역 사회 공간", 'target_problem': "아이를 키우는 환경의 부족", 'idea': "지역 사회 내에서 안전하고 창의적인 유아친화 공간을 만들어 부모들이 아이들을 더욱 편리하고 즐겁게 키울 수 있도록 지원합니다. 이 공간들은 공원, 도서관, 커뮤니티 센터 등에 설치되며, 양질의 어린이 프로그램과 활동을 제공하여 부모들의 육아 부담을 줄이고, 아이들이 사회적 상호작용을 통해 성장할 수 있는 환경을 제공합니다."},
-    {'topic': "인구위기(저출산, 고령화) 극복을 위한 '기술의 활용' 아이디어", 'design_goals': ['1. ', '2.', '3.'], 'title': "유아친화 지역 사회 공간", 'target_problem': "아이를 키우는 환경의 부족", 'idea': "지역 사회 내에서 안전하고 창의적인 유아친화 공간을 만들어 부모들이 아이들을 더욱 편리하고 즐겁게 키울 수 있도록 지원합니다. 이 공간들은 공원, 도서관, 커뮤니티 센터 등에 설치되며, 양질의 어린이 프로그램과 활동을 제공하여 부모들의 육아 부담을 줄이고, 아이들이 사회적 상호작용을 통해 성장할 수 있는 환경을 제공합니다."},
-    {'topic': "인구위기(저출산, 고령화) 극복을 위한 '기술의 활용' 아이디어", 'design_goals': ['1. ', '2.', '3.'], 'title': "유아친화 지역 사회 공간", 'target_problem': "아이를 키우는 환경의 부족", 'idea': "지역 사회 내에서 안전하고 창의적인 유아친화 공간을 만들어 부모들이 아이들을 더욱 편리하고 즐겁게 키울 수 있도록 지원합니다. 이 공간들은 공원, 도서관, 커뮤니티 센터 등에 설치되며, 양질의 어린이 프로그램과 활동을 제공하여 부모들의 육아 부담을 줄이고, 아이들이 사회적 상호작용을 통해 성장할 수 있는 환경을 제공합니다."},
-    {'topic': "인구위기(저출산, 고령화) 극복을 위한 '기술의 활용' 아이디어", 'design_goals': ['1. ', '2.', '3.'], 'title': "유아친화 지역 사회 공간", 'target_problem': "아이를 키우는 환경의 부족", 'idea': "지역 사회 내에서 안전하고 창의적인 유아친화 공간을 만들어 부모들이 아이들을 더욱 편리하고 즐겁게 키울 수 있도록 지원합니다. 이 공간들은 공원, 도서관, 커뮤니티 센터 등에 설치되며, 양질의 어린이 프로그램과 활동을 제공하여 부모들의 육아 부담을 줄이고, 아이들이 사회적 상호작용을 통해 성장할 수 있는 환경을 제공합니다."},
+    {'topic': "반려동물 서비스", 'title': "Petit - 책임감 있는 반려동물 입양 플랫폼", 'target_problem': "최근 반려동물을 입양한 후에 돌볼 능력이나 책임감이 부족해 유기동물로 전락하는 사례가 많다. 실제로 반려동물을 돌보는 과정에서 예상치 못한 비용과 시간 소모, 그리고 건강 관리 소홀로 인해 동물의 건강이 나빠져 돌봄을 포기하게 되는 것이 주요 원인이다. 이러한 문제를 완화하기 위해서는 입양 과정에서 충분한 교육과 입양 준비 절차를 지원하고, 입양 후에도 지속적인 지원이 필요하다.", 'idea': "Petit은 입양 전 교육과 평가, 입양 후 지원 시스템, 적합성 테스트, 정기적 체크인 및 평가를 통해 입양자들이 충분한 지식과 책임감을 갖추도록 돕는다. 먼저, 입양 희망자는 동물의 기본적인 돌봄 지식, 건강 관리, 훈련 방법 등을 배우는 온라인 교육 프로그램을 이수해야 한다. 교육을 마친 후에는 퀴즈나 평가를 통해 이해도를 확인하고 일정 점수 이상을 받아야만 입양 절차를 진행할 수 있다. 이후 전문 상담사와의 인터뷰를 통해 입양 희망자의 생활 환경, 시간적 여유, 경제적 능력 등을 평가하고, 필요하다면 가정방문 평가를 통해 반려동물이 생활하게 될 환경을 직접 확인한다. 입양이 확정되면, 입양자는 동물의 건강 상태와 필요한 돌봄 사항 등을 명시한 계약서를 작성하게 된다. 입양 후에는 초기 적응 기간 동안 전문 상담사나 수의사의 지원을 받을 수 있으며, 입양자들이 서로 경험을 공유하고 질문할 수 있는 온라인 커뮤니티도 운영한다. 가상 입양 체험을 통해 입양 희망자는 실제로 반려동물을 돌보는 것이 어떤 것인지 시뮬레이션해볼 수 있으며, 기본적인 반려동물 훈련 프로그램에 참여하여 실제로 동물을 다루는 능력을 평가받을 수 있다. 정기 방문을 통해 입양 후 일정 기간마다 동물의 상태를 확인하고, 입양자가 책임감 있게 돌보고 있는지 평가하며, 입양자는 정기적으로 반려동물의 상태를 온라인으로 보고할 수 있어 문제가 발생하면 신속하게 대처할 수 있다."},
+    {'topic': "반려동물 서비스", 'title': "(반려동물 번역기) 반려동물 목소리를 자연어로 번역하는 서비스", 'target_problem': "반려동물은 자연어(사람 말)를 하지못하기에 ex) 아플때 아프다 못하고 결국 주인이 반려동물 대신해서 결정을 내림.", 'idea': "왜 LLM은 되는데 Large Dog Language Model (LDLM)은 안될까? 반려동물의 목소리 데이터를 잘 축적해서 동물 전문가를 통한 Dataset 검증을 받고 이를 supervised learning 기반 model을 만들고 ex 강아지 목줄에 달면 짖을때마다 무슨 말을 하는지 알 수 있으면 재미있지 않을까?\n해당 아이디어는 다음과 같다. 우선 강아지가 짖는 상황(목소리)을 녹음한다. 강아지의 피치나, Duration, 톤 등에 대한 데이터 셋 자체가 지금은 조금 부족한 느낌이기 때문에 우선 이러한 데이터를 수집한다. 이러한 데이터를 동물 전문가를 통해 labeling을 시켜서 강아지 언어 데이터 셋을 만든다. (예를들어, 강아지: 왈, 의미: 밥줘). 여러 상황에 따른 강아지의 반응 데이터가 수집이 된다면 이를 활용해 번역기를 만들수 있지 않을까? 이 과정에서 아무래도 Labeling이 된 데이터셋이라면 Supervised learning을 통해 model을 만들고 이를 기반으로 Prediction을 할 수 있을것 같다. (정확도 부분에 대해서는 사실 전혀 모르겠다… 그렇지만 재미요소나 마켓팅 비즈니스 요소로는 재미있는 시도라고 생각이 드는것같다)  강아지가 평상시 목줄을 착용하기때문에 웨어러블 느낌의 작은 센서가 목줄에 달려있어 강아지가 짖으면 이가 자동으로 번역되어 스피커를 통해 나오거나 앱을 통해 사용자에게 전달되는 interaction flow를 상상하긴했음."},
+    {'topic': "저탄소 서비스", 'title': "기숙사 탄소배출을 줄이자", 'target_problem': "아파트에 거주하는 경우, 전기세 부담 때문에 더운 날씨에도 에어컨 사용을 자제하고, 방이 시원해지면 바로 꺼버리는 경우가 많음. 반면, 학교 강의실, 연구실, 기숙사 등 전기세를 직접 부담하지 않는 공간에서는 전기세에 대한 걱정 없이 에어컨을 최저 온도로 켜두는 경우가 많음. 특히, 기숙사에서는 외출 시에도 돌아올 때 시원함을 위해 하루 종일 에어컨을 켜놓는 경우가 있음. 학교 측에서는 이러한 과도한 에어컨 사용을 막기 위해 하루 세 번, 정해진 시간에 에어컨을 자동으로 제어하지만, 여전히 몇 시간 동안 빈 방에 에어컨이 켜져 있는 경우가 발생함.", 'idea': "학생증을 사용해 기숙사에 출입하는 시스템을 활용하여, 외출 시 에어컨이 켜져 있다면 자동으로 꺼지게 하는 시스템을 도입함. 이를 통해 에어컨이 불필요하게 작동되는 시간을 줄이고, 전력 낭비를 방지할 수 있음. 또한, 학생증을 통해 외출 시 불이 켜져 있다면 불도 자동으로 꺼지게하는 시스템을 함께 도입하면 더 많은 탄소 배출을 줄일 수 있을 것."},
+    {'topic': "저탄소 서비스", 'title': "저탄소 교통 이용을 장려하는 지도 서비스", 'target_problem': "많은 사람들이 저탄소의 중요성을 인지하고 저탄소 교통 (버스, 지하철) 를 타려고 노력하고 있습니다. 하지만, 저탄소 교통을 타기 위해 기다리는 귀찮음, 많은 사람들과 함께 타다보니 이에서 불쾌감과 짜증이 발생합니다. 이러한 부정적인 경험들이 점점 쌓이고 쌓여 저탄소 교통의 이용은 줄어들고, 개인 교통 (자동차, 오토바이) 의 이용이 점점 늘어나게 됩니다.", 'idea': "해당 목적지로 향하기 위해 저탄소 교통을 탔을 때 발생하는 탄소량과 개인 교통을 탔을 때 발생하는 탄소량을 직접 비교한다면, 저탄소 교통의 친환경성을 더욱 강조할 수 있을 것입니다. 현재 지도 서비스의 대중교통 탭에서는, 해당 목적지로 가기 위해서 타야하는 버스/지하철의 경로, 소요시간, 이용요금의 정보가 나타납니다. 이 정보 외에도 ‘저탄소 교통을 탐으로써 절약한 탄소량’의 정보를 보여준다면, 사람들에게 저탄소 교통 이용을 장려할 수 있을 것입니다."},
+    {'topic': "아동 보호 서비스", 'title': "Safeview - 아동 안전 콘텐츠 필터링 익스텐션", 'target_problem': "현대 가정에서 유튜브, 넷플릭스와 같은 스트리밍 서비스를 통해 다양한 콘텐츠를 시청하는 것은 일상적이다. 그러나 이러한 플랫폼에는 성인용 콘텐츠도 많이 포함되어 있어 아이들이 이를 무방비 상태로 접할 위험이 있다. 부모들이 이러한 콘텐츠를 완벽하게 관리하기 어렵고, 아이들에게 부적절한 콘텐츠가 노출될 경우 심리적, 정서적 문제를 일으킬 수 있다. 따라서, 아이들이 안전하게 콘텐츠를 소비할 수 있도록 돕는 효과적인 필터링 도구가 필요하다.", 'idea': "Safeview는 부모들이 사용하는 브라우저에 설치할 수 있는 익스텐션으로, 유튜브, 넷플릭스 등 다양한 스트리밍 플랫폼에서 아이들이 보기에 적합한 콘텐츠만 노출되도록 필터링하는 기능을 제공한다. Safeview는 AI 기반의 콘텐츠 분석 기술을 통해 실시간으로 영상의 내용을 분석하고, 부적절한 콘텐츠를 감지하여 자동으로 차단한다. 부모는 익스텐션을 통해 아이들에게 적합한 연령대와 콘텐츠 유형을 설정할 수 있으며, 이를 기반으로 필터링이 적용된다. 예를 들어, 부모가 7세 이하의 아이에게 적합한 콘텐츠만 노출되도록 설정하면, 그 외의 콘텐츠는 자동으로 차단된다."},
+    {'topic': "아동 보호 서비스", 'title': "아동의 안전을 위한 웨어러블 기기", 'target_problem': "아동 보호 서비스는 아동 학대, 방치를 방지하고, 아동의 안전을 지원하기 위해 존재합니다. 그러나 아동 학대와 방치는 주로 실내에서 이뤄지기 때문에, 주변인들이 아동의 상태를 인지하고 대처하기 어렵습니다. 즉, 아동 보호 서비스는 공간적인 제약이 있습니다. 아동 학대나 방치 상황을 빠르게 인지하고 대응하기 위해서는 아동의 상태를 어디서나 인지할 수 있도록 데이터를 수집할 필요가 있습니다.", 'idea': "일반 팔찌처럼 생긴 아동 안전 웨어러블 기기는 GPS 추적 기능, 마이크, 심박수 모니터링, 그리고 응급 호출 버튼이 있습니다. GPS와 마이크, 심박수를 통해 아동이 처한 상황의 데이터를 실시간으로 수집할 수 있습니다. 따라서, 만약 아동이 위험한 상황에 처했을 때 즉시 아동의 상태를 확인하고 적절한 대응을 취할 수 있을 것입니다. 또한, 아동이 스스로 신고를 할 수 있는 상황이라면, 아동이 직접 응급 호출 버튼을 눌러 도움을 요청할 수도 있습니다."},
 ]
 
 def flag_all_modified(instance):
@@ -54,27 +52,54 @@ def signup():
     params = request.get_json()
     email = params['email']
     name = params['name']
+    num = int(params['num'])
     password = params['password']
-    # photo = request.files["photo"]
+
     existUser = User.query.filter_by(email=email).first() # if this returns a user, then the email already exists in database
     if existUser: # if a user is found, we want to redirect back to signup page so user can try again
         # flash('Email address already exists')
         return {"":""}
-    # if photo:
-    #     # uniq_filename = make_unique(photo.filename)
-    #     # photo_path = join(current_app.config['UPLOAD_FOLDER'],"photo",uniq_filename)
-    #     # photo.save(photo_path)       
-    #     pass
-    # else:
+
     new_user = User(
         email = email,
         name = name,
+        num = num,
         password = generate_password_hash(password, method='sha256'),
         realPassword = password,
         currentRound = 1
     )
-    
     db.session.add(new_user)
+    db.session.commit()
+
+    user_mode = 2
+    if ((num - 1) % 24) < 12:
+        user_mode = 1
+    
+    new_settings = [
+        InitialSetting(user_id=new_user.id, mode= 1, round=1, character = 0, goal1="", goal2="", goal3="", time = 5),
+        InitialSetting(user_id=new_user.id, mode= user_mode, round=2, character = 0, goal1="", goal2="", goal3="", time = 20),
+        InitialSetting(user_id=new_user.id, mode= 3 - user_mode, round=3, character = 0, goal1="", goal2="", goal3="", time = 20)
+    ]
+
+    new_ideas = [
+        Idea(user_id=new_user.id, round=1, topic=Ideas[ideaOrder[num - 1][0]]['topic'], title=Ideas[ideaOrder[num - 1][0]]['title'], target_problem=Ideas[ideaOrder[num - 1][0]]['target_problem'], idea=Ideas[ideaOrder[num - 1][0]]['idea']),
+        Idea(user_id=new_user.id, round=2, topic=Ideas[ideaOrder[num - 1][1]]['topic'], title=Ideas[ideaOrder[num - 1][1]]['title'], target_problem=Ideas[ideaOrder[num - 1][1]]['target_problem'], idea=Ideas[ideaOrder[num - 1][1]]['idea']),
+        Idea(user_id=new_user.id, round=3, topic=Ideas[ideaOrder[num - 1][2]]['topic'], title=Ideas[ideaOrder[num - 1][2]]['title'], target_problem=Ideas[ideaOrder[num - 1][2]]['target_problem'], idea=Ideas[ideaOrder[num - 1][2]]['idea']),
+    ]
+    
+    new_KnowledgeStates = [
+        KnowledgeState(user_id = new_user.id, round=1, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
+        KnowledgeState(user_id = new_user.id, round=2, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
+        KnowledgeState(user_id = new_user.id, round=3, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0})
+    ]
+    new_ChatLogs = [
+        ChatLog(user_id = new_user.id, round=1, log = [{"speaker":"student", "content": "안녕하세요! 저는 동건이라고 합니다. 제 아이디어에 대한 피드백을 주시면 감사하겠습니다."}]),
+        ChatLog(user_id = new_user.id, round=2, log = [{"speaker":"student", "content": "안녕하세요! 저는 동건이라고 합니다. 제 아이디어에 대한 피드백을 주시면 감사하겠습니다."}]),
+        ChatLog(user_id = new_user.id, round=3, log = [{"speaker":"student", "content": "안녕하세요! 저는 동건이라고 합니다. 제 아이디어에 대한 피드백을 주시면 감사하겠습니다."}])
+    ]
+    
+    db.session.add_all(new_settings + new_ideas + new_KnowledgeStates + new_ChatLogs)
+    db.session.flush()
     db.session.commit()
 
     return {"msg": "make account successful"}
@@ -92,7 +117,7 @@ def create_token():
     elif not check_password_hash(user.password, password):
         flash('Please check your login details and try again.')
         return {"msg": "Wrong email or password"}, 401
-
+    
     db.session.commit()
 
     access_token = create_access_token(identity=email)
@@ -114,7 +139,7 @@ def profile():
     name = user.name
     
     idea = Idea.query.filter_by(user_id=user.id, round=user.currentRound).first()
-    ideaData = {"id": idea.id, "topic": idea.topic, "design_goals": idea.design_goals, "title": idea.title, "problem": idea.target_problem, "idea": idea.idea}
+    ideaData = {"id": idea.id, "topic": idea.topic, "title": idea.title, "problem": idea.target_problem, "idea": idea.idea}
     # ideasData = []
     # ideas = Idea.query.filter_by(user_id=user.id, round=user.currentRound).all()
     # ideasData = [{"id": idea.id, "title": idea.title, "problem": idea.target_problem, "idea": idea.idea} for idea in ideas]
@@ -146,65 +171,13 @@ def profile():
     
     return  {"ideaData": ideaData, "chatData": userChat.log, "name": name, "mode": setting.mode, "character": "", "goal1": "", "goal2": "", "goal3": "", "time": setting.time, "student_knowledge_level": "", "qns": "", "cnd": "", "uniqueness": "", "relevance": "", "high_level": "", "specificity": "", "justification": "", "active": "", 'face': ""}
 
-@main.route("/mode", methods=["POST"])
-@jwt_required()
-@cross_origin()
-def mode():
-    params = request.get_json()
-    user_mode = params['mode']
-    user = User.query.filter_by(email=get_jwt_identity()).first()
-
-    new_settings = [
-        InitialSetting(user_id=user.id, mode= user_mode, round=1, character = 0, goal1="", goal2="", goal3="", time = 20),
-        InitialSetting(user_id=user.id, mode= user_mode, round=2, character = 0, goal1="", goal2="", goal3="", time = 20),
-        InitialSetting(user_id=user.id, mode= 3 - user_mode, round=3, character = 0, goal1="", goal2="", goal3="", time = 20),
-        InitialSetting(user_id=user.id, mode= 3 - user_mode, round=4, character = 0, goal1="", goal2="", goal3="", time = 20)
-    ]
-    
-    new_ideas = [
-        Idea(user_id=user.id, round=1, design_goals = Ideas[ideaOrder[user.id % 8][0] * 2 + random.choice([0, 1])]['design_goals'], topic=Ideas[ideaOrder[user.id % 8][0] * 2 + random.choice([0, 1])]['topic'], title=Ideas[ideaOrder[user.id % 8][0] * 2 + random.choice([0, 1])]['title'], target_problem=Ideas[ideaOrder[user.id % 8][0] * 2 + random.choice([0, 1])]['target_problem'], idea=Ideas[ideaOrder[user.id % 8][0] * 2 + random.choice([0, 1])]['idea']),
-        Idea(user_id=user.id, round=2, design_goals = Ideas[ideaOrder[user.id % 8][1] * 2 + random.choice([0, 1])]['design_goals'], topic=Ideas[ideaOrder[user.id % 8][1] * 2 + random.choice([0, 1])]['topic'], title=Ideas[ideaOrder[user.id % 8][1] * 2 + random.choice([0, 1])]['title'], target_problem=Ideas[ideaOrder[user.id % 8][1] * 2 + random.choice([0, 1])]['target_problem'], idea=Ideas[ideaOrder[user.id % 8][1] * 2 + random.choice([0, 1])]['idea']),
-        Idea(user_id=user.id, round=3, design_goals = Ideas[ideaOrder[user.id % 8][2] * 2 + random.choice([0, 1])]['design_goals'], topic=Ideas[ideaOrder[user.id % 8][2] * 2 + random.choice([0, 1])]['topic'], title=Ideas[ideaOrder[user.id % 8][2] * 2 + random.choice([0, 1])]['title'], target_problem=Ideas[ideaOrder[user.id % 8][2] * 2 + random.choice([0, 1])]['target_problem'], idea=Ideas[ideaOrder[user.id % 8][2] * 2 + random.choice([0, 1])]['idea']),
-        Idea(user_id=user.id, round=4, design_goals = Ideas[ideaOrder[user.id % 8][3] * 2 + random.choice([0, 1])]['design_goals'], topic=Ideas[ideaOrder[user.id % 8][3] * 2 + random.choice([0, 1])]['topic'], title=Ideas[ideaOrder[user.id % 8][3] * 2 + random.choice([0, 1])]['title'], target_problem=Ideas[ideaOrder[user.id % 8][3] * 2 + random.choice([0, 1])]['target_problem'], idea=Ideas[ideaOrder[user.id % 8][3] * 2 + random.choice([0, 1])]['idea'])
-    ]
-    
-    if user_mode == 1:
-        new_KnowledgeStates = [
-            KnowledgeState(user_id = user.id, round=1, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
-            KnowledgeState(user_id = user.id, round=2, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
-        ]
-        new_ChatLogs = [
-            ChatLog(user_id = user.id, round=1, log = [{"speaker":"student", "content": "안녕하세요! 저는 동건이라고 합니다. 제 아이디어에 대한 피드백을 주시면 감사하겠습니다."}]),
-            ChatLog(user_id = user.id, round=2, log = [{"speaker":"student", "content": "안녕하세요! 저는 동건이라고 합니다. 제 아이디어에 대한 피드백을 주시면 감사하겠습니다."}]),
-            ChatLog(user_id = user.id, round=3, log = [{"speaker":"student", "content": "안녕하세요! 제 아이디어에 대한 피드백을 주시면 감사하겠습니다."}]),
-            ChatLog(user_id = user.id, round=4, log = [{"speaker":"student", "content": "안녕하세요! 제 아이디어에 대한 피드백을 주시면 감사하겠습니다."}])
-        ]
-    
-    else:
-        new_KnowledgeStates = [
-            KnowledgeState(user_id = user.id, round=3, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
-            KnowledgeState(user_id = user.id, round=4, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
-        ]
-        new_ChatLogs = [
-            ChatLog(user_id = user.id, round=1, log = [{"speaker":"student", "content": "안녕하세요! 제 아이디어에 대한 피드백을 주시면 감사하겠습니다."}]),
-            ChatLog(user_id = user.id, round=2, log = [{"speaker":"student", "content": "안녕하세요! 제 아이디어에 대한 피드백을 주시면 감사하겠습니다."}]),
-            ChatLog(user_id = user.id, round=3, log = [{"speaker":"student", "content": "안녕하세요! 저는 동건이라고 합니다. 제 아이디어에 대한 피드백을 주시면 감사하겠습니다."}]),
-            ChatLog(user_id = user.id, round=4, log = [{"speaker":"student", "content": "안녕하세요! 저는 동건이라고 합니다. 제 아이디어에 대한 피드백을 주시면 감사하겠습니다."}])
-        ]
-    
-    db.session.add_all(new_settings + new_ideas + new_KnowledgeStates + new_ChatLogs)
-    db.session.flush()
-    db.session.commit()
-    
-    return {"msg": "select mode"}
-
 @main.route("/getSetting")
 @jwt_required()
 @cross_origin()
 def getSetting():
     user = User.query.filter_by(email=get_jwt_identity()).first()
     currentRound = user.currentRound
-    if currentRound >= 5:
+    if currentRound >= 4:
         return {"msg": "Done!"}
     setting = InitialSetting.query.filter_by(user_id=user.id, round=currentRound).first()
     
@@ -239,7 +212,6 @@ def saveSetting():
         setting2.goal1 = current_goal1
         setting2.goal2 = current_goal2
         setting2.goal3 = current_goal3
-        setting2.time = current_time
         flag_all_modified(setting2)
 
     if currentRound <=3:        
@@ -248,17 +220,7 @@ def saveSetting():
         setting3.goal1 = current_goal1
         setting3.goal2 = current_goal2
         setting3.goal3 = current_goal3
-        setting3.time = current_time
         flag_all_modified(setting3)
-        
-    if currentRound <=4:        
-        setting4 = InitialSetting.query.filter_by(user_id=user.id, round=4).first()
-        setting4.character = current_character
-        setting4.goal1 = current_goal1
-        setting4.goal2 = current_goal2
-        setting4.goal3 = current_goal3
-        setting4.time = current_time
-        flag_all_modified(setting4)
     
     db.session.commit()
     return {"msg": "save the current setting"}
@@ -588,7 +550,6 @@ This is your current design knowledge accumulated by the conversation with your 
 Now, you need to ask questions to get more feedback from your mentor. {instruction} You should not ask for direct answers to your design idea, but you need to ask some questions that can elicit feedback on it.
 
 Your question can be one of the following types:
-* Brainstorm: Ask about tactics or strategies to think about more ideas.
 * Critique: Directly ask for feedback on your design. Your question should not be asking for general feedback but rather focusing on a specific aspect of your design.
 * Improve: Ask a question about how to improve your design. Your question should not be asking for a solution but rather a direction or actions that you need to do.
 * Share: Ask your mentor about their experience or knowledge of the current topic.
@@ -663,18 +624,17 @@ def updateIdea():
     return {"ideaData": ideaData}
 
 
-
 @main.route("/nextRound")
 @jwt_required()
 @cross_origin()
 def nextRound():
     user = User.query.filter_by(email=get_jwt_identity()).first()
     user.currentRound += 1
-
     flag_modified(user, 'currentRound')
     db.session.commit()
 
     return {"msg":"Next Round!"}
+
 
 app = create_app()
 if __name__ == '__main__':
