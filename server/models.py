@@ -51,6 +51,7 @@ class KnowledgeState(db.Model):
     cnd = db.Column(db.Integer) # divergent and convergent
     eval = db.Column(db.JSON)
     knowledge = db.Column(db.String(3000))
+    actionPlan = db.Column(db.String(3000))
     counter = db.Column(db.JSON)
  
 class ChatLog(db.Model):

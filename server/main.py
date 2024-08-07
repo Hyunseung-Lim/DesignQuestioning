@@ -88,9 +88,9 @@ def signup():
     ]
     
     new_KnowledgeStates = [
-        KnowledgeState(user_id = new_user.id, round=1, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
-        KnowledgeState(user_id = new_user.id, round=2, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
-        KnowledgeState(user_id = new_user.id, round=3, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0})
+        KnowledgeState(user_id = new_user.id, round=1, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", actionPlan = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
+        KnowledgeState(user_id = new_user.id, round=2, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", actionPlan = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
+        KnowledgeState(user_id = new_user.id, round=3, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", actionPlan = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0})
     ]
     new_ChatLogs = [
         ChatLog(user_id = new_user.id, round=1, log = [{"speaker":"student", "content": "안녕하세요! 저는 동건이라고 합니다. 제 아이디어에 대한 피드백을 주시면 감사하겠습니다."}]),
@@ -167,7 +167,7 @@ def profile():
             feedback_justification = round(user_knowledgestate.eval['justification'] / user_knowledgestate.s_num, 1)
             feedback_active = round(user_knowledgestate.eval['active'] / user_knowledgestate.s_num, 1)
 
-        return {"ideaData": ideaData, "chatData": userChat.log, "name": name, "mode": setting.mode, "character": setting.character, "goal1": setting.goal1, "goal2": setting.goal2, "goal3": setting.goal3, "time": setting.time, "student_knowledge_level": len(user_knowledgestate.knowledge), "qns": user_knowledgestate.qns, "cnd": user_knowledgestate.cnd, "uniqueness": feedback_uniqueness, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active, 'face': user_knowledgestate.face}
+        return {"ideaData": ideaData, "chatData": userChat.log, "name": name, "mode": setting.mode, "character": setting.character, "goal1": setting.goal1, "goal2": setting.goal2, "goal3": setting.goal3, "time": setting.time, "student_knowledge_level": len(user_knowledgestate.knowledge), "qns": user_knowledgestate.qns, "cnd": user_knowledgestate.cnd, "uniqueness": feedback_uniqueness, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active, 'face': user_knowledgestate.face, 'knowledge': user_knowledgestate.knowledge, 'actionPlan': user_knowledgestate.actionPlan}
     
     return  {"ideaData": ideaData, "chatData": userChat.log, "name": name, "mode": setting.mode, "character": "", "goal1": "", "goal2": "", "goal3": "", "time": setting.time, "student_knowledge_level": "", "qns": "", "cnd": "", "uniqueness": "", "relevance": "", "high_level": "", "specificity": "", "justification": "", "active": "", 'face': ""}
 
@@ -241,16 +241,80 @@ def response():
     # consideration = user_knowledgestate.consideration
     knowledge = user_knowledgestate.knowledge
     user_chat = ChatLog.query.filter_by(user_id=user.id, round=user.currentRound).first()
+    
+    formatted_chat = ''.join([f'you: {x["content"]}\n' if x["speaker"] == "student" else f'mentor: {x["content"]}\n' for x in user_chat.log])
+    formatted_knowledge = knowledge.replace(".", ".\n")
 
-    feedbackcate_prompt = [{"role": "system", "content":"Feedback Analysis Instructions for Instructor's Feedback of a Student's Design Idea.\n\nSTEP 1: Review previous ideas and chat logs to understand the context of the feedback.\n\nSTEP 2: Decompose the feedback into individual sentences.\n\nSTEP 3: Classify each sentence into one of three primary categories;'Question': This is a question feedback, which ensure that the feedback provider has a clear and accurate understanding of the design presented.;'Statement': This is a statement feedback, which provides relevant information or is directly related to a design idea to evaluate or suggest improvements.;'No feedback': This sentence is completely irrelevant to the feedback.\n\nSTEP 4: Subcategorize each sentence based on its nature (There are 21 types of 'Question', three types of 'Statement' and no sub category for 'No feedback.'); 'Question':\n\"Low-Level\": Seeks factual details about the design.\n- Verification: Is X true?\n- Definition: What does X mean?\n- Example: What is an example of X?\n- Feature Specification: What (qualitative) attributes does X have?\n- Concept Completion: Who? What? When? Where?\n- Quantification: How much? How many?\n- Disjunctive: Is X or Y the case?\n- Comparison: How does X compare to Y?\n- Judgmental: What is your opinion on X?\n\"Deep Reasoning\": Explores deeper implications or reasons behind the design.\n- Interpretation: How is a particular event or pattern of information interpreted or summarized?\n- Goal Orientation: What are the motives behind an agent’s action?\n- Causal Antecedent: What caused X to occur?\n- Causal Consequent: What were the consequences of X occurring?\n- Expectational: Why is X not true?\n- Instrumental/Procedural: How does an agent accomplish a goal?\n- Enablement(DR): What object or resource enables an agent to perform an action?\n\"Generate Design\": Encourages innovative thinking about design challenges.\n- Proposal/Negotiation: Could a new concept be suggested/negotiated?\n- Scenario Creation: What would happen if X occurred?\n- Ideation: Generation of ideas without a deliberate end goal\n- Method: How could an agent accomplish a goal?\n- Enablement(GD): What object or resource could enable an agent to perform an action?\n'Statement':\n\"Information\": Share related information or examples.\n\"Evaluation\": Assess the student’s design idea. Stating general facts rather than evaluating a student's ideas doesn't belong.\n\"Recommendation\": Provide actionable suggestions for improvement.\n\nSTEP 5: Summarize the extracted knowledge from each category. Knowledge includes only key approaches and keywords and excludes complex context.\n'Question':\n\"Low-Level\": DO NOT ADD knowledge.\n\"Deep Reasoning\": Suggest design considerations.\n\"Generate Design\": Suggest new design opportunities.\n'Statement':\n\"Information\": Details the provided information.\n\"Evaluation\": Describes the assessment of the design.\n\"Recommendation\": Outline ideas for enhancement.\n'No feedback': DO NOT ADD knowledge.\n\nSTEP 6: Check whether the knowledge is already known to the student or not.\n\nResponse Only in JSON array, which looks like, {\"sentences\":[{\"sentence\": \"\", \"categories\":\"\", \"type\":\"\", \"knowledge\":\"\", \"isNew\":\"\"}]}.\n\"sentence\": Individual unit of feedback.\n\"categories\": Category of feedback. ('Question' or 'Statement' or 'No feedback')\n\"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n\"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.\n\"isNew\": If it's new knowledge, true; otherwise, false.\nStudent's Idea:" + json.dumps(ideaData, ensure_ascii=False) + "\nStudent's Knowledge:" + knowledge + "\nchat Log:" + json.dumps(user_chat.log, ensure_ascii=False) + "\nfeedback:" + feedback}]
-    student_prompt = [{"role": "system", "content":"This is your design idea: " + json.dumps(ideaData, ensure_ascii=False) + "\nYou are a student who is trying to learn design. You're coming up with ideas for a design project. Your persona is \n* A Design Department 1st year student. \n* Korean. (say in Korean) \n* NEVER apologize, NEVER say you can help, and NEVER just say thanks.\n* NEVER write more than 3 sentences in a single response. Speak colloquially only. Use honorifics.\n\nAnswer feedback from the mentor ONLY based on your knowledge. If you can't answer based on Your Design Knowledge, say sorry, I don't know. BUT try to answer AS MUCH AS you can.\n\nThe format of your answer is JSON as follows. {\"answer\": {your answer}} \nThese are previous conversations between you(the student) and the mentor: " + json.dumps(user_chat.log, ensure_ascii=False) + "\nThis is the mentor's following chat(feedback): " + feedback}, 
-                      {"role": "user", "content":"I am an industrial design expert. As a mentor, I'll give feedback on your design project."}]
+    categorization_prompt = [
+        {
+            "role": "system",
+            "content": f"""Your task is to categorize the feedback provided by the mentor about the student's design idea. The studens is a 1st year Design Department student, and the mentor is an industrial design expert.
 
+This is student's current design idea:
+* Topic: {ideaData['topic']}
+* Title: {ideaData['title']}
+* Problem: {ideaData['problem']}
+* Idea: {ideaData['idea']}
+
+These are previous conversations between the student and the mentor about student's design idea:
+{formatted_chat}
+
+After the conversation, the mentor provided feedback to the student. This is the feedback that need to be categorized: {feedback}
+
+Follow the steps below to complete the task.
+
+STEP 1: Review student's current design idea and chat logs to understand the context of the feedback.
+
+STEP 2: Decompose the feedback into individual sentences.
+
+STEP 3: Classify each sentence into one of three primary categories;
+'Question': This is a question feedback, which ensure that the feedback provider has a clear and accurate understanding of the design presented.
+'Statement': This is a statement feedback, which provides relevant information or is directly related to a design idea to evaluate or suggest improvements.
+'No feedback': This sentence is completely irrelevant to the feedback.
+
+STEP 4: Subcategorize each sentence based on its nature (There are 21 types of 'Question', three types of 'Statement' and no sub category for 'No feedback.');
+'Question':
+"Low-Level": Seeks factual details about the design.
+- Verification: Is X true?
+- Definition: What does X mean?
+- Example: What is an example of X?
+- Feature Specification: What (qualitative) attributes does X have?
+- Concept Completion: Who? What? When? Where?
+- Quantification: How much? How many?
+- Disjunctive: Is X or Y the case?
+- Comparison: How does X compare to Y?
+- Judgmental: What is your opinion on X?
+"Deep Reasoning": Explores deeper implications or reasons behind the design.
+- Interpretation: How is a particular event or pattern of information interpreted or summarized?
+- Goal Orientation: What are the motives behind an agent’s action?
+- Causal Antecedent: What caused X to occur?
+- Causal Consequent: What were the consequences of X occurring?
+- Expectational: Why is X not true?
+- Instrumental/Procedural: How does an agent accomplish a goal?
+- Enablement(DR): What object or resource enables an agent to perform an action?
+"Generate Design": Encourages innovative thinking about design challenges.
+- Proposal/Negotiation: Could a new concept be suggested/negotiated?
+- Scenario Creation: What would happen if X occurred?
+- Ideation: Generation of ideas without a deliberate end goal
+- Method: How could an agent accomplish a goal?
+- Enablement(GD): What object or resource could enable an agent to perform an action?
+
+'Statement':
+"Information": Share related information or examples.
+"Evaluation": Assess the student’s design idea. Stating general facts rather than evaluating a student's ideas doesn't belong.
+"Recommendation": Provide actionable suggestions for improvement.
+
+Response Only in JSON array, which looks like, {{"sentences":[{{"sentence": "", "categories":"", "type":""}}]}}.
+"sentence": Individual unit of feedback.
+"categories": Category of feedback. ('Question' or 'Statement' or 'No feedback')
+"type": Subcategory of feedback. ("Low-Level" or "Deep Reasoning" or "Generate Design" or "Information" or "Evaluation" or "Recommendation").
+"""
+}]
     completion1 = openai.chat.completions.create(
         model="gpt-4o",
         # model="gpt-3.5-turbo",
         temperature=0,
-        messages=feedbackcate_prompt,
+        messages=categorization_prompt,
         response_format={"type": "json_object"}
     )
     try:
@@ -260,23 +324,80 @@ def response():
         # This will run only if there is no error
         return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
 
-    feedbackeval_prompt = [{"role": "system", "content":"Feedback Evaluation Instructions for Instructor's Feedback of a Student's Design Idea.\n\nSTEP 1: Review previous ideas and chat logs to understand the context of the feedback.\n\nSTEP 2: Evaluate the feedback on a scale of 1 to 57 based on the following criteria. There are three different criteria depending on whether the feedback category is a 'Question' or a 'Statement'.\n'Question':\n\"uniqueness\": The question is unique.\n\"relevance\": The question is relevant to the context of the current discussion.\n\"high-level\": The question is high-level.(If the question falls into the \"Low-Level\" category, it's between 1 and 2. Otherwise, it's between 3 and 5.)\n'Statement':\n\"specificity\": The feedback is specific.\n\"justification\": The feedback is justified.\n\"active\": The feedback is actionable\n'No feedback': DO NOT RATE.\nSTEP 3: Evaluate the sentiment of the feedback. Analyze the sentiment of the feedback and rate it as either positive(1), neutral(0), or negative(-1).\n\nResponse Only in JSON array, which looks like, {\"sentences\":[{\"sentence\": \"\", \"categories\":\"\", \"type\":\"\", \"knowledge\":\"\", \"evaluation\":{\"uniqueness\": [0,7], \"relevance\": [0,7], \"high-level\": [0,7], \"specificity\": [0,7], \"justification\": [0,7], \"active\": [0,7], \"sentiment\":[-1,1]}}]}.\n\"sentence\": Individual unit of feedback.\n\"categories\": Category of feedback. ('Question' or 'Statement' or 'No feedback')\n\"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n\"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.\n\"evaluation\": JSON with the evaluation score based on the criteria. The criteria that should be evaluated in STEP 2 have a value between 1-7, with the rest evaluated as 0.\n\nStudent's Idea:" + json.dumps(ideaData, ensure_ascii=False) + "\nchat Log:" + json.dumps(user_chat.log, ensure_ascii=False) + "\nfeedback:" + str(result1)}]
-
     # Add Knowledge
-    new_knowledge = ""
+    knowledge_prompt = [
+        {
+            "role": "system",
+            "content": f"""Your task is to extract the knowledge that was accumulated by the student during the conversation with the mentor about the student's design idea.
+
+This is student's current design idea:
+* Topic: {ideaData['topic']}
+* Title: {ideaData['title']}
+* Problem: {ideaData['problem']}
+* Idea: {ideaData['idea']}
+
+These are previous conversations between the student and the mentor about student's design idea:
+{formatted_chat}
+
+This is student's current design knowledge accumulated by the conversation with the mentor:
+{formatted_knowledge}
+
+Now, you will be given the feedback that the mentor provided to the student after the conversation, and the type of that feedback. The format of the input is as follows:
+{{"sentence": "", "categories":"", "type":""}}
+
+First, extract the knowledge that the student can derive from the feedback.
+The knowledge should be a one-line sentence, and is highly relevant to the given instructor's feedback, but could be applied to any design idea or context. It should not include specific details related to the current design idea.
+You can infer some intentions behind the feedback to build the knowledge, but avoid generating too irrelevant or too specific knowledge.
+
+Then, based on the knowledge, generate one-line action plan that the student should take based on the feedback. The action plan should be about the actions that the student should take to improve the current design idea based on the knowledge extracted from the feedback.
+"Deep Reasoning": Suggest design considerations from the feedback.
+"Generate Design": Suggest new design opportunities from the feedback.
+"Information": Details the information provided in the feedback.
+"Evaluation": Describes the assessment of the design idea.
+"Recommendation": Outline ideas for enhancement based on the feedback.
+
+Lastly, convert the extracted knowledge into the form of a student talking to himself. This should be a one-line Korean sentence. This should be not rephrasing the given feedback, but more about the process of translating the given feedback into his own knowledge.
+
+The response should be in JSON array format, which looks like, {{"knowledge": "", "action_plan": "", "thinking": ""}}.
+"""
+}]
+    
+    new_knowledge = []
+    new_actionPlan = []
+    new_thinking = []
     for sentence in result1:
+        if sentence['categories'].lower() == 'no feedback' or sentence['categories'].lower() == 'low-level':
+            continue
+        getKowledge = openai.chat.completions.create(
+            model="gpt-4o",
+            # model="gpt-3.5-turbo",
+            messages=knowledge_prompt + [{"role": "assistant", "content": json.dumps(sentence)}],
+            temperature=0,
+            response_format={"type": "json_object"}
+        )
         try:
-            if sentence['isNew']:
-                new_knowledge += sentence["knowledge"]
+            knowledge = json.loads(getKowledge.choices[0].message.content)
+            print(knowledge)
+            new_knowledge.append(knowledge["knowledge"])
+            new_actionPlan.append(knowledge["action_plan"])
+            new_thinking.append(knowledge["thinking"])
         except:
             return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
-    user_knowledgestate.knowledge += new_knowledge
+
+    if (user_knowledgestate.knowledge != ""):
+        user_knowledgestate.knowledge += ", "
+    user_knowledgestate.knowledge += ", ".join(new_knowledge)
+    if (user_knowledgestate.actionPlan != ""):
+        user_knowledgestate.actionPlan += ", "
+    user_knowledgestate.actionPlan += ", ".join(new_actionPlan)
+    new_thinking = " ".join(new_thinking)
 
     if len(result1) == 0:
         if (user_knowledgestate.face / 10) > 2:
             user_knowledgestate.face -= 10
 
     else:
+        feedbackeval_prompt = [{"role": "system", "content":"Feedback Evaluation Instructions for Instructor's Feedback of a Student's Design Idea.\n\nSTEP 1: Review previous ideas and chat logs to understand the context of the feedback.\n\nSTEP 2: Evaluate the feedback on a scale of 1 to 57 based on the following criteria. There are three different criteria depending on whether the feedback category is a 'Question' or a 'Statement'.\n'Question':\n\"uniqueness\": The question is unique.\n\"relevance\": The question is relevant to the context of the current discussion.\n\"high-level\": The question is high-level.(If the question falls into the \"Low-Level\" category, it's between 1 and 2. Otherwise, it's between 3 and 5.)\n'Statement':\n\"specificity\": The feedback is specific.\n\"justification\": The feedback is justified.\n\"active\": The feedback is actionable\n'No feedback': DO NOT RATE.\nSTEP 3: Evaluate the sentiment of the feedback. Analyze the sentiment of the feedback and rate it as either positive(1), neutral(0), or negative(-1).\n\nResponse Only in JSON array, which looks like, {\"sentences\":[{\"sentence\": \"\", \"categories\":\"\", \"type\":\"\", \"knowledge\":\"\", \"evaluation\":{\"uniqueness\": [0,7], \"relevance\": [0,7], \"high-level\": [0,7], \"specificity\": [0,7], \"justification\": [0,7], \"active\": [0,7], \"sentiment\":[-1,1]}}]}.\n\"sentence\": Individual unit of feedback.\n\"categories\": Category of feedback. ('Question' or 'Statement' or 'No feedback')\n\"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n\"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.\n\"evaluation\": JSON with the evaluation score based on the criteria. The criteria that should be evaluated in STEP 2 have a value between 1-7, with the rest evaluated as 0.\n\nStudent's Idea:" + json.dumps(ideaData, ensure_ascii=False) + "\nchat Log:" + json.dumps(user_chat.log, ensure_ascii=False) + "\nfeedback:" + str(result1)}]
         # Second Prompt for Evaluate feedback
         completion2 = openai.chat.completions.create(
             model="gpt-4o",
@@ -382,6 +503,8 @@ def response():
         elif ((user_knowledgestate.face % 10) > 2) and (sentiment_counter < 0):
             user_knowledgestate.face -= 1
             
+    student_prompt = [{"role": "system", "content":"This is your design idea: " + json.dumps(ideaData, ensure_ascii=False) + "\nYou are a student who is trying to learn design. You're coming up with ideas for a design project. Your persona is \n* A Design Department 1st year student. \n* Korean. (say in Korean) \n* NEVER apologize, NEVER say you can help, and NEVER just say thanks.\n* NEVER write more than 3 sentences in a single response. Speak colloquially only. Use honorifics.\n\nAnswer feedback from the mentor ONLY based on your knowledge. If you can't answer based on Your Design Knowledge, say sorry, I don't know. BUT try to answer AS MUCH AS you can.\n\nThe format of your answer is JSON as follows. {\"answer\": {your answer}} \nThese are previous conversations between you(the student) and the mentor: " + json.dumps(user_chat.log, ensure_ascii=False) + "\nThis is the mentor's following chat(feedback): " + feedback}, 
+                      {"role": "user", "content":"I am an industrial design expert. As a mentor, I'll give feedback on your design project."}]
     completion3 = openai.chat.completions.create(
         model="gpt-4o",
         # model="gpt-3.5-turbo",
@@ -449,7 +572,7 @@ def response():
     # print(user_knowledgestate.face)
     # print("knowledge: ", user_knowledgestate.knowledge)
 
-    return {"response": result3["answer"], "student_knowledge_level": student_knowledge_level, "qns": user_knowledgestate.qns, "cnd": user_knowledgestate.cnd, "uniqueness": feedback_uniqueness, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active, "questionChecker": question_checker, "face": user_knowledgestate.face}
+    return {"response": result3["answer"], "student_knowledge_level": student_knowledge_level, "qns": user_knowledgestate.qns, "cnd": user_knowledgestate.cnd, "uniqueness": feedback_uniqueness, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active, "questionChecker": question_checker, "face": user_knowledgestate.face, "knowledge": user_knowledgestate.knowledge, "actionPlan": user_knowledgestate.actionPlan, "thinking": new_thinking}
 
 @main.route("/baselineresponse", methods=["POST"])
 @jwt_required()
@@ -530,8 +653,7 @@ def askQuestion():
     question_prompt = [
         {
             "role": "system",
-            "content": f"""
-You are a student who is trying to learn design. You're coming up with ideas for a design project. Your persona is:
+            "content": f"""You are a student who is trying to learn design. You're coming up with ideas for a design project. Your persona is:
 * a Design Department 1st year student.
 * Korean. (say in Korean)
 * Speak colloquially only. Use honorifics.
@@ -591,9 +713,44 @@ The format of your question is JSON as follows:
 def updateIdea():
     user = User.query.filter_by(email=get_jwt_identity()).first()
     user_chat = ChatLog.query.filter_by(user_id=user.id).first()
+    user_knowledgestate = KnowledgeState.query.filter_by(user_id=user.id).first()
     idea = Idea.query.filter_by(user_id=user.id, round=user.currentRound).first()
+    
+    if (user_knowledgestate.actionPlan == ""):
+        return {"response": "No action plan to update the idea."}
+    
     ideaData = {"topic": idea.topic, "design criteria": idea.design_goals, "title": idea.title, "problem": idea.target_problem, "idea": idea.idea}
-    ideaUpdatePrompt = [{ "role": "system", "content":"PLEASE improve your design ideas by incorporating the following conversation as much as possible. All content must be written in Korean.\nThis is a design idea you have to improve;" + json.dumps(ideaData, ensure_ascii=False) + "\nThis is the conversation you have to refer to;" + json.dumps(user_chat.log, ensure_ascii=False) + "\nResponse Only in JSON array, which looks like, {'title': \"\", 'target_problem': \"\", 'idea': \"\"}"}]
+    formatted_chat = ''.join([f'you: {x["content"]}\n' if x["speaker"] == "student" else f'mentor: {x["content"]}\n' for x in user_chat.log])
+    formatted_actionPlan = ""
+    for action in user_knowledgestate.actionPlan.split(", "):
+        formatted_actionPlan += f"* {action}\n"
+    
+    ideaUpdatePrompt = [{
+        "role": "system",
+        "content": f"""
+You are a student who is trying to improve your design ideas for a design project. Your persona is:
+* a Design Department 1st year student.
+* Korean. (say in Korean)
+
+This is your current design idea:
+* Topic: {ideaData['topic']}
+* Title: {ideaData['title']}
+* Problem: {ideaData['problem']}
+* Idea: {ideaData['idea']}        
+
+Now you have to improve this idea based on your conversation with your instructor, who is an industrial design expert.
+These are previous conversations between you (the student) and the mentor about your design idea:
+{formatted_chat}
+
+Based on your conversation with the mentor, you made a list of action plans to improve your design idea. You need to update your design idea based on these action plans.
+{formatted_actionPlan}
+
+All content must be written in Korean. Ideas are a maximum of 1000 characters.
+
+Response Only in JSON array, which looks like, {{'title': "", 'target_problem': "", 'idea': ""}}
+        """
+    }]
+    print(ideaUpdatePrompt[0]['content'])   
     
     completion1 = openai.chat.completions.create(
         model="gpt-4-turbo",
@@ -608,6 +765,7 @@ def updateIdea():
         return {"response": "error"}
     
     try:
+        user_knowledgestate.actionPlan = ""
         idea.title = result['title']
         idea.problem = result['target_problem']
         idea.idea = result['idea']
