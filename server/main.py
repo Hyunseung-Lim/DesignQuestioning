@@ -273,8 +273,7 @@ def response():
     user_knowledgestate.knowledge += new_knowledge
 
     if len(result1) == 0:
-        if (user_knowledgestate.face / 10) > 1:
-            print('hi')
+        if (user_knowledgestate.face / 10) > 2:
             user_knowledgestate.face -= 10
 
     else:
@@ -345,10 +344,12 @@ def response():
                     if sentence['evaluation']['active'] <= 4:
                         user_knowledgestate.counter['a_count'] += 1
 
-                    if (int(sentence['evaluation']['specificity']) + int(sentence['evaluation']['justification']) + int(sentence['evaluation']['active']) >= 15) and ((user_knowledgestate.face / 10) < 5):
-                        user_knowledgestate.face += 10
-                    elif (int(sentence['evaluation']['specificity']) + int(sentence['evaluation']['justification']) + int(sentence['evaluation']['active']) <= 9) and ((user_knowledgestate.face / 10) > 1):
-                        user_knowledgestate.face -= 10
+                    if int(sentence['evaluation']['specificity']) + int(sentence['evaluation']['justification']) + int(sentence['evaluation']['active']) >= 15:
+                        if (user_knowledgestate.face / 10) < 5:
+                            user_knowledgestate.face += 10
+                    if int(sentence['evaluation']['specificity']) + int(sentence['evaluation']['justification']) + int(sentence['evaluation']['active']) <= 9:
+                        if (user_knowledgestate.face / 10) > 2:
+                            user_knowledgestate.face -= 10
 
                     flag_modified(user_knowledgestate, 'counter')
                     flag_modified(user_knowledgestate, 's_num')
@@ -378,7 +379,7 @@ def response():
             
         if ((user_knowledgestate.face % 10) < 5) and (sentiment_counter > 0):
             user_knowledgestate.face += 1
-        elif ((user_knowledgestate.face % 10) > 1) and (sentiment_counter < 0):
+        elif ((user_knowledgestate.face % 10) > 2) and (sentiment_counter < 0):
             user_knowledgestate.face -= 1
             
     completion3 = openai.chat.completions.create(

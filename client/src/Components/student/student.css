@@ -138,14 +138,19 @@
 
 .userStatus > .feedback {
     width: 90%;
+    padding: 12px 0;
 }
 
-.userStatus > .feedback > .bar {
+.userStatus > .feedback > .barHolder {
+    margin: 30px 0;
+}
+
+.userStatus > .feedback > .barHolder > .bar {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
     font-size: 14px;
     font-weight: 600;
 }
