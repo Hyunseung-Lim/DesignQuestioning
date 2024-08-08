@@ -88,9 +88,9 @@ def signup():
     ]
     
     new_KnowledgeStates = [
-        KnowledgeState(user_id = new_user.id, round=1, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", actionPlan = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
-        KnowledgeState(user_id = new_user.id, round=2, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", actionPlan = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
-        KnowledgeState(user_id = new_user.id, round=3, face=33, q_num=0, s_num=0, qns=0, cnd=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", actionPlan = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0})
+        KnowledgeState(user_id = new_user.id, round=1, face=33, q_num=0, s_num=0, c_num=0, d_num=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", actionPlan = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
+        KnowledgeState(user_id = new_user.id, round=2, face=33, q_num=0, s_num=0, c_num=0, d_num=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", actionPlan = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
+        KnowledgeState(user_id = new_user.id, round=3, face=33, q_num=0, s_num=0, c_num=0, d_num=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", actionPlan = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0})
     ]
     new_ChatLogs = [
         ChatLog(user_id = new_user.id, round=1, log = [{"speaker":"student", "content": "안녕하세요! 저는 동건이라고 합니다. 제 아이디어에 대한 피드백을 주시면 감사하겠습니다."}]),
@@ -167,7 +167,15 @@ def profile():
             feedback_justification = round(user_knowledgestate.eval['justification'] / user_knowledgestate.s_num, 1)
             feedback_active = round(user_knowledgestate.eval['active'] / user_knowledgestate.s_num, 1)
 
-        return {"ideaData": ideaData, "chatData": userChat.log, "name": name, "mode": setting.mode, "character": setting.character, "goal1": setting.goal1, "goal2": setting.goal2, "goal3": setting.goal3, "time": setting.time, "student_knowledge_level": len(user_knowledgestate.knowledge), "qns": user_knowledgestate.qns, "cnd": user_knowledgestate.cnd, "uniqueness": feedback_uniqueness, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active, 'face': user_knowledgestate.face, 'knowledge': user_knowledgestate.knowledge, 'actionPlan': user_knowledgestate.actionPlan}
+        qns = 50
+        if user_knowledgestate.q_num + user_knowledgestate.s_num > 0:
+            qns = user_knowledgestate.q_num * 100 / (user_knowledgestate.q_num + user_knowledgestate.s_num)
+        
+        cnd = 50
+        if user_knowledgestate.c_num + user_knowledgestate.d_num > 0:
+            qns = user_knowledgestate.c_num * 100 / (user_knowledgestate.c_num + user_knowledgestate.d_num)
+
+        return {"ideaData": ideaData, "chatData": userChat.log, "name": name, "mode": setting.mode, "character": setting.character, "goal1": setting.goal1, "goal2": setting.goal2, "goal3": setting.goal3, "time": setting.time, "student_knowledge_level": len(user_knowledgestate.knowledge), "qns": qns, "cnd": cnd, "uniqueness": feedback_uniqueness, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active, 'face': user_knowledgestate.face, 'knowledge': user_knowledgestate.knowledge, 'actionPlan': user_knowledgestate.actionPlan}
     
     return  {"ideaData": ideaData, "chatData": userChat.log, "name": name, "mode": setting.mode, "character": "", "goal1": "", "goal2": "", "goal3": "", "time": setting.time, "student_knowledge_level": "", "qns": "", "cnd": "", "uniqueness": "", "relevance": "", "high_level": "", "specificity": "", "justification": "", "active": "", 'face': ""}
 
@@ -345,7 +353,9 @@ This is student's current design knowledge accumulated by the conversation with 
 Now, you will be given the feedback that the mentor provided to the student after the conversation, and the type of that feedback. The format of the input is as follows:
 {{"sentence": "", "categories":"", "type":""}}
 
-First, extract the knowledge that the student can derive from the feedback.
+First,First, don't interpret the sentence literally, but contextualize it from previous conversations to understand what is being said.
+
+Next, extract the knowledge that the student can derive from the feedback.
 The knowledge should be a one-line sentence, and is highly relevant to the given instructor's feedback, but could be applied to any design idea or context. It should not include specific details related to the current design idea.
 You can infer some intentions behind the feedback to build the knowledge, but avoid generating too irrelevant or too specific knowledge.
 
@@ -356,7 +366,7 @@ Then, based on the knowledge, generate one-line action plan that the student sho
 "Evaluation": Describes the assessment of the design idea.
 "Recommendation": Outline ideas for enhancement based on the feedback.
 
-Lastly, convert the extracted knowledge into the form of a student talking to himself. This should be a one-line Korean sentence. This should be not rephrasing the given feedback, but more about the process of translating the given feedback into his own knowledge.
+Lastly, convert the extracted knowledge into the form of a student talking to himself. This should be a one-line Korean sentence. This should be not rephrasing the given feedback, but more about the process of translating the given feedback into his own knowledge. End with an exclamation point if the thought is surprising, a question mark if it conflicts with your knowledge or common sense, and a period otherwise.
 
 The response should be in JSON array format, which looks like, {{"knowledge": "", "action_plan": "", "thinking": ""}}.
 """
@@ -420,8 +430,6 @@ The response should be in JSON array format, which looks like, {{"knowledge": ""
                 if sentence['type'].lower() in LLQ + DRQ + GDQ:
                     user_knowledgestate.counter['q_count'] += 1
                     user_knowledgestate.q_num += 1
-                    if user_knowledgestate.qns > -5:
-                        user_knowledgestate.qns -= 1
                     #uniqueness
                     user_knowledgestate.eval['uniqueness'] += int(sentence['evaluation']['uniqueness'])
                     if sentence['evaluation']['uniqueness'] <= 4:
@@ -438,20 +446,17 @@ The response should be in JSON array format, which looks like, {{"knowledge": ""
                     if (int(sentence['evaluation']['uniqueness']) + int(sentence['evaluation']['relevance']) + int(sentence['evaluation']['high-level']) >= 15) and ((user_knowledgestate.face / 10) < 5):
                         print(user_knowledgestate.face / 10)
                         user_knowledgestate.face += 10
-                    elif (int(sentence['evaluation']['uniqueness']) + int(sentence['evaluation']['relevance']) + int(sentence['evaluation']['high-level']) <= 9) and ((user_knowledgestate.face / 10) > 1):
+                    elif (int(sentence['evaluation']['uniqueness']) + int(sentence['evaluation']['relevance']) + int(sentence['evaluation']['high-level']) <= 9) and ((user_knowledgestate.face / 10) > 2):
                         print(user_knowledgestate.face / 10)
                         user_knowledgestate.face -= 10
 
                     flag_modified(user_knowledgestate, 'counter')
                     flag_modified(user_knowledgestate, 'q_num')
-                    flag_modified(user_knowledgestate, 'qns')
                     flag_modified(user_knowledgestate, 'eval')
     
                 if sentence['type'].lower() in ['information', 'evaluation', 'recommendation']:
                     user_knowledgestate.counter['q_count'] -= 1
                     user_knowledgestate.s_num += 1
-                    if user_knowledgestate.qns < 5:
-                        user_knowledgestate.qns += 1
                     #specificity
                     user_knowledgestate.eval['specificity'] += int(sentence['evaluation']['specificity'])
                     if sentence['evaluation']['specificity'] <= 4:
@@ -465,30 +470,29 @@ The response should be in JSON array format, which looks like, {{"knowledge": ""
                     if sentence['evaluation']['active'] <= 4:
                         user_knowledgestate.counter['a_count'] += 1
 
-                    if int(sentence['evaluation']['specificity']) + int(sentence['evaluation']['justification']) + int(sentence['evaluation']['active']) >= 15:
+                    if int(sentence['evaluation']['specificity']) + int(sentence['evaluation']['justification']) + int(sentence['evaluation']['active']) >= 14:
                         if (user_knowledgestate.face / 10) < 5:
                             user_knowledgestate.face += 10
-                    if int(sentence['evaluation']['specificity']) + int(sentence['evaluation']['justification']) + int(sentence['evaluation']['active']) <= 9:
+                    if int(sentence['evaluation']['specificity']) + int(sentence['evaluation']['justification']) + int(sentence['evaluation']['active']) <= 8:
                         if (user_knowledgestate.face / 10) > 2:
                             user_knowledgestate.face -= 10
 
                     flag_modified(user_knowledgestate, 'counter')
                     flag_modified(user_knowledgestate, 's_num')
-                    flag_modified(user_knowledgestate, 'qns')
                     flag_modified(user_knowledgestate, 'eval')
 
                 if sentence['type'].lower() in GDQ + ['recommendation']:
                     user_knowledgestate.counter['d_count'] += 1
-                    if user_knowledgestate.cnd < 5:
-                        user_knowledgestate.cnd += 1
-                        flag_modified(user_knowledgestate, 'cnd')
+                    user_knowledgestate.d_num += 1
+
+                    flag_modified(user_knowledgestate, 'd_num')
                     flag_modified(user_knowledgestate, 'counter')
 
                 if sentence['type'].lower() in DRQ + ['evaluation']:
                     user_knowledgestate.counter['d_count'] -= 1
-                    if user_knowledgestate.cnd > -5:
-                        user_knowledgestate.cnd -= 1
-                        flag_modified(user_knowledgestate, 'cnd')
+                    user_knowledgestate.c_num += 1
+
+                    flag_modified(user_knowledgestate, 'c_num')
                     flag_modified(user_knowledgestate, 'counter')
                 
                 sentiment_counter += sentence['evaluation']['sentiment']
@@ -546,16 +550,16 @@ The response should be in JSON array format, which looks like, {{"knowledge": ""
         feedback_active = round(user_knowledgestate.eval['active'] / user_knowledgestate.s_num, 1)
     
     question_checker = not (
-        (user_knowledgestate.counter['q_count'] < 3)
-        and (user_knowledgestate.counter['q_count'] > -3)
-        and (user_knowledgestate.counter['d_count'] < 3) 
-        and (user_knowledgestate.counter['d_count'] > -3) 
-        and (user_knowledgestate.counter['u_count'] < 3) 
-        and (user_knowledgestate.counter['r_count'] < 3) 
-        and (user_knowledgestate.counter['h_count'] < 3)
-        and (user_knowledgestate.counter['s_count'] < 3)
-        and (user_knowledgestate.counter['j_count'] < 3)
-        and (user_knowledgestate.counter['a_count'] < 3)
+        (user_knowledgestate.counter['q_count'] < 4)
+        and (user_knowledgestate.counter['q_count'] > -4)
+        and (user_knowledgestate.counter['d_count'] < 4) 
+        and (user_knowledgestate.counter['d_count'] > -4) 
+        and (user_knowledgestate.counter['u_count'] < 4) 
+        and (user_knowledgestate.counter['r_count'] < 4) 
+        and (user_knowledgestate.counter['h_count'] < 4)
+        and (user_knowledgestate.counter['s_count'] < 4)
+        and (user_knowledgestate.counter['j_count'] < 4)
+        and (user_knowledgestate.counter['a_count'] < 4)
     )
 
     # print(feedback_uniqueness)
@@ -572,7 +576,15 @@ The response should be in JSON array format, which looks like, {{"knowledge": ""
     # print(user_knowledgestate.face)
     # print("knowledge: ", user_knowledgestate.knowledge)
 
-    return {"response": result3["answer"], "student_knowledge_level": student_knowledge_level, "qns": user_knowledgestate.qns, "cnd": user_knowledgestate.cnd, "uniqueness": feedback_uniqueness, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active, "questionChecker": question_checker, "face": user_knowledgestate.face, "knowledge": user_knowledgestate.knowledge, "actionPlan": user_knowledgestate.actionPlan, "thinking": new_thinking}
+    qns = 50
+    if user_knowledgestate.q_num + user_knowledgestate.s_num > 0:
+        qns = user_knowledgestate.q_num * 100 / (user_knowledgestate.q_num + user_knowledgestate.s_num)
+    
+    cnd = 50
+    if user_knowledgestate.c_num + user_knowledgestate.d_num > 0:
+        cnd = user_knowledgestate.c_num * 100 / (user_knowledgestate.c_num + user_knowledgestate.d_num)
+
+    return {"response": result3["answer"], "student_knowledge_level": student_knowledge_level, "qns": qns, "cnd": cnd, "uniqueness": feedback_uniqueness, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active, "questionChecker": question_checker, "face": user_knowledgestate.face, "knowledge": user_knowledgestate.knowledge, "actionPlan": user_knowledgestate.actionPlan, "thinking": new_thinking}
 
 @main.route("/baselineresponse", methods=["POST"])
 @jwt_required()
@@ -625,25 +637,25 @@ def askQuestion():
 
     instruction = ""
 
-    if user_knowledgestate.counter['q_count'] >= 3:
+    if user_knowledgestate.counter['q_count'] >= 4:
         instruction = "Ask for the reviewer's own opinion or advice on the previous reviewer's question."
-    elif user_knowledgestate.counter['q_count'] <= -3:
+    elif user_knowledgestate.counter['q_count'] <= -4:
         instruction = "Ask what I need to think about to respond to the feedback."
-    elif user_knowledgestate.counter['d_count'] >= 3:
+    elif user_knowledgestate.counter['d_count'] >= 4:
         instruction = "Ask questions to synthesize what we've discussed so far."
-    elif user_knowledgestate.counter['d_count'] <= -3:
+    elif user_knowledgestate.counter['d_count'] <= -4:
         instruction = "Ask questions to expand on what we've discussed so far."
-    elif user_knowledgestate.counter['r_count'] >= 3:
+    elif user_knowledgestate.counter['r_count'] >= 4:
         instruction = "Ask questions that are relevant to what we're discussing."
-    elif user_knowledgestate.counter['h_count'] >= 3:
+    elif user_knowledgestate.counter['h_count'] >= 4:
         instruction = "Ask questions that elicit feedback that lead to higher-level thinking."
-    elif user_knowledgestate.counter['s_count'] >= 3:
+    elif user_knowledgestate.counter['s_count'] >= 4:
         instruction = "Ask questions that elicit specific feedback."
-    elif user_knowledgestate.counter['j_count'] >= 3:
+    elif user_knowledgestate.counter['j_count'] >= 4:
         instruction = "Ask questions that elicit justification."
-    elif user_knowledgestate.counter['a_count'] >= 3:
+    elif user_knowledgestate.counter['a_count'] >= 4:
         instruction = "Ask questions that elicit actionable feedback."
-    elif user_knowledgestate.counter['u_count'] >= 3:
+    elif user_knowledgestate.counter['u_count'] >= 4:
         instruction = "Ask questions to get feedback you hadn't considered."
 
     user_knowledgestate.counter = {'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}
@@ -745,7 +757,7 @@ These are previous conversations between you (the student) and the mentor about 
 Based on your conversation with the mentor, you made a list of action plans to improve your design idea. You need to update your design idea based on these action plans.
 {formatted_actionPlan}
 
-All content must be written in Korean. Ideas are a maximum of 1000 characters.
+All content must be written in Korean. Ideas are a maximum of 3000 characters.
 
 Response Only in JSON array, which looks like, {{'title': "", 'target_problem': "", 'idea': ""}}
         """

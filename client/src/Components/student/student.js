@@ -155,7 +155,7 @@ export const Student = (props) => {
                       <clipPath id="left-rounded-rect-1">
                         <path
                           d={`M10,0 H${
-                            ((cnd + 5) * (svgWidth * 0.6)) / 10 + 10
+                            ((cnd/10) * (svgWidth * 0.6)) / 10 + 10
                           } V20 H10 Q0,20 0,10 V10 Q0,0 10,0 Z`}
                         />
                       </clipPath>
@@ -182,7 +182,7 @@ export const Student = (props) => {
                     />
                     <rect
                       className="barPointer"
-                      width={((cnd + 5) * (svgWidth * 0.6 - 20)) / 10 + 10}
+                      width={((cnd/10) * (svgWidth * 0.6 - 20)) / 10 + 10}
                       height="20"
                       fill="#32C5B3"
                       clipPath="url(#left-rounded-rect-1)"
@@ -197,7 +197,7 @@ export const Student = (props) => {
                       <clipPath id="left-rounded-rect-2">
                         <path
                           d={`M10,0 H${
-                            ((5 - qns) * (svgWidth * 0.6)) / 10 + 10
+                            (qns / 10 * (svgWidth * 0.6)) / 10 + 10
                           } V20 H10 Q0,20 0,10 V10 Q0,0 10,0 Z`}
                         />
                       </clipPath>
@@ -224,7 +224,7 @@ export const Student = (props) => {
                     />
                     <rect
                       className="barPointer"
-                      width={((5 - qns) * (svgWidth * 0.6 - 20)) / 10 + 10}
+                      width={(qns / 10 * (svgWidth * 0.6 - 20)) / 10 + 10}
                       height="20"
                       fill="#2D54F2"
                       clipPath="url(#left-rounded-rect-2)"
@@ -233,7 +233,7 @@ export const Student = (props) => {
                   <div>진술형</div>
                 </div>
               </div>
-              <BarChart evalPoint={evalPoint} />
+              <BarChart evalPoint={evalPoint}/>
             </div>
           )}
         </div>

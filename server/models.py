@@ -47,8 +47,10 @@ class KnowledgeState(db.Model):
     # consideration = db.Column(db.String(1000))
     q_num = db.Column(db.Integer)
     s_num = db.Column(db.Integer)
-    qns = db.Column(db.Integer) # question and statemnet
-    cnd = db.Column(db.Integer) # divergent and convergent
+    c_num = db.Column(db.Integer)
+    d_num = db.Column(db.Integer)
+    # qns = db.Column(db.Integer) # question and statemnet
+    # cnd = db.Column(db.Integer) # divergent and convergent
     eval = db.Column(db.JSON)
     knowledge = db.Column(db.String(3000))
     actionPlan = db.Column(db.String(3000))
