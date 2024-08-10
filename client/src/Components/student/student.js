@@ -76,7 +76,7 @@ export const Student = (props) => {
     setCnd(props.feedbackData.cnd);
     setQns(props.feedbackData.qns);
     setEvalPoint([
-      props.feedbackData.uniqueness,
+      props.feedbackData.timely,
       props.feedbackData.relevance,
       props.feedbackData.high_level,
       props.feedbackData.specificity,
@@ -101,7 +101,7 @@ export const Student = (props) => {
                     <img src='images/student_wrap_Btn.png' alt='student_wrap_btn'/>
                 </div> */}
         <div className="studentProfile">
-          <div className="title">학생(동건) 프로필{studentFace}</div>
+          <div className="title">학생(동건) 프로필</div>
           <div className="thinkingContentBox">{thinkingContents}</div>
           <img src={"images/student/student" + studentFace + ".png"} alt="logo" />
           <div className="barContainer">

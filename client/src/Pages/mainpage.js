@@ -67,7 +67,7 @@ export const MainPage = (props) => {
         setFeedbackData({
           cnd: res.cnd,
           qns: res.qns,
-          uniqueness: res.uniqueness,
+          timely: res.timely,
           relevance: res.relevance,
           high_level: res.high_level,
           specificity: res.specificity,

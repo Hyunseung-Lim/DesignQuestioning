@@ -88,9 +88,9 @@ def signup():
     ]
     
     new_KnowledgeStates = [
-        KnowledgeState(user_id = new_user.id, round=1, face=33, q_num=0, s_num=0, c_num=0, d_num=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", actionPlan = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
-        KnowledgeState(user_id = new_user.id, round=2, face=33, q_num=0, s_num=0, c_num=0, d_num=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", actionPlan = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
-        KnowledgeState(user_id = new_user.id, round=3, face=33, q_num=0, s_num=0, c_num=0, d_num=0, eval={'uniqueness': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", actionPlan = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0})
+        KnowledgeState(user_id = new_user.id, round=1, face=33, q_num=0, s_num=0, c_num=0, d_num=0, eval={'timely': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", actionPlan = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
+        KnowledgeState(user_id = new_user.id, round=2, face=33, q_num=0, s_num=0, c_num=0, d_num=0, eval={'timely': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", actionPlan = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0}),
+        KnowledgeState(user_id = new_user.id, round=3, face=33, q_num=0, s_num=0, c_num=0, d_num=0, eval={'timely': 0, 'relevance': 0, 'high-level': 0, 'specificity': 0, 'justification': 0, 'active': 0}, knowledge = "", actionPlan = "", counter={'q_count': 0, 'd_count': 0, 'u_count': 0, 'r_count': 0, 'h_count': 0, 's_count': 0, 'j_count': 0, 'a_count': 0})
     ]
     new_ChatLogs = [
         ChatLog(user_id = new_user.id, round=1, log = [{"speaker":"student", "content": "안녕하세요! 저는 동건이라고 합니다. 제 아이디어에 대한 피드백을 주시면 감사하겠습니다."}]),
@@ -150,7 +150,7 @@ def profile():
     if setting.mode == 1 :
         user_knowledgestate = KnowledgeState.query.filter_by(user_id=user.id, round=user.currentRound).first()
         
-        feedback_uniqueness = 0
+        feedback_timely = 0
         feedback_relevance = 0
         feedback_high_level = 0
         feedback_specificity = 0
@@ -158,7 +158,7 @@ def profile():
         feedback_active = 0
         
         if user_knowledgestate.q_num > 0:
-            feedback_uniqueness = round(user_knowledgestate.eval['uniqueness'] / user_knowledgestate.q_num, 1)
+            feedback_timely = round(user_knowledgestate.eval['timely'] / user_knowledgestate.q_num, 1)
             feedback_relevance = round(user_knowledgestate.eval['relevance'] / user_knowledgestate.q_num, 1)
             feedback_high_level = round(user_knowledgestate.eval['high-level'] / user_knowledgestate.q_num, 1)
             
@@ -175,9 +175,9 @@ def profile():
         if user_knowledgestate.c_num + user_knowledgestate.d_num > 0:
             qns = user_knowledgestate.c_num * 100 / (user_knowledgestate.c_num + user_knowledgestate.d_num)
 
-        return {"ideaData": ideaData, "chatData": userChat.log, "name": name, "mode": setting.mode, "character": setting.character, "goal1": setting.goal1, "goal2": setting.goal2, "goal3": setting.goal3, "time": setting.time, "student_knowledge_level": len(user_knowledgestate.knowledge), "qns": qns, "cnd": cnd, "uniqueness": feedback_uniqueness, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active, 'face': user_knowledgestate.face, 'knowledge': user_knowledgestate.knowledge, 'actionPlan': user_knowledgestate.actionPlan}
+        return {"ideaData": ideaData, "chatData": userChat.log, "name": name, "mode": setting.mode, "character": setting.character, "goal1": setting.goal1, "goal2": setting.goal2, "goal3": setting.goal3, "time": setting.time, "student_knowledge_level": len(user_knowledgestate.knowledge), "qns": qns, "cnd": cnd, "timely": feedback_timely, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active, 'face': user_knowledgestate.face, 'knowledge': user_knowledgestate.knowledge, 'actionPlan': user_knowledgestate.actionPlan}
     
-    return  {"ideaData": ideaData, "chatData": userChat.log, "name": name, "mode": setting.mode, "character": "", "goal1": "", "goal2": "", "goal3": "", "time": setting.time, "student_knowledge_level": "", "qns": "", "cnd": "", "uniqueness": "", "relevance": "", "high_level": "", "specificity": "", "justification": "", "active": "", 'face': ""}
+    return  {"ideaData": ideaData, "chatData": userChat.log, "name": name, "mode": setting.mode, "character": "", "goal1": "", "goal2": "", "goal3": "", "time": setting.time, "student_knowledge_level": "", "qns": "", "cnd": "", "timely": "", "relevance": "", "high_level": "", "specificity": "", "justification": "", "active": "", 'face': ""}
 
 @main.route("/getSetting")
 @jwt_required()
@@ -407,7 +407,32 @@ The response should be in JSON array format, which looks like, {{"knowledge": ""
             user_knowledgestate.face -= 10
 
     else:
-        feedbackeval_prompt = [{"role": "system", "content":"Feedback Evaluation Instructions for Instructor's Feedback of a Student's Design Idea.\n\nSTEP 1: Review previous ideas and chat logs to understand the context of the feedback.\n\nSTEP 2: Evaluate the feedback on a scale of 1 to 57 based on the following criteria. There are three different criteria depending on whether the feedback category is a 'Question' or a 'Statement'.\n'Question':\n\"uniqueness\": The question is unique.\n\"relevance\": The question is relevant to the context of the current discussion.\n\"high-level\": The question is high-level.(If the question falls into the \"Low-Level\" category, it's between 1 and 2. Otherwise, it's between 3 and 5.)\n'Statement':\n\"specificity\": The feedback is specific.\n\"justification\": The feedback is justified.\n\"active\": The feedback is actionable\n'No feedback': DO NOT RATE.\nSTEP 3: Evaluate the sentiment of the feedback. Analyze the sentiment of the feedback and rate it as either positive(1), neutral(0), or negative(-1).\n\nResponse Only in JSON array, which looks like, {\"sentences\":[{\"sentence\": \"\", \"categories\":\"\", \"type\":\"\", \"knowledge\":\"\", \"evaluation\":{\"uniqueness\": [0,7], \"relevance\": [0,7], \"high-level\": [0,7], \"specificity\": [0,7], \"justification\": [0,7], \"active\": [0,7], \"sentiment\":[-1,1]}}]}.\n\"sentence\": Individual unit of feedback.\n\"categories\": Category of feedback. ('Question' or 'Statement' or 'No feedback')\n\"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n\"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.\n\"evaluation\": JSON with the evaluation score based on the criteria. The criteria that should be evaluated in STEP 2 have a value between 1-7, with the rest evaluated as 0.\n\nStudent's Idea:" + json.dumps(ideaData, ensure_ascii=False) + "\nchat Log:" + json.dumps(user_chat.log, ensure_ascii=False) + "\nfeedback:" + str(result1)}]
+        feedbackeval_prompt = [{"role": "system", "content": f"""
+Feedback Evaluation Instructions for Instructor's Feedback of a Student's Design Idea.\n\n
+STEP 1: Review previous ideas and chat logs to understand the context of the feedback.\n\n
+STEP 2: Evaluate the feedback on a scale of 1 to 57 based on the following criteria. There are three different criteria depending on whether the feedback category is a 'Question' or a 'Statement'.\n
+'Question':\n
+\"timely\": This feedback(question) was provided at the appropriate time.\n
+\"relevance\": The feedback(question) is relevant to achieving the design goals.The design goals are; Inovation: how innovative the idea is, Elaboration: how sophisticated the idea is, Usability: how easy the idea is to use, Value: how valuable the idea is to use, and Social Responsibility: how socially responsible the idea is.\n
+\"high-level\": The feedback(question) is high-level.(If the question falls into the \"Low-Level\" category, it's between 1 and 2. Otherwise, it's between 3 and 5.)\n
+'Statement':\n
+\"specificity\": The feedback is specific.\n
+\"justification\": The feedback is justified.\n
+\"active\": The feedback is actionable.\n
+'No feedback': DO NOT RATE.\n
+STEP 3: Evaluate the sentiment of the feedback. Analyze the sentiment of the feedback and rate it as either positive(1), neutral(0), or negative(-1).\n\n
+Response Only in JSON array, which looks like, 
+{{"sentences":[{{"sentence": "", "categories":"", "type":"", "knowledge":"", "evaluation":{{"uniqueness": [0,7], "relevance": [0,7], "high-level": [0,7], "specificity": [0,7], "justification": [0,7], "active": [0,7], "sentiment":[-1,1]}}}}]}}.\n
+\"sentence\": Individual unit of feedback.\n
+\"categories\": Category of feedback. ('Question' or 'Statement' or 'No feedback')\n
+\"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n
+\"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.\n
+\"evaluation\": JSON with the evaluation score based on the criteria. The criteria that should be evaluated in STEP 2 have a value between 1-7, with the rest evaluated as 0.\n\n
+Student's Idea:" + json.dumps(ideaData) + "\n
+chat Log:" + json.dumps(user_chat.log) + "\n
+feedback:" + result1
+"""}]
+                                                                
         # Second Prompt for Evaluate feedback
         completion2 = openai.chat.completions.create(
             model="gpt-4o",
@@ -430,9 +455,9 @@ The response should be in JSON array format, which looks like, {{"knowledge": ""
                 if sentence['type'].lower() in LLQ + DRQ + GDQ:
                     user_knowledgestate.counter['q_count'] += 1
                     user_knowledgestate.q_num += 1
-                    #uniqueness
-                    user_knowledgestate.eval['uniqueness'] += int(sentence['evaluation']['uniqueness'])
-                    if sentence['evaluation']['uniqueness'] <= 4:
+                    #timely
+                    user_knowledgestate.eval['timely'] += int(sentence['evaluation']['timely'])
+                    if sentence['evaluation']['timely'] <= 4:
                         user_knowledgestate.counter['u_count'] += 1
                     #relevance
                     user_knowledgestate.eval['relevance'] += int(sentence['evaluation']['relevance'])
@@ -443,10 +468,10 @@ The response should be in JSON array format, which looks like, {{"knowledge": ""
                     if sentence['evaluation']['high-level'] <= 4:
                         user_knowledgestate.counter['h_count'] += 1
 
-                    if (int(sentence['evaluation']['uniqueness']) + int(sentence['evaluation']['relevance']) + int(sentence['evaluation']['high-level']) >= 15) and ((user_knowledgestate.face / 10) < 5):
+                    if (int(sentence['evaluation']['timely']) + int(sentence['evaluation']['relevance']) + int(sentence['evaluation']['high-level']) >= 16) and ((user_knowledgestate.face / 10) < 5):
                         print(user_knowledgestate.face / 10)
                         user_knowledgestate.face += 10
-                    elif (int(sentence['evaluation']['uniqueness']) + int(sentence['evaluation']['relevance']) + int(sentence['evaluation']['high-level']) <= 9) and ((user_knowledgestate.face / 10) > 2):
+                    elif (int(sentence['evaluation']['timely']) + int(sentence['evaluation']['relevance']) + int(sentence['evaluation']['high-level']) <= 9) and ((user_knowledgestate.face / 10) > 2):
                         print(user_knowledgestate.face / 10)
                         user_knowledgestate.face -= 10
 
@@ -534,14 +559,14 @@ The response should be in JSON array format, which looks like, {{"knowledge": ""
     # student_divergent_level = len(user_knowledgestate.opportunity)
     # student_convergent_level = len(user_knowledgestate.consideration)
     student_knowledge_level = len(user_knowledgestate.knowledge)
-    feedback_uniqueness = 0
+    feedback_timely = 0
     feedback_relevance = 0
     feedback_high_level = 0
     feedback_specificity = 0
     feedback_justification = 0
     feedback_active = 0
     if user_knowledgestate.q_num > 0:
-        feedback_uniqueness = round(user_knowledgestate.eval['uniqueness'] / user_knowledgestate.q_num, 1)
+        feedback_timely = round(user_knowledgestate.eval['timely'] / user_knowledgestate.q_num, 1)
         feedback_relevance = round(user_knowledgestate.eval['relevance'] / user_knowledgestate.q_num, 1)
         feedback_high_level = round(user_knowledgestate.eval['high-level'] / user_knowledgestate.q_num, 1)
     if user_knowledgestate.s_num > 0:
@@ -562,7 +587,7 @@ The response should be in JSON array format, which looks like, {{"knowledge": ""
         and (user_knowledgestate.counter['a_count'] < 4)
     )
 
-    # print(feedback_uniqueness)
+    # print(feedback_timely)
     # print(feedback_relevance)
     # print(feedback_high_level)
     # print(feedback_specificity)
@@ -584,7 +609,7 @@ The response should be in JSON array format, which looks like, {{"knowledge": ""
     if user_knowledgestate.c_num + user_knowledgestate.d_num > 0:
         cnd = user_knowledgestate.c_num * 100 / (user_knowledgestate.c_num + user_knowledgestate.d_num)
 
-    return {"response": result3["answer"], "student_knowledge_level": student_knowledge_level, "qns": qns, "cnd": cnd, "uniqueness": feedback_uniqueness, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active, "questionChecker": question_checker, "face": user_knowledgestate.face, "knowledge": user_knowledgestate.knowledge, "actionPlan": user_knowledgestate.actionPlan, "thinking": new_thinking}
+    return {"response": result3["answer"], "student_knowledge_level": student_knowledge_level, "qns": qns, "cnd": cnd, "timely": feedback_timely, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active, "questionChecker": question_checker, "face": user_knowledgestate.face, "knowledge": user_knowledgestate.knowledge, "actionPlan": user_knowledgestate.actionPlan, "thinking": new_thinking}
 
 @main.route("/baselineresponse", methods=["POST"])
 @jwt_required()
@@ -636,6 +661,8 @@ def askQuestion():
     ideaData = {"topic": idea.topic, "design criteria": idea.design_goals, "title": idea.title, "problem": idea.target_problem, "idea": idea.idea}
 
     instruction = ""
+
+    print(user_knowledgestate.counter)
 
     if user_knowledgestate.counter['q_count'] >= 4:
         instruction = "Ask for the reviewer's own opinion or advice on the previous reviewer's question."

@@ -27,7 +27,7 @@ export class BarChart extends Component {
 
   render() {
     const barData = {
-      labels: ["독창성", "연관성", "난이도", "구체성", "타당성", "실행가능성"],
+      labels: ["시의적절성", "목표연관성", "난이도", "구체성", "타당성", "실행가능성"],
       datasets: [
         {
           backgroundColor: ["#2D54F2", "#2D54F2", "#2D54F2", "#A4D8FF", "#A4D8FF", "#A4D8FF"],
