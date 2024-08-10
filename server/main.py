@@ -616,42 +616,64 @@ This is the feedback that the student received from the mentor: {result1}
 
     return {"response": result3["answer"], "student_knowledge_level": student_knowledge_level, "qns": qns, "cnd": cnd, "timely": feedback_timely, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active, "questionChecker": question_checker, "face": user_knowledgestate.face, "knowledge": user_knowledgestate.knowledge, "actionPlan": user_knowledgestate.actionPlan, "thinking": new_thinking}
 
-@main.route("/baselineresponse", methods=["POST"])
-@jwt_required()
-@cross_origin()
-def baselineresponse():
-    params = request.get_json()
-    feedback = params['feedback']
-    user = User.query.filter_by(email=get_jwt_identity()).first()
+# @main.route("/baselineresponse", methods=["POST"])
+# @jwt_required()
+# @cross_origin()
+# def baselineresponse():
+#     params = request.get_json()
+#     feedback = params['feedback']
+#     user = User.query.filter_by(email=get_jwt_identity()).first()
     
-    idea = Idea.query.filter_by(user_id=user.id, round=user.currentRound).first()
-    ideaData = {"topic": idea.topic, "design criteria": idea.design_goals, "title": idea.title, "problem": idea.target_problem, "idea": idea.idea}
+#     idea = Idea.query.filter_by(user_id=user.id, round=user.currentRound).first()
+#     ideaData = {"topic": idea.topic, "design criteria": idea.design_goals, "title": idea.title, "problem": idea.target_problem, "idea": idea.idea}
 
-    user_chat = ChatLog.query.filter_by(user_id=user.id, round=user.currentRound).first()
+#     user_chat = ChatLog.query.filter_by(user_id=user.id, round=user.currentRound).first()
+#     formatted_chat = ''.join([f'you: {x["content"]}\n' if x["speaker"] == "student" else f'mentor: {x["content"]}\n' for x in user_chat.log])
 
-    prompt = [{"role": "system","content":"This is your design ideas: " + json.dumps(ideaData, ensure_ascii=False) + "\nAnswer feedback from the user.\nThe format of your answer is JSON as follows. {\"answer\": {your answer}} \nYour answer can only be text, not an array.(markdown is available.)\nThis is previous conversations: " + json.dumps(user_chat.log, ensure_ascii=False) + "\nThis is the following chat(feedback): " + feedback }]
+
+#     prompt = [
+#         {
+#             "role": "system",
+#             "content": f"""
+# Your task is to respond to the feedback provided by the mentor about the student's design idea. The studens is a 1st year Design Department student, and the mentor is an industrial design expert.
+
+# This is student's current design idea:
+# * Topic: {ideaData['topic']}
+# * Title: {ideaData['title']}
+# * Problem: {ideaData['problem']}
+# * Idea: {ideaData['idea']}
+
+# These are previous conversations between the student and the mentor about student's design idea:
+# {formatted_chat}
+
+# This is the feedback that the student received from the mentor after the conversation: {feedback}
+
+# Response Only in JSON array, which looks like, {{"answer": "your answer"}}
+#             """
+#         }
+#     ]
             
-    completion = openai.chat.completions.create(
-        model="gpt-4o",
-        # model="gpt-3.5-turbo",
-        messages=prompt,
-        response_format={"type": "json_object"}
-    )
-    try:
-        result3 = json.loads(completion.choices[0].message.content)
-    except ZeroDivisionError as e:
-    # This will run only if there is no error
-        return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
+#     completion = openai.chat.completions.create(
+#         model="gpt-4o",
+#         # model="gpt-3.5-turbo",
+#         messages=prompt,
+#         response_format={"type": "json_object"}
+#     )
+#     try:
+#         result3 = json.loads(completion.choices[0].message.content)
+#     except ZeroDivisionError as e:
+#     # This will run only if there is no error
+#         return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
 
-    new_entries = [
-        {"speaker": "instructor", "content": feedback},
-        {"speaker": "student", "content": result3["answer"]}
-    ]
-    user_chat.log.extend(new_entries)
-    flag_modified(user_chat, 'log')
+#     new_entries = [
+#         {"speaker": "instructor", "content": feedback},
+#         {"speaker": "student", "content": result3["answer"]}
+#     ]
+#     user_chat.log.extend(new_entries)
+#     flag_modified(user_chat, 'log')
 
-    db.session.commit()
-    return {"response": result3["answer"]}
+#     db.session.commit()
+#     return {"response": result3["answer"]}
 
 
 @main.route("/askQuestion")
@@ -659,9 +681,9 @@ def baselineresponse():
 @cross_origin()
 def askQuestion():
     user = User.query.filter_by(email=get_jwt_identity()).first()
-    user_knowledgestate = KnowledgeState.query.filter_by(user_id=user.id).first()
+    user_knowledgestate = KnowledgeState.query.filter_by(user_id=user.id, round=user.currentRound).first()
     knowledge = user_knowledgestate.knowledge
-    user_chat = ChatLog.query.filter_by(user_id=user.id).first()
+    user_chat = ChatLog.query.filter_by(user_id=user.id, round=user.currentRound).first()
     idea = Idea.query.filter_by(user_id=user.id, round=user.currentRound).first()
     ideaData = {"topic": idea.topic, "design criteria": idea.design_goals, "title": idea.title, "problem": idea.target_problem, "idea": idea.idea}
 
@@ -755,8 +777,8 @@ The format of your question is JSON as follows:
 @cross_origin()
 def updateIdea():
     user = User.query.filter_by(email=get_jwt_identity()).first()
-    user_chat = ChatLog.query.filter_by(user_id=user.id).first()
-    user_knowledgestate = KnowledgeState.query.filter_by(user_id=user.id).first()
+    user_chat = ChatLog.query.filter_by(user_id=user.id, round=user.currentRound).first()
+    user_knowledgestate = KnowledgeState.query.filter_by(user_id=user.id, round=user.currentRound).first()
     idea = Idea.query.filter_by(user_id=user.id, round=user.currentRound).first()
     
     if (user_knowledgestate.actionPlan == ""):
@@ -793,7 +815,6 @@ All content must be written in Korean. Ideas are a maximum of 3000 characters.
 Response Only in JSON array, which looks like, {{'title': "", 'target_problem': "", 'idea': ""}}
         """
     }]
-    print(ideaUpdatePrompt[0]['content'])   
     
     completion1 = openai.chat.completions.create(
         model="gpt-4-turbo",
