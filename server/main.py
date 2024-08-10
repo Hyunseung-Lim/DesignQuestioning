@@ -324,6 +324,7 @@ Response Only in JSON array, which looks like, {{"sentences":[{{"sentence": "", 
     try:
         result1 = json.loads(completion1.choices[0].message.content)
         result1 = [sentence for sentence in result1['sentences'] if sentence['categories'].lower() in ['question', 'statement']]
+        print(result1)
     except ZeroDivisionError as e:
         # This will run only if there is no error
         return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
@@ -349,7 +350,7 @@ This is student's current design knowledge accumulated by the conversation with 
 Now, you will be given the feedback that the mentor provided to the student after the conversation, and the type of that feedback. The format of the input is as follows:
 {{"sentence": "", "categories":"", "type":""}}
 
-First,First, don't interpret the sentence literally, but contextualize it from previous conversations to understand what is being said.
+First, don't interpret the sentence literally, but contextualize it from previous conversations to understand what is being said.
 
 Next, extract the knowledge that the student can derive from the feedback.
 The knowledge should be a one-line sentence, and is highly relevant to the given instructor's feedback, but could be applied to any design idea or context. It should not include specific details related to the current design idea.
@@ -403,29 +404,41 @@ The response should be in JSON array format, which looks like, {{"knowledge": ""
             user_knowledgestate.face -= 10
     else:
         feedbackeval_prompt = [{"role": "system", "content": f"""
-Feedback Evaluation Instructions for Instructor's Feedback of a Student's Design Idea.\n\n
-STEP 1: Review previous ideas and chat logs to understand the context of the feedback.\n\n
-STEP 2: Evaluate the feedback on a scale of 1 to 57 based on the following criteria. There are three different criteria depending on whether the feedback category is a 'Question' or a 'Statement'.\n
-'Question':\n
-\"timely\": This feedback(question) was provided at the appropriate time.\n
-\"relevance\": The feedback(question) is relevant to achieving the design goals.The design goals are; Inovation: how innovative the idea is, Elaboration: how sophisticated the idea is, Usability: how easy the idea is to use, Value: how valuable the idea is to use, and Social Responsibility: how socially responsible the idea is.\n
-\"high-level\": The feedback(question) is high-level.(If the question falls into the \"Low-Level\" category, it's between 1 and 2. Otherwise, it's between 3 and 5.)\n
-'Statement':\n
-\"specificity\": The feedback is specific.\n
-\"justification\": The feedback is justified.\n
-\"active\": The feedback is actionable.\n
-'No feedback': DO NOT RATE.\n
-STEP 3: Evaluate the sentiment of the feedback. Analyze the sentiment of the feedback and rate it as either positive(1), neutral(0), or negative(-1).\n\n
+Feedback Evaluation Instructions for Instructor's Feedback of a Student's Design Idea.
+
+STEP 1: Review previous ideas and chat logs to understand the context of the feedback.
+
+STEP 2: Evaluate the feedback on a scale of 1 to 57 based on the following criteria. There are three different criteria depending on whether the feedback category is a 'Question' or a 'Statement'.
+'Question':
+"timely": This feedback(question) was provided at the appropriate time.
+"relevance": The feedback(question) is relevant to achieving the design goals.The design goals are; Inovation: how innovative the idea is, Elaboration: how sophisticated the idea is, Usability: how easy the idea is to use, Value: how valuable the idea is to use, and Social Responsibility: how socially responsible the idea is.
+"high-level": The feedback(question) is high-level.(If the question falls into the "Low-Level" category, it's between 1 and 2. Otherwise, it's between 3 and 5.)
+'Statement':
+"specificity": The feedback is specific.
+"justification": The feedback is justified.
+"active": The feedback is actionable.
+'No feedback': DO NOT RATE.
+
+STEP 3: Evaluate the sentiment of the feedback. Analyze the sentiment of the feedback and rate it as either positive(1), neutral(0), or negative(-1).
+
 Response Only in JSON array, which looks like, 
-{{"sentences":[{{"sentence": "", "categories":"", "type":"", "knowledge":"", "evaluation":{{"uniqueness": [0,7], "relevance": [0,7], "high-level": [0,7], "specificity": [0,7], "justification": [0,7], "active": [0,7], "sentiment":[-1,1]}}}}]}}.\n
-\"sentence\": Individual unit of feedback.\n
-\"categories\": Category of feedback. ('Question' or 'Statement' or 'No feedback')\n
-\"type\": Subcategory of feedback (e.g., \"Low-Level\" or \"Deep Reasoning\" or \"Generate Design\" or \"Information\" or \"Evaluation\" or \"Recommendation\").\n
-\"knowledge\": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.\n
-\"evaluation\": JSON with the evaluation score based on the criteria. The criteria that should be evaluated in STEP 2 have a value between 1-7, with the rest evaluated as 0.\n\n
-Student's Idea:" + json.dumps(ideaData) + "\n
-chat Log:" + json.dumps(user_chat.log) + "\n
-feedback:" + result1
+{{"sentences":[{{"sentence": "", "categories":"", "type":"", "knowledge":"", "evaluation":{{"uniqueness": [0,7], "relevance": [0,7], "high-level": [0,7], "specificity": [0,7], "justification": [0,7], "active": [0,7], "sentiment":[-1,1]}}}}]}}.
+"sentence": Individual unit of feedback.
+"categories": Category of feedback. ('Question' or 'Statement' or 'No feedback')
+"type": Subcategory of feedback (e.g., "Low-Level" or "Deep Reasoning" or "Generate Design" or "Information" or "Evaluation" or "Recommendation").
+"knowledge": A key one-sentence summary of the knowledge from the feedback described in STEP5 that is brief and avoids proper nouns.
+"evaluation": JSON with the evaluation score based on the criteria. The criteria that should be evaluated in STEP 2 have a value between 1-7, with the rest evaluated as 0.
+
+This is student's current design idea:
+* Topic: {ideaData['topic']}
+* Title: {ideaData['title']}
+* Problem: {ideaData['problem']}
+* Idea: {ideaData['idea']}
+
+These are previous conversations between the student and the mentor about student's design idea:
+{formatted_chat}
+
+This is the feedback that the student received from the mentor: {result1}
 """}]
                                                                 
         # Second Prompt for Evaluate feedback
@@ -535,6 +548,7 @@ feedback:" + result1
     )
     try:
         result3 = json.loads(completion3.choices[0].message.content)
+        print(result3)
     except ZeroDivisionError as e:
     # This will run only if there is no error
         return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
