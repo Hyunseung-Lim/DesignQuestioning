@@ -27,7 +27,7 @@ export const MainPage = (props) => {
   const [feedbackData, setFeedbackData] = useState({
     cnd: 0,
     qns: 0,
-    uniqueness: 0,
+    timely: 0,
     relevance: 0,
     high_level: 0,
     specificity: 0,
@@ -123,7 +123,7 @@ export const MainPage = (props) => {
         setFeedbackData({
           cnd: res.cnd,
           qns: res.qns,
-          uniqueness: res.uniqueness,
+          timely: res.timely,
           relevance: res.relevance,
           high_level: res.high_level,
           specificity: res.specificity,
