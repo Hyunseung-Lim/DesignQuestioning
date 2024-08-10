@@ -117,8 +117,6 @@ export const MainPage = (props) => {
           { speaker: "instructor", content: feedback },
           { speaker: "student", content: res.response },
         ]);
-        // setDivergentLevel(res.student_divergent_level);
-        // setConvergentLevel(res.student_convergent_level);
         setKnowledgeLevel(res.student_knowledge_level);
         setFeedbackData({
           cnd: res.cnd,
@@ -146,7 +144,7 @@ export const MainPage = (props) => {
   const getBaselineResponse = (feedback) => {
     axios({
       method: "POST",
-      url: "/baselineresponse",
+      url: "/response",
       headers: {
         Authorization: "Bearer " + props.token,
       },

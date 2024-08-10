@@ -1,138 +1,139 @@
 .ideaContainerUI {
-    height: 100%;
-    overflow: auto;
-    width: 400px;
-    min-width: 280px;
-    flex: 1 1 400px;
-    background-color: #ECF0F6;
-    padding: 16px;
-    max-height: 100%;
-    box-sizing: border-box;
-    position: relative;
+  height: 100%;
+  overflow: auto;
+  width: 400px;
+  min-width: 280px;
+  flex: 1 1 400px;
+  background-color: #ecf0f6;
+  padding: 16px;
+  max-height: 100%;
+  box-sizing: border-box;
+  position: relative;
 }
 
 .ideaContainerUI::-webkit-scrollbar {
-    display: none; /* 스크롤바를 숨김 */
+  display: none; /* 스크롤바를 숨김 */
 }
 
 .ideaContainerUI > .ideaDescription {
-    background-color: white;
-    border: solid 1px #ddd;
-    border-radius: 4px;
-    /* height: 50px; */
-    padding: 20px 30px;
-    text-align: left;
-    font-size: 14px;
-    font-weight:500;
-    margin-top: -1px;
+  background-color: white;
+  border: solid 1px #ddd;
+  border-radius: 4px;
+  /* height: 50px; */
+  padding: 20px 30px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: -1px;
 }
 
 .ideaContainerUI > .ideaDescription > .topic {
-    font-weight: 700;
-    font-size: 15px;
+  font-weight: 700;
+  font-size: 15px;
 }
 
 .ideaContainerUI > .navbar {
-    display: flex;
-    /* background-color: #ECF0F6;; */
+  display: flex;
+  /* background-color: #ECF0F6;; */
 }
 
 .ideaContainerUI > .navbar > .Tag {
-    background: white;
-    border: 0;
-    padding: 8px 28px;
-    font-weight: 700;
-    color: var(--theme-color);
-    border-radius: 4px 4px 0 0;
-    border: solid 1px #ddd;
-    border-bottom: solid 1px white;
+  background: white;
+  border: 0;
+  padding: 8px 28px;
+  font-weight: 700;
+  color: var(--theme-color);
+  border-radius: 4px 4px 0 0;
+  border: solid 1px #ddd;
+  border-bottom: solid 1px white;
 }
 
 .ideaContainerUI > .navbar > .current {
-    background-color: #F7F8FA;
-    color: #333;
-    border-bottom: solid 1px #ddd;
+  background-color: #f7f8fa;
+  color: #333;
+  border-bottom: solid 1px #ddd;
 }
 
 .ideaContainerUI > .navbar > .right {
-    border-left: 0;
+  border-left: 0;
 }
 
 .ideaContainerUI > .ideaContainer {
-    overflow: auto;
-    box-sizing: border-box;
-    padding-bottom: 10px;
+  overflow: auto;
+  box-sizing: border-box;
+  padding-bottom: 10px;
 }
 
 .ideaBox {
-    display: flex;
-    flex-direction: column;
-    text-align: left;
-    padding: 30px;
-    margin-top: 20px;
-    background-color: white;
-    border: solid 1px #ddd;
-    border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  padding: 30px;
+  margin-top: 20px;
+  background-color: white;
+  border: solid 1px #ddd;
+  border-radius: 4px;
 }
 
 .ideaBox > .ideatitle {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    font-weight:900;
-    font-size: 17px;
-    margin-bottom: 6px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 900;
+  font-size: 17px;
+  margin-bottom: 6px;
 }
 
 .ideaBox > .ideatitle > button {
-    min-width: 102px;
-    margin-left: 18px;
-    border: solid 1px #ddd;
-    border-radius: 4px;
-    padding: 6px 12px;
-    font-weight: 800;
-    background-color: #f4f9fd;
+  min-width: 102px;
+  margin-left: 18px;
+  border: solid 1px #ddd;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-weight: 800;
+  background-color: #f4f9fd;
 }
 
 .ideaBox > .ideatitle > button:hover {
-    color: var(--theme-color);
-    background-color: #E8EDF1;
+  color: var(--theme-color);
+  background-color: #e8edf1;
 }
 
 .ideaBox > .subtitle {
-    font-size: 15px;
-    font-weight:900;
-    margin-top: 12px;
-    margin-bottom: 4px;
+  font-size: 15px;
+  font-weight: 900;
+  margin-top: 12px;
+  margin-bottom: 4px;
 }
 
 .ideaBox > .problem {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .ideaBox > .idea {
-    font-size: 14px;
-    line-height: 140%;
+  font-size: 14px;
+  line-height: 140%;
+  white-space: pre-wrap;
 }
 
 .ideaContainerUI > .ideaContainer > .disable {
-    background-color: #f4f9fd;
+  background-color: #f4f9fd;
 }
 
 .ideaContainerUI > .ideaContainer > .disable > .ideatitle > button {
-    background-color: #E8EDF1;
+  background-color: #e8edf1;
 }
 
 .ideaContainerUI > .ideaContainer > .disable > .ideatitle > button:hover {
-    color: black;
+  color: black;
 }
 
 .design_goal {
-    margin: 3px 0;
+  margin: 3px 0;
 }
 
-.error-popover{
+.error-popover {
   position: absolute;
 
   background-color: white;
