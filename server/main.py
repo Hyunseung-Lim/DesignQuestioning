@@ -7,7 +7,7 @@ from sqlalchemy.orm.attributes import flag_modified
 from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 from __init__ import create_app, db
-from models import User, Idea, KnowledgeState, ChatLog, InitialSetting
+from models import User, Idea, KnowledgeState, ChatLog, InitialSetting, UserLog
 from datetime import datetime
 import base64
 import json
@@ -16,7 +16,6 @@ import http.client
 import openai
 import requests
 import random
-
 
 load_dotenv()  # This loads the environment variables from .env
 
@@ -31,12 +30,12 @@ GDQ = ["generate design", "proposal/negotiation", "proposal", "negotiation", "sc
 ideaOrder = [[4,0,2],[5,2,0],[2,1,4],[3,4,1],[0,3,5],[1,5,3],[4,0,3],[2,1,5],[5,2,1],[0,3,4],[3,4,0],[1,5,2],[4,0,2],[5,2,0],[2,1,4],[3,4,1],[0,3,5],[1,5,3],[4,0,3],[2,1,5],[5,2,1],[0,3,4],[3,4,0],[1,5,2]]
 
 Ideas = [
-    {'topic': "반려동물 서비스", 'title': "Petit - 책임감 있는 반려동물 입양 플랫폼", 'target_problem': "최근 반려동물을 입양한 후에 돌볼 능력이나 책임감이 부족해 유기동물로 전락하는 사례가 많다. 실제로 반려동물을 돌보는 과정에서 예상치 못한 비용과 시간 소모, 그리고 건강 관리 소홀로 인해 동물의 건강이 나빠져 돌봄을 포기하게 되는 것이 주요 원인이다. 이러한 문제를 완화하기 위해서는 입양 과정에서 충분한 교육과 입양 준비 절차를 지원하고, 입양 후에도 지속적인 지원이 필요하다.", 'idea': "Petit은 입양 전 교육과 평가, 입양 후 지원 시스템, 적합성 테스트, 정기적 체크인 및 평가를 통해 입양자들이 충분한 지식과 책임감을 갖추도록 돕는다. 먼저, 입양 희망자는 동물의 기본적인 돌봄 지식, 건강 관리, 훈련 방법 등을 배우는 온라인 교육 프로그램을 이수해야 한다. 교육을 마친 후에는 퀴즈나 평가를 통해 이해도를 확인하고 일정 점수 이상을 받아야만 입양 절차를 진행할 수 있다. 이후 전문 상담사와의 인터뷰를 통해 입양 희망자의 생활 환경, 시간적 여유, 경제적 능력 등을 평가하고, 필요하다면 가정방문 평가를 통해 반려동물이 생활하게 될 환경을 직접 확인한다. 입양이 확정되면, 입양자는 동물의 건강 상태와 필요한 돌봄 사항 등을 명시한 계약서를 작성하게 된다. 입양 후에는 초기 적응 기간 동안 전문 상담사나 수의사의 지원을 받을 수 있으며, 입양자들이 서로 경험을 공유하고 질문할 수 있는 온라인 커뮤니티도 운영한다. 가상 입양 체험을 통해 입양 희망자는 실제로 반려동물을 돌보는 것이 어떤 것인지 시뮬레이션해볼 수 있으며, 기본적인 반려동물 훈련 프로그램에 참여하여 실제로 동물을 다루는 능력을 평가받을 수 있다. 정기 방문을 통해 입양 후 일정 기간마다 동물의 상태를 확인하고, 입양자가 책임감 있게 돌보고 있는지 평가하며, 입양자는 정기적으로 반려동물의 상태를 온라인으로 보고할 수 있어 문제가 발생하면 신속하게 대처할 수 있다."},
-    {'topic': "반려동물 서비스", 'title': "(반려동물 번역기) 반려동물 목소리를 자연어로 번역하는 서비스", 'target_problem': "반려동물은 자연어(사람 말)를 하지못하기에 ex) 아플때 아프다 못하고 결국 주인이 반려동물 대신해서 결정을 내림.", 'idea': "왜 LLM은 되는데 Large Dog Language Model (LDLM)은 안될까? 반려동물의 목소리 데이터를 잘 축적해서 동물 전문가를 통한 Dataset 검증을 받고 이를 supervised learning 기반 model을 만들고 ex 강아지 목줄에 달면 짖을때마다 무슨 말을 하는지 알 수 있으면 재미있지 않을까?\n해당 아이디어는 다음과 같다. 우선 강아지가 짖는 상황(목소리)을 녹음한다. 강아지의 피치나, Duration, 톤 등에 대한 데이터 셋 자체가 지금은 조금 부족한 느낌이기 때문에 우선 이러한 데이터를 수집한다. 이러한 데이터를 동물 전문가를 통해 labeling을 시켜서 강아지 언어 데이터 셋을 만든다. (예를들어, 강아지: 왈, 의미: 밥줘). 여러 상황에 따른 강아지의 반응 데이터가 수집이 된다면 이를 활용해 번역기를 만들수 있지 않을까? 이 과정에서 아무래도 Labeling이 된 데이터셋이라면 Supervised learning을 통해 model을 만들고 이를 기반으로 Prediction을 할 수 있을것 같다. (정확도 부분에 대해서는 사실 전혀 모르겠다… 그렇지만 재미요소나 마켓팅 비즈니스 요소로는 재미있는 시도라고 생각이 드는것같다)  강아지가 평상시 목줄을 착용하기때문에 웨어러블 느낌의 작은 센서가 목줄에 달려있어 강아지가 짖으면 이가 자동으로 번역되어 스피커를 통해 나오거나 앱을 통해 사용자에게 전달되는 interaction flow를 상상하긴했음."},
-    {'topic': "저탄소 서비스", 'title': "기숙사 탄소배출을 줄이자", 'target_problem': "아파트에 거주하는 경우, 전기세 부담 때문에 더운 날씨에도 에어컨 사용을 자제하고, 방이 시원해지면 바로 꺼버리는 경우가 많음. 반면, 학교 강의실, 연구실, 기숙사 등 전기세를 직접 부담하지 않는 공간에서는 전기세에 대한 걱정 없이 에어컨을 최저 온도로 켜두는 경우가 많음. 특히, 기숙사에서는 외출 시에도 돌아올 때 시원함을 위해 하루 종일 에어컨을 켜놓는 경우가 있음. 학교 측에서는 이러한 과도한 에어컨 사용을 막기 위해 하루 세 번, 정해진 시간에 에어컨을 자동으로 제어하지만, 여전히 몇 시간 동안 빈 방에 에어컨이 켜져 있는 경우가 발생함.", 'idea': "학생증을 사용해 기숙사에 출입하는 시스템을 활용하여, 외출 시 에어컨이 켜져 있다면 자동으로 꺼지게 하는 시스템을 도입함. 이를 통해 에어컨이 불필요하게 작동되는 시간을 줄이고, 전력 낭비를 방지할 수 있음. 또한, 학생증을 통해 외출 시 불이 켜져 있다면 불도 자동으로 꺼지게하는 시스템을 함께 도입하면 더 많은 탄소 배출을 줄일 수 있을 것."},
-    {'topic': "저탄소 서비스", 'title': "저탄소 교통 이용을 장려하는 지도 서비스", 'target_problem': "많은 사람들이 저탄소의 중요성을 인지하고 저탄소 교통 (버스, 지하철) 를 타려고 노력하고 있습니다. 하지만, 저탄소 교통을 타기 위해 기다리는 귀찮음, 많은 사람들과 함께 타다보니 이에서 불쾌감과 짜증이 발생합니다. 이러한 부정적인 경험들이 점점 쌓이고 쌓여 저탄소 교통의 이용은 줄어들고, 개인 교통 (자동차, 오토바이) 의 이용이 점점 늘어나게 됩니다.", 'idea': "해당 목적지로 향하기 위해 저탄소 교통을 탔을 때 발생하는 탄소량과 개인 교통을 탔을 때 발생하는 탄소량을 직접 비교한다면, 저탄소 교통의 친환경성을 더욱 강조할 수 있을 것입니다. 현재 지도 서비스의 대중교통 탭에서는, 해당 목적지로 가기 위해서 타야하는 버스/지하철의 경로, 소요시간, 이용요금의 정보가 나타납니다. 이 정보 외에도 ‘저탄소 교통을 탐으로써 절약한 탄소량’의 정보를 보여준다면, 사람들에게 저탄소 교통 이용을 장려할 수 있을 것입니다."},
-    {'topic': "아동 보호 서비스", 'title': "Safeview - 아동 안전 콘텐츠 필터링 익스텐션", 'target_problem': "현대 가정에서 유튜브, 넷플릭스와 같은 스트리밍 서비스를 통해 다양한 콘텐츠를 시청하는 것은 일상적이다. 그러나 이러한 플랫폼에는 성인용 콘텐츠도 많이 포함되어 있어 아이들이 이를 무방비 상태로 접할 위험이 있다. 부모들이 이러한 콘텐츠를 완벽하게 관리하기 어렵고, 아이들에게 부적절한 콘텐츠가 노출될 경우 심리적, 정서적 문제를 일으킬 수 있다. 따라서, 아이들이 안전하게 콘텐츠를 소비할 수 있도록 돕는 효과적인 필터링 도구가 필요하다.", 'idea': "Safeview는 부모들이 사용하는 브라우저에 설치할 수 있는 익스텐션으로, 유튜브, 넷플릭스 등 다양한 스트리밍 플랫폼에서 아이들이 보기에 적합한 콘텐츠만 노출되도록 필터링하는 기능을 제공한다. Safeview는 AI 기반의 콘텐츠 분석 기술을 통해 실시간으로 영상의 내용을 분석하고, 부적절한 콘텐츠를 감지하여 자동으로 차단한다. 부모는 익스텐션을 통해 아이들에게 적합한 연령대와 콘텐츠 유형을 설정할 수 있으며, 이를 기반으로 필터링이 적용된다. 예를 들어, 부모가 7세 이하의 아이에게 적합한 콘텐츠만 노출되도록 설정하면, 그 외의 콘텐츠는 자동으로 차단된다."},
-    {'topic': "아동 보호 서비스", 'title': "아동의 안전을 위한 웨어러블 기기", 'target_problem': "아동 보호 서비스는 아동 학대, 방치를 방지하고, 아동의 안전을 지원하기 위해 존재합니다. 그러나 아동 학대와 방치는 주로 실내에서 이뤄지기 때문에, 주변인들이 아동의 상태를 인지하고 대처하기 어렵습니다. 즉, 아동 보호 서비스는 공간적인 제약이 있습니다. 아동 학대나 방치 상황을 빠르게 인지하고 대응하기 위해서는 아동의 상태를 어디서나 인지할 수 있도록 데이터를 수집할 필요가 있습니다.", 'idea': "일반 팔찌처럼 생긴 아동 안전 웨어러블 기기는 GPS 추적 기능, 마이크, 심박수 모니터링, 그리고 응급 호출 버튼이 있습니다. GPS와 마이크, 심박수를 통해 아동이 처한 상황의 데이터를 실시간으로 수집할 수 있습니다. 따라서, 만약 아동이 위험한 상황에 처했을 때 즉시 아동의 상태를 확인하고 적절한 대응을 취할 수 있을 것입니다. 또한, 아동이 스스로 신고를 할 수 있는 상황이라면, 아동이 직접 응급 호출 버튼을 눌러 도움을 요청할 수도 있습니다."},
+    {'topic': "반려동물을 위한 서비스", 'title': "Petit - 책임감 있는 반려동물 입양 플랫폼", 'target_problem': "최근 반려동물을 입양한 후에 돌볼 능력이나 책임감이 부족해 유기동물로 전락하는 사례가 많다. 실제로 반려동물을 돌보는 과정에서 예상치 못한 비용과 시간 소모, 그리고 건강 관리 소홀로 인해 동물의 건강이 나빠져 돌봄을 포기하게 되는 것이 주요 원인이다. 이러한 문제를 완화하기 위해서는 입양 과정에서 충분한 교육과 입양 준비 절차를 지원하고, 입양 후에도 지속적인 지원이 필요하다.", 'idea': "Petit은 입양 전 교육과 평가, 입양 후 지원 시스템, 적합성 테스트, 정기적 체크인 및 평가를 통해 입양자들이 충분한 지식과 책임감을 갖추도록 돕는다. 먼저, 입양 희망자는 동물의 기본적인 돌봄 지식, 건강 관리, 훈련 방법 등을 배우는 온라인 교육 프로그램을 이수해야 한다. 교육을 마친 후에는 퀴즈나 평가를 통해 이해도를 확인하고 일정 점수 이상을 받아야만 입양 절차를 진행할 수 있다. 이후 전문 상담사와의 인터뷰를 통해 입양 희망자의 생활 환경, 시간적 여유, 경제적 능력 등을 평가하고, 필요하다면 가정방문 평가를 통해 반려동물이 생활하게 될 환경을 직접 확인한다. 입양이 확정되면, 입양자는 동물의 건강 상태와 필요한 돌봄 사항 등을 명시한 계약서를 작성하게 된다. 가상 입양 체험을 통해 입양 희망자는 실제로 반려동물을 돌보는 것이 어떤 것인지 시뮬레이션해볼 수 있으며, 기본적인 반려동물 훈련 프로그램에 참여하여 실제로 동물을 다루는 능력을 평가받을 수 있다. 정기 방문을 통해 입양 후 일정 기간마다 동물의 상태를 확인하고, 입양자가 책임감 있게 돌보고 있는지 평가하며, 입양자는 정기적으로 반려동물의 상태를 온라인으로 보고할 수 있어 문제가 발생하면 신속하게 대처할 수 있다."},
+    {'topic': "반려동물을 위한 서비스", 'title': "(반려동물 번역기) 반려동물 목소리를 자연어로 번역하는 서비스", 'target_problem': "반려동물은 자연어(사람 말)를 하지못하기에 ex) 아플때 아프다 못하고 결국 주인이 반려동물 대신해서 결정을 내림.", 'idea': "왜 LLM은 되는데 Large Dog Language Model (LDLM)은 안될까? 반려동물의 목소리 데이터를 잘 축적해서 동물 전문가를 통한 Dataset 검증을 받고 이를 supervised learning 기반 model을 만들고 ex 강아지 목줄에 달면 짖을때마다 무슨 말을 하는지 알 수 있으면 재미있지 않을까?\n해당 아이디어는 다음과 같다. 우선 강아지가 짖는 상황(목소리)을 녹음한다. 강아지의 피치나, Duration, 톤 등에 대한 데이터 셋 자체가 지금은 조금 부족한 느낌이기 때문에 우선 이러한 데이터를 수집한다. 이러한 데이터를 동물 전문가를 통해 labeling을 시켜서 강아지 언어 데이터 셋을 만든다. (예를들어, 강아지: 왈, 의미: 밥줘). 여러 상황에 따른 강아지의 반응 데이터가 수집이 된다면 이를 활용해 번역기를 만들수 있지 않을까? 이 과정에서 아무래도 Labeling이 된 데이터셋이라면 Supervised learning을 통해 model을 만들고 이를 기반으로 Prediction을 할 수 있을것 같다. (정확도 부분에 대해서는 사실 전혀 모르겠다… 그렇지만 재미요소나 마켓팅 비즈니스 요소로는 재미있는 시도라고 생각이 드는것같다)  강아지가 평상시 목줄을 착용하기때문에 웨어러블 느낌의 작은 센서가 목줄에 달려있어 강아지가 짖으면 이가 자동으로 번역되어 스피커를 통해 나오거나 앱을 통해 사용자에게 전달되는 interaction flow를 상상하긴했음."},
+    {'topic': "탄소중립을 위한 서비스", 'title': "기숙사 탄소배출을 줄이자", 'target_problem': "아파트에 거주하는 경우, 전기세 부담 때문에 더운 날씨에도 에어컨 사용을 자제하고, 방이 시원해지면 바로 꺼버리는 경우가 많음. 반면, 학교 강의실, 연구실, 기숙사 등 전기세를 직접 부담하지 않는 공간에서는 전기세에 대한 걱정 없이 에어컨을 최저 온도로 켜두는 경우가 많음. 특히, 기숙사에서는 외출 시에도 돌아올 때 시원함을 위해 하루 종일 에어컨을 켜놓는 경우가 있음. 학교 측에서는 이러한 과도한 에어컨 사용을 막기 위해 하루 세 번, 정해진 시간에 에어컨을 자동으로 제어하지만, 여전히 몇 시간 동안 빈 방에 에어컨이 켜져 있는 경우가 발생함.", 'idea': "학생증을 사용해 기숙사에 출입하는 시스템을 활용하여, 외출 시 에어컨이 켜져 있다면 자동으로 꺼지게 하는 시스템을 도입함. 이를 통해 에어컨이 불필요하게 작동되는 시간을 줄이고, 전력 낭비를 방지할 수 있음. 또한, 학생증을 통해 외출 시 불이 켜져 있다면 불도 자동으로 꺼지게하는 시스템을 함께 도입하면 더 많은 탄소 배출을 줄일 수 있을 것."},
+    {'topic': "탄소중립을 위한 서비스", 'title': "저탄소 교통 이용을 장려하는 지도 서비스", 'target_problem': "많은 사람들이 저탄소의 중요성을 인지하고 저탄소 교통 (버스, 지하철) 를 타려고 노력하고 있습니다. 하지만, 저탄소 교통을 타기 위해 기다리는 귀찮음, 많은 사람들과 함께 타다보니 이에서 불쾌감과 짜증이 발생합니다. 이러한 부정적인 경험들이 점점 쌓이고 쌓여 저탄소 교통의 이용은 줄어들고, 개인 교통 (자동차, 오토바이) 의 이용이 점점 늘어나게 됩니다.", 'idea': "해당 목적지로 향하기 위해 저탄소 교통을 탔을 때 발생하는 탄소량과 개인 교통을 탔을 때 발생하는 탄소량을 직접 비교한다면, 저탄소 교통의 친환경성을 더욱 강조할 수 있을 것입니다. 현재 지도 서비스의 대중교통 탭에서는, 해당 목적지로 가기 위해서 타야하는 버스/지하철의 경로, 소요시간, 이용요금의 정보가 나타납니다. 이 정보 외에도 ‘저탄소 교통을 탐으로써 절약한 탄소량’의 정보를 보여준다면, 사람들에게 저탄소 교통 이용을 장려할 수 있을 것입니다."},
+    {'topic': "아동 보호를 위한 서비스", 'title': "Safeview - 아동 안전 콘텐츠 필터링 익스텐션", 'target_problem': "현대 가정에서 유튜브, 넷플릭스와 같은 스트리밍 서비스를 통해 다양한 콘텐츠를 시청하는 것은 일상적이다. 그러나 이러한 플랫폼에는 성인용 콘텐츠도 많이 포함되어 있어 아이들이 이를 무방비 상태로 접할 위험이 있다. 부모들이 이러한 콘텐츠를 완벽하게 관리하기 어렵고, 아이들에게 부적절한 콘텐츠가 노출될 경우 심리적, 정서적 문제를 일으킬 수 있다. 따라서, 아이들이 안전하게 콘텐츠를 소비할 수 있도록 돕는 효과적인 필터링 도구가 필요하다.", 'idea': "Safeview는 부모들이 사용하는 브라우저에 설치할 수 있는 익스텐션으로, 유튜브, 넷플릭스 등 다양한 스트리밍 플랫폼에서 아이들이 보기에 적합한 콘텐츠만 노출되도록 필터링하는 기능을 제공한다. Safeview는 AI 기반의 콘텐츠 분석 기술을 통해 실시간으로 영상의 내용을 분석하고, 부적절한 콘텐츠를 감지하여 자동으로 차단한다. 부모는 익스텐션을 통해 아이들에게 적합한 연령대와 콘텐츠 유형을 설정할 수 있으며, 이를 기반으로 필터링이 적용된다. 예를 들어, 부모가 7세 이하의 아이에게 적합한 콘텐츠만 노출되도록 설정하면, 그 외의 콘텐츠는 자동으로 차단된다."},
+    {'topic': "아동 보호를 위한 서비스", 'title': "아동의 안전을 위한 웨어러블 기기", 'target_problem': "아동 보호 서비스는 아동 학대, 방치를 방지하고, 아동의 안전을 지원하기 위해 존재합니다. 그러나 아동 학대와 방치는 주로 실내에서 이뤄지기 때문에, 주변인들이 아동의 상태를 인지하고 대처하기 어렵습니다. 즉, 아동 보호 서비스는 공간적인 제약이 있습니다. 아동 학대나 방치 상황을 빠르게 인지하고 대응하기 위해서는 아동의 상태를 어디서나 인지할 수 있도록 데이터를 수집할 필요가 있습니다.", 'idea': "일반 팔찌처럼 생긴 아동 안전 웨어러블 기기는 GPS 추적 기능, 마이크, 심박수 모니터링, 그리고 응급 호출 버튼이 있습니다. GPS와 마이크, 심박수를 통해 아동이 처한 상황의 데이터를 실시간으로 수집할 수 있습니다. 따라서, 만약 아동이 위험한 상황에 처했을 때 즉시 아동의 상태를 확인하고 적절한 대응을 취할 수 있을 것입니다. 또한, 아동이 스스로 신고를 할 수 있는 상황이라면, 아동이 직접 응급 호출 버튼을 눌러 도움을 요청할 수도 있습니다."},
 ]
 
 def flag_all_modified(instance):
@@ -44,7 +43,6 @@ def flag_all_modified(instance):
         flag_modified(instance, attr)
 
 main = Blueprint('main', __name__)
-
 
 @main.route("/signup", methods=['POST'])
 @cross_origin()
@@ -71,6 +69,7 @@ def signup():
     db.session.add(new_user)
     db.session.commit()
 
+    #if num is 1-12, user_mode is 1; if num is 13-24, user_mode is 2 
     user_mode = 2
     if ((num - 1) % 24) < 12:
         user_mode = 1
@@ -137,19 +136,20 @@ def logout():
 def profile():
     user = User.query.filter_by(email=get_jwt_identity()).first()
     name = user.name
-    
     idea = Idea.query.filter_by(user_id=user.id, round=user.currentRound).first()
     ideaData = {"id": idea.id, "topic": idea.topic, "title": idea.title, "problem": idea.target_problem, "idea": idea.idea}
-    # ideasData = []
-    # ideas = Idea.query.filter_by(user_id=user.id, round=user.currentRound).all()
-    # ideasData = [{"id": idea.id, "title": idea.title, "problem": idea.target_problem, "idea": idea.idea} for idea in ideas]
-    
     userChat = ChatLog.query.filter_by(user_id=user.id, round=user.currentRound).first()
     setting = InitialSetting.query.filter_by(user_id=user.id, round=user.currentRound).first()
+    user_knowledgestate = KnowledgeState.query.filter_by(user_id=user.id, round=user.currentRound).first()
+
+    ########Collect Log#######
+    timestamp = datetime.fromtimestamp(datetime.now().timestamp())
+    userlog = UserLog(user_id = user.id, timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S'), tag="start", data="")
+    db.session.add(userlog)
+    db.session.commit()
+    ##########################
     
-    if setting.mode == 1 :
-        user_knowledgestate = KnowledgeState.query.filter_by(user_id=user.id, round=user.currentRound).first()
-        
+    if setting.mode == 1 :        
         feedback_timely = 0
         feedback_relevance = 0
         feedback_high_level = 0
@@ -177,7 +177,7 @@ def profile():
 
         return {"ideaData": ideaData, "chatData": userChat.log, "name": name, "mode": setting.mode, "character": setting.character, "goal1": setting.goal1, "goal2": setting.goal2, "goal3": setting.goal3, "time": setting.time, "student_knowledge_level": len(user_knowledgestate.knowledge), "qns": qns, "cnd": cnd, "timely": feedback_timely, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active, 'face': user_knowledgestate.face, 'knowledge': user_knowledgestate.knowledge, 'actionPlan': user_knowledgestate.actionPlan}
     
-    return  {"ideaData": ideaData, "chatData": userChat.log, "name": name, "mode": setting.mode, "character": "", "goal1": "", "goal2": "", "goal3": "", "time": setting.time, "student_knowledge_level": "", "qns": "", "cnd": "", "timely": "", "relevance": "", "high_level": "", "specificity": "", "justification": "", "active": "", 'face': ""}
+    return {"ideaData": ideaData, "chatData": userChat.log, "name": name, "mode": setting.mode, "character": "", "goal1": "", "goal2": "", "goal3": "", "time": setting.time, "student_knowledge_level": "", "qns": "", "cnd": "", "timely": "", "relevance": "", "high_level": "", "specificity": "", "justification": "", "active": "", 'face': "", 'actionPlan': user_knowledgestate.actionPlan}
 
 @main.route("/getSetting")
 @jwt_required()
@@ -240,13 +240,9 @@ def response():
     params = request.get_json()
     feedback = params['feedback']
     user = User.query.filter_by(email=get_jwt_identity()).first()
-    
     idea = Idea.query.filter_by(user_id=user.id, round=user.currentRound).first()
     ideaData = {"topic": idea.topic, "design criteria": idea.design_goals, "title": idea.title, "problem": idea.target_problem, "idea": idea.idea}
-    
     user_knowledgestate = KnowledgeState.query.filter_by(user_id=user.id, round=user.currentRound).first()
-    # opportunity = user_knowledgestate.opportunity
-    # consideration = user_knowledgestate.consideration
     knowledge = user_knowledgestate.knowledge
     user_chat = ChatLog.query.filter_by(user_id=user.id, round=user.currentRound).first()
     
@@ -371,7 +367,7 @@ Lastly, convert the extracted knowledge into the form of a student talking to hi
 The response should be in JSON array format, which looks like, {{"knowledge": "", "action_plan": "", "thinking": ""}}.
 """
 }]
-    
+
     new_knowledge = []
     new_actionPlan = []
     new_thinking = []
@@ -405,7 +401,6 @@ The response should be in JSON array format, which looks like, {{"knowledge": ""
     if len(result1) == 0:
         if (user_knowledgestate.face / 10) > 2:
             user_knowledgestate.face -= 10
-
     else:
         feedbackeval_prompt = [{"role": "system", "content": f"""
 Feedback Evaluation Instructions for Instructor's Feedback of a Student's Design Idea.\n\n
@@ -469,10 +464,8 @@ feedback:" + result1
                         user_knowledgestate.counter['h_count'] += 1
 
                     if (int(sentence['evaluation']['timely']) + int(sentence['evaluation']['relevance']) + int(sentence['evaluation']['high-level']) >= 16) and ((user_knowledgestate.face / 10) < 5):
-                        print(user_knowledgestate.face / 10)
                         user_knowledgestate.face += 10
                     elif (int(sentence['evaluation']['timely']) + int(sentence['evaluation']['relevance']) + int(sentence['evaluation']['high-level']) <= 9) and ((user_knowledgestate.face / 10) > 2):
-                        print(user_knowledgestate.face / 10)
                         user_knowledgestate.face -= 10
 
                     flag_modified(user_knowledgestate, 'counter')
@@ -556,8 +549,6 @@ feedback:" + result1
 
     db.session.commit()
 
-    # student_divergent_level = len(user_knowledgestate.opportunity)
-    # student_convergent_level = len(user_knowledgestate.consideration)
     student_knowledge_level = len(user_knowledgestate.knowledge)
     feedback_timely = 0
     feedback_relevance = 0
@@ -662,8 +653,7 @@ def askQuestion():
 
     instruction = ""
 
-    print(user_knowledgestate.counter)
-
+    # print(user_knowledgestate.counter)
     if user_knowledgestate.counter['q_count'] >= 4:
         instruction = "Ask for the reviewer's own opinion or advice on the previous reviewer's question."
     elif user_knowledgestate.counter['q_count'] <= -4:
@@ -821,7 +811,7 @@ Response Only in JSON array, which looks like, {{'title': "", 'target_problem': 
 
     return {"ideaData": ideaData}
 
-
+# When the user finishes that round, move them to the next round.
 @main.route("/nextRound")
 @jwt_required()
 @cross_origin()
@@ -830,9 +820,7 @@ def nextRound():
     user.currentRound += 1
     flag_modified(user, 'currentRound')
     db.session.commit()
-
     return {"msg":"Next Round!"}
-
 
 app = create_app()
 if __name__ == '__main__':

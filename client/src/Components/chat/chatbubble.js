@@ -22,7 +22,6 @@ export const ChatBubble = ({speaker, content, mode}) => {
           }
       };
 
-
     return(
         <>
             {speaker === "student" ? 
