@@ -5,6 +5,7 @@ import './App.css';
 import { MainPage } from './Pages/mainpage';
 import { LoginPage } from './Pages/loginPage';
 import { StartPage } from './Pages/startPage';
+import { ManagePage } from './Pages/managePage';
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
             <Routes>
               <Route path='/feedback' element={<MainPage token={token} setToken={setToken} removeToken={removeToken}/>}/>
               <Route path='/' element={<StartPage token={token} setToken={setToken} removeToken={removeToken}/>}/>
+              <Route path='/manage' element={<ManagePage token={token} setToken={setToken} removeToken={removeToken}/>}/>
             </Routes>
           </>
         }

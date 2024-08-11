@@ -144,7 +144,7 @@ def profile():
 
     ########Collect Log#######
     timestamp = datetime.fromtimestamp(datetime.now().timestamp())
-    userlog = UserLog(user_id = user.id, timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S'), tag="start", data="")
+    userlog = UserLog(user_id = user.id, round=user.currentRound, timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S'), tag="start", data="")
     db.session.add(userlog)
     db.session.commit()
     ##########################
@@ -561,6 +561,15 @@ This is the feedback that the student received from the mentor: {result1}
     flag_modified(user_chat, 'log')
     flag_modified(user_knowledgestate, 'knowledge')
 
+    
+    ########Collect Log#######
+    timestamp = datetime.fromtimestamp(datetime.now().timestamp())
+    userlog = UserLog(user_id = user.id, round=user.currentRound, timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S'), tag="user_feedaback", data=json.dumps({"user_input": feedback, "category": result1, "new_knowledge": new_knowledge, "new_actionPlan": new_actionPlan, "new_thinking": new_thinking, "evaluation": result2, "response": result3}, ensure_ascii=False))
+    db.session.add(userlog)
+    db.session.commit()
+    ##########################
+
+
     db.session.commit()
 
     student_knowledge_level = len(user_knowledgestate.knowledge)
@@ -763,12 +772,19 @@ The format of your question is JSON as follows:
         # This will run only if there is no error
         return {"response": "죄송합니다...질문이 있었는데 까먹었습니다..."}
 
-    print(result)
+    # print(result)
+
     user_chat.log.append({"speaker": "student", "content": result["question"]})
     flag_modified(user_chat, 'log')
     flag_modified(user_knowledgestate, 'counter')
-
     db.session.commit()
+
+    ########Collect Log#######
+    timestamp = datetime.fromtimestamp(datetime.now().timestamp())
+    userlog = UserLog(user_id = user.id, round=user.currentRound, timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S'), tag="student_question", data=json.dumps({"question": result["question"]}, ensure_ascii=False))
+    db.session.add(userlog)
+    db.session.commit()
+    ##########################
 
     return {"response": result["question"]}
 
@@ -839,6 +855,13 @@ Response Only in JSON array, which looks like, {{'title': "", 'target_problem': 
         flag_modified(idea, 'idea')
         db.session.commit()
 
+        ########Collect Log#######
+        timestamp = datetime.fromtimestamp(datetime.now().timestamp())
+        userlog = UserLog(user_id = user.id, round=user.currentRound, timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S'), tag="update_idea", data=json.dumps({"title": result['title'], "problem": result['target_problem'], "idea": result['idea']}, ensure_ascii=False))
+        db.session.add(userlog)
+        db.session.commit()
+        ##########################
+
     except ZeroDivisionError as e:
         return {"response": "error"}
     
@@ -852,10 +875,36 @@ Response Only in JSON array, which looks like, {{'title': "", 'target_problem': 
 @cross_origin()
 def nextRound():
     user = User.query.filter_by(email=get_jwt_identity()).first()
+
+    ########Collect Log#######
+    timestamp = datetime.fromtimestamp(datetime.now().timestamp())
+    userlog = UserLog(user_id = user.id, round=user.currentRound, timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S'), tag="finish", data="")
+    db.session.add(userlog)
+    db.session.commit()
+    ##########################
+
     user.currentRound += 1
     flag_modified(user, 'currentRound')
     db.session.commit()
+
     return {"msg":"Next Round!"}
+
+# get log data
+@main.route("/getLogData", methods=["POST"])
+@cross_origin()
+def getLogData():
+    params = request.get_json()
+    userNum = int(params['userNum'])
+    user_id = User.query.filter_by(num=userNum).first().id
+    logs = UserLog.query.filter_by(user_id=user_id).all()
+
+    logData = []
+    for log in logs:
+        logData.append({"user_id": log.user_id, "timestamp": log.timestamp, "tag": log.tag, "data": log.data})
+
+    return {"logData": logData}
+
+
 
 app = create_app()
 if __name__ == '__main__':

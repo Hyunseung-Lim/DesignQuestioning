@@ -195,61 +195,61 @@ export const MainPage = (props) => {
 
   return (
     <>
-      <div className="mainpage">
-        <Topbar
-          token={props.token}
-          setToken={props.setToken}
-          removeToken={props.removeToken}
-          time={time}
-        />
-        <div className="UIContainer">
-          {/* {notesData ? <Board token={props.token} notesData={notesData}/> : <>loading</>} */}
-          {ideaData ? (
-            <IdeaContainer
-              token={props.token}
-              ideaData={ideaData}
-              isUpdateIdea={isUpdateIdea}
-              setIsUpdateIdea={setIsUpdateIdea}
-              setIdeaData={setIdeaData}
+        <div className="mainpage">
+            <Topbar
+            token={props.token}
+            setToken={props.setToken}
+            removeToken={props.removeToken}
+            time={time}
             />
-          ) : (
-            <>loading</>
-          )}
-          {chatData ? (
-            mode === 1 ? (
-              <Chat
+            <div className="UIContainer">
+            {/* {notesData ? <Board token={props.token} notesData={notesData}/> : <>loading</>} */}
+            {ideaData ? (
+                <IdeaContainer
                 token={props.token}
-                chatData={chatData}
+                ideaData={ideaData}
                 isUpdateIdea={isUpdateIdea}
-                questionChecker={questionChecker}
-                getResponse={(feedback) => getResponse(feedback)}
-                getQuestion={() => getQuestion()}
-              />
+                setIsUpdateIdea={setIsUpdateIdea}
+                setIdeaData={setIdeaData}
+                />
             ) : (
-              <BaselineChat
-                token={props.token}
-                chatData={chatData}
-                isUpdateIdea={isUpdateIdea}
-                getResponse={(feedback) => getBaselineResponse(feedback)}
-              />
-            )
-          ) : (
-            <>loading</>
-          )}
-          {profileData ? (
-            mode === 1 ? (
-              <Student
-                knowledgeLevel={knowledgeLevel}
-                profileData={profileData}
-                feedbackData={feedbackData}
-                face={face}
-                thinkingContents={thinkingContents}
-              />
-            ) : null
-          ) : (
-            <>loading</>
-          )}
-        </div>
+                <>loading</>
+            )}
+            {chatData ? (
+                mode === 1 ? (
+                <Chat
+                    token={props.token}
+                    chatData={chatData}
+                    isUpdateIdea={isUpdateIdea}
+                    questionChecker={questionChecker}
+                    getResponse={(feedback) => getResponse(feedback)}
+                    getQuestion={() => getQuestion()}
+                />
+                ) : (
+                <BaselineChat
+                    token={props.token}
+                    chatData={chatData}
+                    isUpdateIdea={isUpdateIdea}
+                    getResponse={(feedback) => getBaselineResponse(feedback)}
+                />
+                )
+            ) : (
+                <>loading</>
+            )}
+            {profileData ? (
+                mode === 1 ? (
+                <Student
+                    knowledgeLevel={knowledgeLevel}
+                    profileData={profileData}
+                    feedbackData={feedbackData}
+                    face={face}
+                    thinkingContents={thinkingContents}
+                />
+                ) : null
+            ) : (
+                <>loading</>
+            )}
+            </div>
       </div>
     </>
   );

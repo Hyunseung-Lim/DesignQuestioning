@@ -65,6 +65,7 @@ class ChatLog(db.Model):
 class UserLog(db.Model):
     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    round = db.Column(db.Integer)
     timestamp = db.Column(db.String(100))
     tag = db.Column(db.String(100))
     data = db.Column(db.JSON)
