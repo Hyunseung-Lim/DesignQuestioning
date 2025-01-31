@@ -601,20 +601,6 @@ This is the feedback that the student received from the mentor: {result1}
         and (user_knowledgestate.counter['a_count'] < 4)
     )
 
-    # print(feedback_timely)
-    # print(feedback_relevance)
-    # print(feedback_high_level)
-    # print(feedback_specificity)
-    # print(feedback_justification)
-    # print(feedback_active)
-    # print(user_knowledgestate.qns)
-
-    # print("opportunity: ", user_knowledgestate.opportunity)
-    # print("consideration: ", user_knowledgestate.consideration)
-    # print(question_checker)
-    # print(user_knowledgestate.face)
-    # print("knowledge: ", user_knowledgestate.knowledge)
-
     qns = 50
     if user_knowledgestate.q_num + user_knowledgestate.s_num > 0:
         qns = user_knowledgestate.q_num * 100 / (user_knowledgestate.q_num + user_knowledgestate.s_num)
@@ -624,65 +610,6 @@ This is the feedback that the student received from the mentor: {result1}
         cnd = user_knowledgestate.c_num * 100 / (user_knowledgestate.c_num + user_knowledgestate.d_num)
 
     return {"response": result3["answer"], "student_knowledge_level": student_knowledge_level, "qns": qns, "cnd": cnd, "timely": feedback_timely, "relevance": feedback_relevance, "high_level": feedback_high_level, "specificity": feedback_specificity, "justification": feedback_justification, "active": feedback_active, "questionChecker": question_checker, "face": user_knowledgestate.face, "knowledge": user_knowledgestate.knowledge, "actionPlan": user_knowledgestate.actionPlan, "thinking": new_thinking}
-
-# @main.route("/baselineresponse", methods=["POST"])
-# @jwt_required()
-# @cross_origin()
-# def baselineresponse():
-#     params = request.get_json()
-#     feedback = params['feedback']
-#     user = User.query.filter_by(email=get_jwt_identity()).first()
-    
-#     idea = Idea.query.filter_by(user_id=user.id, round=user.currentRound).first()
-#     ideaData = {"topic": idea.topic, "design criteria": idea.design_goals, "title": idea.title, "problem": idea.target_problem, "idea": idea.idea}
-
-#     user_chat = ChatLog.query.filter_by(user_id=user.id, round=user.currentRound).first()
-#     formatted_chat = ''.join([f'you: {x["content"]}\n' if x["speaker"] == "student" else f'mentor: {x["content"]}\n' for x in user_chat.log])
-
-
-#     prompt = [
-#         {
-#             "role": "system",
-#             "content": f"""
-# Your task is to respond to the feedback provided by the mentor about the student's design idea. The studens is a 1st year Design Department student, and the mentor is an industrial design expert.
-
-# This is student's current design idea:
-# * Topic: {ideaData['topic']}
-# * Title: {ideaData['title']}
-# * Problem: {ideaData['problem']}
-# * Idea: {ideaData['idea']}
-
-# These are previous conversations between the student and the mentor about student's design idea:
-# {formatted_chat}
-
-# This is the feedback that the student received from the mentor after the conversation: {feedback}
-
-# Response Only in JSON array, which looks like, {{"answer": "your answer"}}
-#             """
-#         }
-#     ]
-            
-#     completion = openai.chat.completions.create(
-#         model="gpt-4o",
-#         # model="gpt-3.5-turbo",
-#         messages=prompt,
-#         response_format={"type": "json_object"}
-#     )
-#     try:
-#         result3 = json.loads(completion.choices[0].message.content)
-#     except ZeroDivisionError as e:
-#     # This will run only if there is no error
-#         return {"response": "죄송합니다...제가 잘 이해 못한 거 같아요. 다시 말씀해주실 수 있을까요?"}
-
-#     new_entries = [
-#         {"speaker": "instructor", "content": feedback},
-#         {"speaker": "student", "content": result3["answer"]}
-#     ]
-#     user_chat.log.extend(new_entries)
-#     flag_modified(user_chat, 'log')
-
-#     db.session.commit()
-#     return {"response": result3["answer"]}
 
 
 @main.route("/askQuestion")
